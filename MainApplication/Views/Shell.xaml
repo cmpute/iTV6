@@ -1,13 +1,113 @@
 ﻿<Page
     x:Class="iTV6.Shell"
+    d:DataContext="{d:DesignInstance Type=vm:ShellViewModel}"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:iTV6"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:converter="using:iTV6.Converters"
+    xmlns:vm="using:iTV6.ViewModels"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.DataContext>
+        <vm:ShellViewModel x:Name="ViewModel" Host="{x:Bind}">
+            <vm:ShellViewModel.NavigationItems>
+                <vm:NavigationItem Name="频道" Glyph="&#xE173;" Navigate="{x:Bind ViewModel.NavigateChannels}"/>
+                <vm:NavigationItem Name="收藏" Glyph="&#xE728;" Navigate="{x:Bind ViewModel.NavigateCollection}"/>
+                <vm:NavigationItem Name="录播" Glyph="&#xE953;" Navigate="{x:Bind ViewModel.NavigateRecordings}"/>
+                <vm:NavigationItem Name="关于" Glyph="&#xE212;" Navigate="{x:Bind ViewModel.NavigateAbout}"/>
+                <vm:NavigationItem Name="设置" Glyph="&#xE115;" Navigate="{x:Bind ViewModel.NavigateSettings}"/>
+            </vm:ShellViewModel.NavigationItems>
+        </vm:ShellViewModel>
+    </Page.DataContext>
+    
+    <!-- Transition copied from myFeed -->
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <EntranceNavigationTransitionInfo/>
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
 
+    <Page.Resources>
+        <converter:ValueWhenConverter x:Key="ToggleConverter">
+            <converter:ValueWhenConverter.When>
+                <x:Boolean>True</x:Boolean>
+            </converter:ValueWhenConverter.When>
+            <converter:ValueWhenConverter.Value>
+                <x:Boolean>False</x:Boolean>
+            </converter:ValueWhenConverter.Value>
+            <converter:ValueWhenConverter.Otherwise>
+                <x:Boolean>True</x:Boolean>
+            </converter:ValueWhenConverter.Otherwise>
+        </converter:ValueWhenConverter>
+    </Page.Resources>
+    
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <SplitView x:Name="MenuView" DisplayMode="CompactOverlay"
+                   CompactPaneLength="48" OpenPaneLength="270">
+            <SplitView.Pane>
+                <Grid x:Name="PaneGrid" Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="48"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Tapped">
+                                <core:ChangePropertyAction TargetObject="{x:Bind MenuView}" PropertyName="IsPaneOpen"
+                                                           Value="{x:Bind MenuView.IsPaneOpen, Converter={StaticResource ToggleConverter}, Mode=OneWay}"/>
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                        <FontIcon FontSize="20" Glyph="&#xE700;" Margin="6,0" Height="36" Width="36"/>
+                        <TextBlock Margin="16,0" Text="iTV6" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <ListBox x:Name="MenuItems" Grid.Row="1"
+                             Background="Transparent" Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                             ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollMode="Disabled"
+                             ItemsSource="{x:Bind ViewModel.NavigationItems}">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="TabNavigation" Value="Local" />
+                                <Setter Property="Padding" Value="0" />
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:NavigationItem">
+                                <Grid Background="Transparent" Height="48">
+                                    <interactivity:Interaction.Behaviors>
+                                        <core:EventTriggerBehavior EventName="Tapped">
+                                            <core:InvokeCommandAction Command="{x:Bind Navigate}"/>
+                                        </core:EventTriggerBehavior>
+                                    </interactivity:Interaction.Behaviors>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <FontIcon Glyph="{x:Bind Glyph}" Width="48"/>
+                                        <TextBlock Margin="16,0" Text="{x:Bind Name}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Height="48" VerticalAlignment="Top" Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}"/>
+                    <Frame x:Name="NavigationFrame" x:FieldModifier="public" Loaded="{x:Bind ViewModel.FrameLoaded}"/>
+                </Grid>
+            </SplitView.Content>
+        </SplitView>
     </Grid>
 </Page>
