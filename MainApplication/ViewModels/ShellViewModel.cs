@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using iTV6.Mvvm;
@@ -17,23 +15,27 @@ namespace iTV6.ViewModels
         
         public void FrameLoaded(object sender, RoutedEventArgs e)
         {
+            // 注册外层菜单的导航服务
             NavigationService.ShellNavigation = new NavigationService((Host as Shell).NavigationFrame);
         }
 
         public DelegateCommand NavigateChannels { get; } = new DelegateCommand(() =>
-            NavigationService.ShellNavigation.Navigate<ChannelsPage>());
+            NavigationService.ShellNavigation.Navigate<ChannelsPage>()); // 频道
         public DelegateCommand NavigateCollection { get; } = new DelegateCommand(() =>
-            NavigationService.ShellNavigation.Navigate<CollectionPage>());
+            NavigationService.ShellNavigation.Navigate<CollectionPage>()); // 收藏
         public DelegateCommand NavigateRecordings { get; } = new DelegateCommand(() =>
-            NavigationService.ShellNavigation.Navigate<RecordingsPage>());
+            NavigationService.ShellNavigation.Navigate<RecordingsPage>()); // 录播
         public DelegateCommand NavigateAbout { get; } = new DelegateCommand(() =>
-            NavigationService.ShellNavigation.Navigate<AboutPage>());
+            NavigationService.ShellNavigation.Navigate<AboutPage>()); // 关于
         public DelegateCommand NavigateSettings { get; } = new DelegateCommand(() =>
-            NavigationService.ShellNavigation.Navigate<SettingsPage>());
+            NavigationService.ShellNavigation.Navigate<SettingsPage>()); // 设置
 
         public List<NavigationItem> NavigationItems { get; } = new List<NavigationItem>();
     }
 
+    /// <summary>
+    /// 导航菜单项的模型，由于比较小，因此不放在Model内了。
+    /// </summary>
     public class NavigationItem
     {
         public string Name { get; set; }

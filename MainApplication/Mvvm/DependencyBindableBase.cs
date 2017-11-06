@@ -5,7 +5,10 @@ using Windows.UI.Xaml;
 
 namespace iTV6.Mvvm
 {
-    // From Template10
+    /// <summary>
+    /// 实现<see cref="INotifyPropertyChanged"/>接口的<see cref="DependencyObject"/>类，用于在XAML中绑定
+    /// </summary>
+    /// <remarks> From Template10 </remarks>
     public abstract class DependencyBindableBase : DependencyObject, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;

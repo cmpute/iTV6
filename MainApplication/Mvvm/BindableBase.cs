@@ -4,7 +4,10 @@ using System.Runtime.CompilerServices;
 
 namespace iTV6.Mvvm
 {
-    // From Template10
+    /// <summary>
+    /// 实现<see cref="INotifyPropertyChanged"/>接口的基类，用于绑定
+    /// </summary>
+    /// <remarks> From Template10 </remarks>
     public abstract class BindableBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;

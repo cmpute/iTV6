@@ -6,7 +6,10 @@ namespace iTV6.Mvvm
     // From Template10
     using System.Diagnostics;
 
-    // DOCS: https://github.com/Windows-XAML/Template10/wiki/MVVM
+    /// <summary>
+    /// 通过<see cref="Action"/>实现<see cref="ICommand"/>的Command类
+    /// </summary>
+    /// <remarks> DOCS: https://github.com/Windows-XAML/Template10/wiki/MVVM </remarks>
     public class DelegateCommand : ICommand
     {
         private readonly Action _execute;
@@ -42,7 +45,10 @@ namespace iTV6.Mvvm
         }
     }
 
-    // DOCS: https://github.com/Windows-XAML/Template10/wiki/MVVM
+    /// <summary>
+    /// 通过<see cref="Action{T}"/>实现<see cref="ICommand"/>的Command类
+    /// </summary>
+    /// <remarks> DOCS: https://github.com/Windows-XAML/Template10/wiki/MVVM </remarks>
     public class DelegateCommand<T> : ICommand
     {
         private readonly Action<T> _execute;
