@@ -96,6 +96,12 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\ValueWhenConverter.cs" />
+    <Compile Include="Models\Channel.cs" />
+    <Compile Include="Models\ITelevisionStation.cs" />
+    <Compile Include="Models\AvailableProgram.cs" />
+    <Compile Include="Models\PlayingProgram.cs" />
+    <Compile Include="Models\Program.cs" />
+    <Compile Include="Models\Stations\TsinghuaTV.cs" />
     <Compile Include="Mvvm\BindableBase.cs" />
     <Compile Include="Mvvm\DelegateCommand.cs" />
     <Compile Include="Mvvm\DependencyBindableBase.cs" />
@@ -177,7 +183,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
     <Folder Include="Styles\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
