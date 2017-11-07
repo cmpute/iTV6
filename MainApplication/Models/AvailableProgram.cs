@@ -9,11 +9,21 @@ namespace iTV6.Models
     /// <summary>
     /// 有可播放资源的节目的Model
     /// </summary>
-    public class AvailableProgram : Program
+    public class AvailableProgram
     {
         /// <summary>
         /// 媒体资源地址
         /// </summary>
         public Uri MediaSource { get; set; }
+
+        /// <summary>
+        /// 节目信息
+        /// </summary>
+        public Program ProgramInfo { get; set; }
+
+        /// <summary>
+        /// 节目来源的电视台
+        /// </summary>
+        public ITelevisionStation SourceStation { get; set; }
     }
 }

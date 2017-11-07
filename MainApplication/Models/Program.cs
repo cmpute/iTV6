@@ -30,5 +30,10 @@ namespace iTV6.Models
         /// 节目集数
         /// </summary>
         public string Episode { get; set; }
+
+        /// <summary>
+        /// 所属频道
+        /// </summary>
+        public Channel Channel { get; set; }
     }
 }
