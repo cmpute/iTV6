@@ -102,12 +102,12 @@ namespace iTV6.Models
     [Flags]
     public enum ChannelType
     {
-        Central = 0,    //中央电视台
-        Local = 1,      //地方电视台
-        Special = 2,    //特色频道
-        Radio = 4,      //广播
-        Standard = 8,   //标清
-        Hd = 16,        //高清
-        Beijing = 32    //北京
+        Central = 1,    //中央电视台
+        Local = 2,      //地方电视台
+        Special = 4,    //特色频道
+        Radio = 8,      //广播
+        Standard = 16,  //标清
+        Hd = 32,        //高清
+        Beijing = 64    //北京
     }
 }

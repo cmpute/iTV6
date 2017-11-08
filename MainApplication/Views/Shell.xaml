@@ -100,11 +100,10 @@
             </SplitView.Pane>
             <SplitView.Content>
                 <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Height="48" VerticalAlignment="Top" Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}"/>
+                    <!-- 页眉的公共背景 -->
+                    <Rectangle Height="48" Fill="{ThemeResource SystemControlPageBackgroundChromeLowBrush}"
+                               VerticalAlignment="Top"/>
+                    <!-- Caution: 这里如果让Frame有"*"的高度的话，Frame的内容就无限大了，里面的元素如ScrollViewer等将失效-->
                     <Frame x:Name="NavigationFrame" x:FieldModifier="public" Loaded="{x:Bind ViewModel.FrameLoaded}"/>
                 </Grid>
             </SplitView.Content>

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using iTV6.Models;
 using iTV6.Models.Stations;
+using iTV6.Utils;
 
 namespace iTV6.Services
 {
@@ -40,8 +41,9 @@ namespace iTV6.Services
         public List<ITelevisionStation> TelevisionStations { get; }
 
         /// <summary>
-        /// 当前节目列表，键为频道名
+        /// 当前节目列表
         /// </summary>
-        public Dictionary<string, PlayingProgram> AvaliablePrograms { get; } = new Dictionary<string, PlayingProgram>();
+        public IEnumerable<PlayingProgram> AvaliablePrograms { get => 
+            Async.InvokeAndWait(async() => await TelevisionStations.First().GetChannelList()); }
     }
 }

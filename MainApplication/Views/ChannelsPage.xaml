@@ -5,9 +5,118 @@
     xmlns:local="using:iTV6.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:iTV6.ViewModels"
+    xmlns:m="using:iTV6.Models"
+    xmlns:wuxdata="using:Windows.UI.Xaml.Data"
+    xmlns:converter="using:iTV6.Converters"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="About"/>
+    <Page.DataContext>
+        <vm:ChannelsViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
+
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <EntranceNavigationTransitionInfo />
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
+
+    <Page.Resources>
+        <DataTemplate x:Key="BriefNarrowProgramTemplate" x:DataType="m:PlayingProgram">
+            <StackPanel>
+                <TextBlock Text="{x:Bind ProgramInfo.Channel.Name}" FontSize="16" FontWeight="Bold"/>
+                <TextBlock Text="{x:Bind ProgramInfo.Name}" FontSize="12"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="BriefWideProgramTemplate" x:DataType="m:PlayingProgram">
+            <RelativePanel>
+                <TextBlock Text="{x:Bind ProgramInfo.Channel.Name}" FontSize="16" FontWeight="Bold"
+                           RelativePanel.AlignLeftWithPanel="True"/>
+                <TextBlock Text="{x:Bind ProgramInfo.Name}" FontSize="12"
+                           RelativePanel.AlignRightWithPanel="True"/>
+            </RelativePanel>
+        </DataTemplate>
+
+        <converter:PassConverter x:Key="ObjectConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <SemanticZoom x:Name="ChannelList" Grid.Row="1">
+            <SemanticZoom.ZoomedInView>
+                <ListView ItemsSource="{x:Bind ViewModel.Programs.View}"
+                          ItemTemplate="{StaticResource ResourceKey=BriefNarrowProgramTemplate}"
+                          HorizontalContentAlignment="Stretch"
+                          SelectedItem="{x:Bind ViewModel.SelectedProgram, Mode=TwoWay, Converter={StaticResource ResourceKey=ObjectConverter}}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate x:DataType="vm:ChannelTypeAdapter">
+                                    <TextBlock Text="{x:Bind Type}" FontSize="24"/>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                </ListView>
+            </SemanticZoom.ZoomedInView>
+            <SemanticZoom.ZoomedOutView>
+                <ListView ItemsSource="{x:Bind ViewModel.Programs.View.CollectionGroups}"
+                          HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="wuxdata:ICollectionViewGroup">
+                            <TextBlock Text="{x:Bind Group.(vm:ChannelTypeAdapter.Type)}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="48"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <MediaElement x:Name="Player" Source="{x:Bind ViewModel.SelectedProgram.MediaSource, Mode=OneWay}"
+                          AutoPlay="True" AreTransportControlsEnabled="True">
+                <MediaElement.TransportControls>
+                    <MediaTransportControls IsCompact="True" IsSeekEnabled="False" IsSeekBarVisible="False"/>
+                </MediaElement.TransportControls>
+            </MediaElement>
+            <RelativePanel Grid.Row="1">
+                <TextBlock Text="片源选择" RelativePanel.AlignLeftWithPanel="True"
+                            RelativePanel.AlignVerticalCenterWithPanel="True"/>
+                <StackPanel Orientation="Horizontal"
+                            RelativePanel.AlignRightWithPanel="True"
+                            RelativePanel.AlignVerticalCenterWithPanel="True">
+                    <Button Content="收藏"/>
+                    <Button Content="录播"/>
+                </StackPanel>
+            </RelativePanel>
+            <ListView x:Name="ProgramList" Grid.Row="2"
+                      ItemsSource="{x:Bind ViewModel.ProgramList, Mode=OneWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="m:Program">
+                        <TextBlock Text="{x:Bind Name}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
     </Grid>
 </Page>

@@ -95,6 +95,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\PassConverter.cs" />
     <Compile Include="Converters\ValueWhenConverter.cs" />
     <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\ITelevisionStation.cs" />
@@ -108,6 +109,8 @@
     <Compile Include="Mvvm\ViewModelBase.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\TelevisionService.cs" />
+    <Compile Include="Utils\Async.cs" />
+    <Compile Include="ViewModels\ChannelsViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
