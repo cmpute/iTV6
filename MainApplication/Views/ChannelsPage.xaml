@@ -53,6 +53,50 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
+        <RelativePanel>
+            <TextBlock Style="{StaticResource HeaderTextStyle}" Text="频道列表"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True"/>
+            <StackPanel Orientation="Horizontal"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True">
+                <Button x:Name="ShowThumb" Style="{StaticResource HeaderButtonStyle}"
+                        ToolTipService.ToolTip="显示缩略图">
+                    <Button.Content>
+                        <!-- 替换图标有 &#xE14C; &#xE8BA; -->
+                        <FontIcon Glyph="&#xE179;" Width="24" Height="24"/>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="HideProgram" Style="{StaticResource HeaderButtonStyle}"
+                        ToolTipService.ToolTip="收起节目播放区域">
+                    <Button.Content>
+                        <FontIcon Glyph="&#xE1C0;" Width="24" Height="24"/>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+        </RelativePanel>
+        <RelativePanel Grid.Column="1">
+            <TextBlock Style="{StaticResource HeaderTextStyle}" 
+                       Text="{x:Bind ViewModel.SelectedProgram.ProgramInfo.Channel.Name, Mode=OneWay}"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True"/>
+            <StackPanel Orientation="Horizontal"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True">
+                <Button x:Name="LoveChannel" Style="{StaticResource HeaderButtonStyle}"
+                        ToolTipService.ToolTip="收藏频道">
+                    <Button.Content>
+                        <FontIcon Glyph="&#xE006;" Width="24" Height="24"/>
+                    </Button.Content>
+                </Button>
+                <Button x:Name="RecordChannel" Style="{StaticResource HeaderButtonStyle}"
+                        ToolTipService.ToolTip="添加频道录播计划">
+                    <Button.Content>
+                        <FontIcon Glyph="&#xE13B;" Width="24" Height="24"/>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+        </RelativePanel>
         <SemanticZoom x:Name="ChannelList" Grid.Row="1">
             <SemanticZoom.ZoomedInView>
                 <ListView ItemsSource="{x:Bind ViewModel.Programs.View}"
@@ -81,7 +125,8 @@
                           HorizontalAlignment="Center" VerticalAlignment="Center">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="wuxdata:ICollectionViewGroup">
-                            <TextBlock Text="{x:Bind Group.(vm:ChannelTypeAdapter.Type)}"/>
+                            <TextBlock Text="{x:Bind Group.(vm:ChannelTypeAdapter.Type)}"
+                                       FontSize="28" FontWeight="Bold" Margin="0,16"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -99,18 +144,32 @@
                     <MediaTransportControls IsCompact="True" IsSeekEnabled="False" IsSeekBarVisible="False"/>
                 </MediaElement.TransportControls>
             </MediaElement>
-            <RelativePanel Grid.Row="1">
-                <TextBlock Text="片源选择" RelativePanel.AlignLeftWithPanel="True"
-                            RelativePanel.AlignVerticalCenterWithPanel="True"/>
+            <RelativePanel Grid.Row="1" Padding="12, 0"
+                           Background="{ThemeResource SystemControlBackgroundBaseLowBrush}">
+                <TextBlock Text="{x:Bind ViewModel.SelectedProgram.ProgramInfo.Name, Mode=OneWay}"
+                           RelativePanel.AlignLeftWithPanel="True"
+                           RelativePanel.AlignVerticalCenterWithPanel="True"
+                           FontSize="16"/>
                 <StackPanel Orientation="Horizontal"
                             RelativePanel.AlignRightWithPanel="True"
                             RelativePanel.AlignVerticalCenterWithPanel="True">
-                    <Button Content="收藏"/>
-                    <Button Content="录播"/>
+                    <TextBlock Text="[片源选择]" VerticalAlignment="Center"/>
+                    <Button x:Name="LoveProgram" Style="{StaticResource HeaderButtonStyle}"
+                            ToolTipService.ToolTip="收藏节目">
+                        <Button.Content>
+                            <FontIcon Glyph="&#xE006;" Width="24" Height="24"/>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="RecordNow" Style="{StaticResource HeaderButtonStyle}"
+                            ToolTipService.ToolTip="立即开始录播">
+                        <Button.Content>
+                            <FontIcon Glyph="&#xE20A;" Width="24" Height="24"/>
+                        </Button.Content>
+                    </Button>
                 </StackPanel>
             </RelativePanel>
-            <ListView x:Name="ProgramList" Grid.Row="2"
-                      ItemsSource="{x:Bind ViewModel.ProgramList, Mode=OneWay}">
+            <ListView x:Name="ScheduleList" Grid.Row="2"
+                      ItemsSource="{x:Bind ViewModel.Schedule, Mode=OneWay}">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="m:Program">
                         <TextBlock Text="{x:Bind Name}"/>

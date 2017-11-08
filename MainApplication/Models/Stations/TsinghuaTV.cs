@@ -16,10 +16,13 @@ namespace iTV6.Models.Stations
         public string IdentifierName => "清华";
 
         private bool _fetched = false; //判断是否获取过节目列表
+        private IEnumerable<PlayingProgram> _cache;
         private List<Tuple<Channel, string /* Vid */>> _vidList;
         private Dictionary<Channel, List<Program>> _programList;
         public async Task<IEnumerable<PlayingProgram>> GetChannelList(bool force = false)
         {
+            if (_fetched && !force)
+                return _cache;
             // TODO: 继续分析https://iptv.tsinghua.edu.cn/status.txt，里面有在线观看人数
             try
             {
@@ -111,6 +114,7 @@ namespace iTV6.Models.Stations
                     }
                 }
                 _fetched = true;
+                _cache = result;
                 return result;
             }
             catch(Exception e)
@@ -121,7 +125,7 @@ namespace iTV6.Models.Stations
             }
         }
 
-        public async Task<IEnumerable<Program>> GetProgramList(Channel channel, bool force = false)
+        public async Task<IEnumerable<Program>> GetSchedule(Channel channel, bool force = false)
         {
             if (!_fetched)
                 await GetChannelList(force);

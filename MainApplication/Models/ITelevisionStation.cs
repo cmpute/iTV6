@@ -30,6 +30,6 @@ namespace iTV6.Models
         /// </summary>
         /// <param name="channel">需要获取节目单的频道</param>
         /// <param name="force">是否强制刷新缓存</param>
-        Task<IEnumerable<Program>> GetProgramList(Channel channel, bool force = false);
+        Task<IEnumerable<Program>> GetSchedule(Channel channel, bool force = false);
     }
 }

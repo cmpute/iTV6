@@ -56,19 +56,19 @@ namespace iTV6.ViewModels
             set
             {
                 Set(ref _selectedProgram, value);
-                ProgramList = Async.InvokeAndWait(async() => await
-                    TelevisionService.Instance.TelevisionStations.First().GetProgramList(value.ProgramInfo.Channel));
+                Schedule = Async.InvokeAndWait(async() => await
+                    TelevisionService.Instance.TelevisionStations.First().GetSchedule(value.ProgramInfo.Channel));
             }
         }
 
         /// <summary>
         /// 选中频道的节目列表
         /// </summary>
-        private IEnumerable<Models.Program> _programList;
-        public IEnumerable<Models.Program> ProgramList
+        private IEnumerable<Models.Program> _schedule;
+        public IEnumerable<Models.Program> Schedule
         {
-            get => _programList;
-            set => Set(ref _programList, value);
+            get => _schedule;
+            set => Set(ref _schedule, value);
         }
     }
 

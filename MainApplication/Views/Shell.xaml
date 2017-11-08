@@ -17,6 +17,7 @@
             <vm:ShellViewModel.NavigationItems>
                 <vm:NavigationItem Name="频道" Glyph="&#xE173;" Navigate="{x:Bind ViewModel.NavigateChannels}"/>
                 <vm:NavigationItem Name="收藏" Glyph="&#xE728;" Navigate="{x:Bind ViewModel.NavigateCollection}"/>
+                <vm:NavigationItem Name="节目单" Glyph="&#xE162;" Navigate="{x:Bind ViewModel.NavigateSchedule}"/>
                 <vm:NavigationItem Name="录播" Glyph="&#xE953;" Navigate="{x:Bind ViewModel.NavigateRecordings}"/>
                 <vm:NavigationItem Name="关于" Glyph="&#xE212;" Navigate="{x:Bind ViewModel.NavigateAbout}"/>
                 <vm:NavigationItem Name="设置" Glyph="&#xE115;" Navigate="{x:Bind ViewModel.NavigateSettings}"/>

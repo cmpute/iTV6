@@ -23,6 +23,8 @@ namespace iTV6.ViewModels
             NavigationService.ShellNavigation.Navigate<ChannelsPage>()); // 频道
         public DelegateCommand NavigateCollection { get; } = new DelegateCommand(() =>
             NavigationService.ShellNavigation.Navigate<CollectionPage>()); // 收藏
+        public DelegateCommand NavigateSchedule { get; } = new DelegateCommand(() =>
+            NavigationService.ShellNavigation.Navigate<SchedulePage>()); // 节目单
         public DelegateCommand NavigateRecordings { get; } = new DelegateCommand(() =>
             NavigationService.ShellNavigation.Navigate<RecordingsPage>()); // 录播
         public DelegateCommand NavigateAbout { get; } = new DelegateCommand(() =>
