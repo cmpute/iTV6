@@ -21,10 +21,11 @@ namespace iTV6.Models
         public static Channel GetChannel(string name, ChannelType type)
         {
             name = GetUniqueChannelName(name);
-            var uniname = name + ((int)type).ToString(); // 电视和广播可能重名
-            if (!_instances.ContainsKey(uniname))
-                _instances.Add(uniname, new Channel() { Name = name, Type = type });
-            return _instances[uniname];
+            if (type.HasFlag(ChannelType.Radio) && name.IndexOf("广播") == -1 && name.IndexOf("之声") == -1)
+                name += "广播"; // 电视和广播可能重名。加上广播来避免用额外的ID来表示频道
+            if (!_instances.ContainsKey(name))
+                _instances.Add(name, new Channel() { Name = name, Type = type });
+            return _instances[name];
         }
         /// <summary>
         /// 根据名称获得频道实例

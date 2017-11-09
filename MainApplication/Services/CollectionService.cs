@@ -24,10 +24,17 @@ namespace iTV6.Services
 
         private ApplicationDataContainer _container =
             ApplicationData.Current.RoamingSettings.CreateContainer(containerKey, ApplicationDataCreateDisposition.Always);
-
-        private ObservableCollection<string> ChannelList { get; }
-        private ObservableCollection<string> ProgramList { get; }
+        
+        /// <summary>
+        /// 被收藏的频道列表
+        /// </summary>
+        public ObservableCollection<Channel> ChannelList { get; }
         public event NotifyCollectionChangedEventHandler ChannelListChanged;
+        /// <summary>
+        /// 被收藏的节目列表
+        /// </summary>
+        public ObservableCollection<string> ProgramList { get; } // 由于不储存频道信息，Program对象是不完整的，只能用UniqueID代表
+        public event NotifyCollectionChangedEventHandler ProgramListChanged;
 
         private CollectionService()
         {
@@ -35,10 +42,11 @@ namespace iTV6.Services
             if (!_container.Values.ContainsKey(channelCollectionKey))
             {
                 _container.Values.Add(channelCollectionKey, string.Empty);
-                ChannelList = new ObservableCollection<string>();
+                ChannelList = new ObservableCollection<Channel>();
             }
             else
-                ChannelList = new ObservableCollection<string>((_container.Values[channelCollectionKey] as string).Split(splitChar));
+                ChannelList = new ObservableCollection<Channel>((_container.Values[channelCollectionKey] as string)
+                    .Split(splitChar).Select(name => Channel.GetChannel(name)));
             ChannelList.CollectionChanged += SyncChannelList;
             ChannelList.CollectionChanged += (sender, e) => ChannelListChanged?.Invoke(sender, e);
 
@@ -50,6 +58,8 @@ namespace iTV6.Services
             }
             else
                 ProgramList = new ObservableCollection<string>((_container.Values[programCollectionKey] as string).Split(splitChar));
+            ProgramList.CollectionChanged += SyncProgramList;
+            ProgramList.CollectionChanged += (sender, e) => ProgramListChanged?.Invoke(sender, e);
         }
 
         private static CollectionService _instance;
@@ -70,23 +80,40 @@ namespace iTV6.Services
         {
             _container.Values[channelCollectionKey] = String.Join(splitChar.ToString(), ChannelList);
         }
-
         public void AddChannel(Channel channel)
         {
             Debug.Assert(!CheckChannel(channel));
-            ChannelList.Add(channel.Name);
+            ChannelList.Add(channel);
         }
-
         public void RemoveChannel(Channel channel)
         {
             Debug.Assert(CheckChannel(channel));
-            ChannelList.Remove(channel.Name);
+            ChannelList.Remove(channel);
         }
-
         public bool CheckChannel(Channel channel)
         {
             Debug.Assert(!channel.Name.Contains(splitChar), "频道名称应不含换行符");
-            return ChannelList.Contains(channel.Name);
+            return ChannelList.Contains(channel);
+        }
+
+        private void SyncProgramList(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            _container.Values[channelCollectionKey] = String.Join(splitChar.ToString(), ProgramList);
+        }
+        public void AddProgram(Models.Program program)
+        {
+            Debug.Assert(!CheckProgram(program));
+            ProgramList.Add(program.UniqueId);
+        }
+        public void RemoveProgram(Models.Program program)
+        {
+            Debug.Assert(CheckProgram(program));
+            ProgramList.Remove(program.UniqueId);
+        }
+        public bool CheckProgram(Models.Program program)
+        {
+            Debug.Assert(!program.UniqueId.Contains(splitChar), "节目ID应不含换行符");
+            return ProgramList.Contains(program.UniqueId);
         }
     }
 }

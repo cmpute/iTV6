@@ -12,6 +12,11 @@ namespace iTV6.Models
     public class Program
     {
         /// <summary>
+        /// 用来表示节目的唯一标识
+        /// </summary>
+        public string UniqueId => Name + '\x0B' + Episode;
+
+        /// <summary>
         /// 节目名称
         /// </summary>
         public string Name { get; set; }
