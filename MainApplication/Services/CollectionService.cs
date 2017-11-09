@@ -1,0 +1,92 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.Storage;
+using iTV6.Models;
+using Windows.Foundation.Collections;
+using System.Collections.ObjectModel;
+
+namespace iTV6.Services
+{
+    /// <summary>
+    /// 提供收藏相关功能的服务
+    /// </summary>
+    public class CollectionService
+    {
+        const string containerKey = "Collections";
+        const string channelCollectionKey = "Channels";
+        const string programCollectionKey = "Programs";
+        const char splitChar = '\n';
+
+        private ApplicationDataContainer _container =
+            ApplicationData.Current.RoamingSettings.CreateContainer(containerKey, ApplicationDataCreateDisposition.Always);
+
+        private ObservableCollection<string> ChannelList { get; }
+        private ObservableCollection<string> ProgramList { get; }
+        public event NotifyCollectionChangedEventHandler ChannelListChanged;
+
+        private CollectionService()
+        {
+            // 建立频道收藏列表
+            if (!_container.Values.ContainsKey(channelCollectionKey))
+            {
+                _container.Values.Add(channelCollectionKey, string.Empty);
+                ChannelList = new ObservableCollection<string>();
+            }
+            else
+                ChannelList = new ObservableCollection<string>((_container.Values[channelCollectionKey] as string).Split(splitChar));
+            ChannelList.CollectionChanged += SyncChannelList;
+            ChannelList.CollectionChanged += (sender, e) => ChannelListChanged?.Invoke(sender, e);
+
+            // 建立节目收藏列表
+            if (!_container.Values.ContainsKey(programCollectionKey))
+            {
+                _container.Values.Add(programCollectionKey, string.Empty);
+                ProgramList = new ObservableCollection<string>();
+            }
+            else
+                ProgramList = new ObservableCollection<string>((_container.Values[programCollectionKey] as string).Split(splitChar));
+        }
+
+        private static CollectionService _instance;
+        /// <summary>
+        /// 获取收藏服务实例，实例为单例
+        /// </summary>
+        public static CollectionService Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new CollectionService();
+                return _instance;
+            }
+        }
+
+        private void SyncChannelList(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            _container.Values[channelCollectionKey] = String.Join(splitChar.ToString(), ChannelList);
+        }
+
+        public void AddChannel(Channel channel)
+        {
+            Debug.Assert(!CheckChannel(channel));
+            ChannelList.Add(channel.Name);
+        }
+
+        public void RemoveChannel(Channel channel)
+        {
+            Debug.Assert(CheckChannel(channel));
+            ChannelList.Remove(channel.Name);
+        }
+
+        public bool CheckChannel(Channel channel)
+        {
+            Debug.Assert(!channel.Name.Contains(splitChar), "频道名称应不含换行符");
+            return ChannelList.Contains(channel.Name);
+        }
+    }
+}

@@ -42,6 +42,18 @@ namespace iTV6.ViewModels
             }
             Programs.Source = channelAdapters;
             Programs.IsSourceGrouped = true;
+
+            // 新建Command的实例
+            LoveCurrentChannel = new DelegateCommand(() => {
+                if (IsCurrentChannelFavourite)
+                    CollectionService.Instance.RemoveChannel(SelectedProgram.ProgramInfo.Channel);
+                else
+                    CollectionService.Instance.AddChannel(SelectedProgram.ProgramInfo.Channel);
+            }, () => SelectedProgram != null);
+
+            // 监听收藏的变动
+            CollectionService.Instance.ChannelListChanged += (sender, e) =>
+                IsCurrentChannelFavourite = CollectionService.Instance.CheckChannel(SelectedProgram.ProgramInfo.Channel);
         }
 
         public CollectionViewSource Programs { get; set; }
@@ -56,9 +68,16 @@ namespace iTV6.ViewModels
             set
             {
                 Set(ref _selectedProgram, value);
-                Schedule = Async.InvokeAndWait(async() => await
-                    TelevisionService.Instance.TelevisionStations.First().GetSchedule(value.ProgramInfo.Channel));
+                OnSelectedProgramChanged();
             }
+        }
+
+        private async void OnSelectedProgramChanged()
+        {
+            var channel = SelectedProgram.ProgramInfo.Channel;
+            Schedule = await TelevisionService.Instance.TelevisionStations.First().GetSchedule(channel);
+            IsCurrentChannelFavourite = CollectionService.Instance.CheckChannel(channel);
+            LoveCurrentChannel.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -70,6 +89,21 @@ namespace iTV6.ViewModels
             get => _schedule;
             set => Set(ref _schedule, value);
         }
+
+        private bool _isCurrentChannelFavourite;
+        /// <summary>
+        /// 当前频道是否被收藏
+        /// </summary>
+        public bool IsCurrentChannelFavourite
+        {
+            get => _isCurrentChannelFavourite;
+            set => Set(ref _isCurrentChannelFavourite, value);
+        }
+
+        /// <summary>
+        /// 收藏当前频道的Command
+        /// </summary>
+        public DelegateCommand LoveCurrentChannel { get; }
     }
 
     /// <summary>

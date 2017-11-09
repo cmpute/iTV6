@@ -107,6 +107,7 @@
     <Compile Include="Mvvm\DelegateCommand.cs" />
     <Compile Include="Mvvm\DependencyBindableBase.cs" />
     <Compile Include="Mvvm\ViewModelBase.cs" />
+    <Compile Include="Services\CollectionService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\TelevisionService.cs" />
     <Compile Include="Utils\Async.cs" />
