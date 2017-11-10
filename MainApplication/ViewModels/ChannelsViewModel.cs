@@ -62,9 +62,15 @@ namespace iTV6.ViewModels
 
             // 监听收藏的变动
             CollectionService.Instance.ChannelListChanged += (sender, e) =>
-                IsCurrentChannelFavourite = CollectionService.Instance.CheckChannel(SelectedProgram.ProgramInfo.Channel);
+            {
+                if (SelectedProgram != null)
+                    IsCurrentChannelFavourite = CollectionService.Instance.CheckChannel(SelectedProgram.ProgramInfo.Channel);
+            };
             CollectionService.Instance.ProgramListChanged += (sender, e) =>
-                IsCurrentProgramFavourite = CollectionService.Instance.CheckProgram(SelectedProgram.ProgramInfo);
+            {
+                if (SelectedProgram != null)
+                    IsCurrentProgramFavourite = CollectionService.Instance.CheckProgram(SelectedProgram.ProgramInfo);
+            };
         }
 
         public CollectionViewSource Programs { get; set; }

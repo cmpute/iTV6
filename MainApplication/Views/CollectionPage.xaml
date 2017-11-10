@@ -5,9 +5,58 @@
     xmlns:local="using:iTV6.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:iTV6.ViewModels"
+    xmlns:m="using:iTV6.Models"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="Collection"/>
+    <Page.DataContext>
+        <vm:CollectionViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
+
+    <Page.Resources>
+        <DataTemplate x:Key="BriefWideChannelTemplate" x:DataType="m:Channel">
+            <RelativePanel>
+                <TextBlock Text="{x:Bind Name}" FontSize="16" FontWeight="Bold"
+                           RelativePanel.AlignLeftWithPanel="True"/>
+            </RelativePanel>
+        </DataTemplate>
+    </Page.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <RelativePanel>
+            <TextBlock Style="{StaticResource HeaderTextStyle}" Text="收藏频道"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True"/>
+            <StackPanel Orientation="Horizontal"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True">
+                <!-- 留给功能按钮 -->
+            </StackPanel>
+        </RelativePanel>
+        <RelativePanel Grid.Column="1">
+            <TextBlock Style="{StaticResource HeaderTextStyle}" Text="收藏节目"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True"/>
+            <StackPanel Orientation="Horizontal"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True">
+                <!-- 留给功能按钮 -->
+            </StackPanel>
+        </RelativePanel>
+        <ListView Grid.Row="1"
+                  ItemsSource="{x:Bind ViewModel.ChannelList}"
+                  ItemTemplate="{StaticResource BriefWideChannelTemplate}">
+        </ListView>
+        <ListView Grid.Row="1" Grid.Column="1"
+                  ItemsSource="{x:Bind ViewModel.ProgramList}">
+        </ListView>
     </Grid>
 </Page>

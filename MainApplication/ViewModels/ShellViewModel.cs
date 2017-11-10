@@ -17,6 +17,7 @@ namespace iTV6.ViewModels
         {
             // 注册外层菜单的导航服务
             NavigationService.ShellNavigation = new NavigationService((Host as Shell).NavigationFrame);
+            NavigationService.ShellNavigation.Navigate<ChannelsPage>();
         }
 
         public DelegateCommand NavigateChannels { get; } = new DelegateCommand(() =>

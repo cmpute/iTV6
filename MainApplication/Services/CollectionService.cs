@@ -38,6 +38,13 @@ namespace iTV6.Services
 
         private CollectionService()
         {
+#if DEBUG
+            // 在调试状态下每次都清空收藏
+            if (_container.Values.ContainsKey(channelCollectionKey))
+                _container.Values[channelCollectionKey] = string.Empty;
+            if (_container.Values.ContainsKey(programCollectionKey))
+                _container.Values[programCollectionKey] = string.Empty;
+#endif
             // 建立频道收藏列表
             if (!_container.Values.ContainsKey(channelCollectionKey))
             {
@@ -46,7 +53,7 @@ namespace iTV6.Services
             }
             else
                 ChannelList = new ObservableCollection<Channel>((_container.Values[channelCollectionKey] as string)
-                    .Split(splitChar).Select(name => Channel.GetChannel(name)));
+                    .Split(splitChar).Where(name => !string.IsNullOrWhiteSpace(name)).Select(name => Channel.GetChannel(name)));
             ChannelList.CollectionChanged += SyncChannelList;
             ChannelList.CollectionChanged += (sender, e) => ChannelListChanged?.Invoke(sender, e);
 
@@ -57,7 +64,8 @@ namespace iTV6.Services
                 ProgramList = new ObservableCollection<string>();
             }
             else
-                ProgramList = new ObservableCollection<string>((_container.Values[programCollectionKey] as string).Split(splitChar));
+                ProgramList = new ObservableCollection<string>((_container.Values[programCollectionKey] as string)
+                    .Split(splitChar).Where(name => !string.IsNullOrWhiteSpace(name)));
             ProgramList.CollectionChanged += SyncProgramList;
             ProgramList.CollectionChanged += (sender, e) => ProgramListChanged?.Invoke(sender, e);
         }
