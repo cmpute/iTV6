@@ -81,7 +81,7 @@ namespace iTV6.ViewModels
         /// </summary>
         public PlayingProgram SelectedProgram
         {
-            get => _selectedProgram;
+            get { return _selectedProgram; }
             set
             {
                 Set(ref _selectedProgram, value);
@@ -105,8 +105,8 @@ namespace iTV6.ViewModels
         private IEnumerable<Models.Program> _schedule;
         public IEnumerable<Models.Program> Schedule
         {
-            get => _schedule;
-            set => Set(ref _schedule, value);
+            get { return _schedule; }
+            set { Set(ref _schedule, value); }
         }
 
         private bool _isCurrentChannelFavourite;
@@ -115,8 +115,8 @@ namespace iTV6.ViewModels
         /// </summary>
         public bool IsCurrentChannelFavourite
         {
-            get => _isCurrentChannelFavourite;
-            set => Set(ref _isCurrentChannelFavourite, value);
+            get { return _isCurrentChannelFavourite; }
+            set { Set(ref _isCurrentChannelFavourite, value); }
         }
 
         /// <summary>
@@ -131,8 +131,8 @@ namespace iTV6.ViewModels
         /// </summary>
         public bool IsCurrentProgramFavourite
         {
-            get => _isCurrentProgramFavourite;
-            set => Set(ref _isCurrentProgramFavourite, value);
+            get { return _isCurrentProgramFavourite; }
+            set { Set(ref _isCurrentProgramFavourite, value); }
         }
 
         /// <summary>

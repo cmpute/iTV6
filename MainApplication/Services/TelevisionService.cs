@@ -43,7 +43,9 @@ namespace iTV6.Services
         /// <summary>
         /// 当前节目列表
         /// </summary>
-        public IEnumerable<PlayingProgram> AvaliablePrograms { get => 
-            Async.InvokeAndWait(async() => await TelevisionStations.First().GetChannelList()); }
+        public IEnumerable<PlayingProgram> AvaliablePrograms
+        {
+            get { return Async.InvokeAndWait(async () => await TelevisionStations.First().GetChannelList()); }
+        }
     }
 }
