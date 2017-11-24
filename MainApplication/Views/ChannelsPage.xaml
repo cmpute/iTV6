@@ -11,10 +11,11 @@
     xmlns:converter="using:iTV6.Converters"
     xmlns:vm="using:iTV6.ViewModels"
     xmlns:m="using:iTV6.Models"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    NavigationCacheMode="Required">
 
     <Page.DataContext>
-        <vm:ChannelsViewModel x:Name="ViewModel"/>
+        <vm:ChannelsViewModel x:Name="ViewModel" Host="{x:Bind}"/>
     </Page.DataContext>
 
     <Page.Transitions>
@@ -57,14 +58,32 @@
         </converter:ValueWhenConverter>
     </Page.Resources>
 
-    <Grid>
+    <Grid Loaded="{x:Bind ViewModel.RootGrid_Loaded}">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="SideViewStates">
+                <VisualState x:Name="SideCollapsed">
+                    <VisualState.Setters>
+                        <Setter Target="SideColumn.Width" Value="0"/>
+                        <Setter Target="HideProgramIcon.Glyph" Value="&#xE1BF;"/>
+                        <Setter Target="SidePanel.Visibility" Value="Collapsed"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="SideExpanded">
+                    <VisualState.Setters>
+                        <Setter Target="SideColumn.Width" Value="2*"/>
+                        <Setter Target="HideProgramIcon.Glyph" Value="&#xE1C0;"/>
+                        <Setter Target="SidePanel.Visibility" Value="Visible"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Grid.RowDefinitions>
             <RowDefinition Height="48"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition x:Name="SideColumn" Width="2*"/>
         </Grid.ColumnDefinitions>
         <RelativePanel>
             <TextBlock Style="{StaticResource HeaderTextStyle}" Text="频道列表"
@@ -81,9 +100,10 @@
                     </Button.Content>
                 </Button>
                 <Button x:Name="HideProgram" Style="{StaticResource HeaderButtonStyle}"
+                        Command="{x:Bind ViewModel.ToggleSidePanel}"
                         ToolTipService.ToolTip="收起节目播放区域">
                     <Button.Content>
-                        <FontIcon Glyph="&#xE1C0;" Width="24" Height="24"/>
+                        <FontIcon x:Name="HideProgramIcon" Glyph="&#xE1BF;" Width="24" Height="24"/>
                     </Button.Content>
                 </Button>
             </StackPanel>
@@ -146,7 +166,7 @@
                 </ListView>
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>
-        <Grid Grid.Column="1" Grid.Row="1">
+        <Grid x:Name="SidePanel" Grid.Column="1" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="48"/>

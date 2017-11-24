@@ -9,6 +9,7 @@ using iTV6.Models;
 using iTV6.Mvvm;
 using iTV6.Services;
 using iTV6.Utils;
+using Windows.UI.Xaml;
 
 namespace iTV6.ViewModels
 {
@@ -16,6 +17,7 @@ namespace iTV6.ViewModels
     {
         public ChannelsViewModel()
         {
+            System.Diagnostics.Debug.WriteLine("New Instance");
             // 将节目列表进行分组
             Programs = new CollectionViewSource();
             var currentPrograms = TelevisionService.Instance.AvaliablePrograms;
@@ -71,6 +73,21 @@ namespace iTV6.ViewModels
                 if (SelectedProgram != null)
                     IsCurrentProgramFavourite = CollectionService.Instance.CheckProgram(SelectedProgram.ProgramInfo);
             };
+
+            // 绑定功能按钮的Command
+            ToggleSidePanel = new DelegateCommand(() =>
+            {
+                VisualStateManager.GoToState(Host, _IsSidePanelExpaneded ? "SideCollapsed" : "SideExpanded", true);
+                _IsSidePanelExpaneded = !_IsSidePanelExpaneded;
+            }, () => SelectedProgram != null);
+        }
+
+        // 这个方法只是为了实现在刚进入时播放界面是被折叠的。这样的实现避免设计器的设计困难，也能避免实现过于繁琐
+        public void RootGrid_Loaded(object sender, RoutedEventArgs e)
+        {
+            // 设定初始VisualState
+            if (SelectedProgram == null)
+                VisualStateManager.GoToState(Host, "SideCollapsed", true);
         }
 
         public CollectionViewSource Programs { get; set; }
@@ -93,10 +110,20 @@ namespace iTV6.ViewModels
         {
             var channel = SelectedProgram.ProgramInfo.Channel;
             Schedule = await TelevisionService.Instance.TelevisionStations.First().GetSchedule(channel);
+
+            //更新收藏状况
             IsCurrentChannelFavourite = CollectionService.Instance.CheckChannel(channel);
             LoveCurrentChannel.RaiseCanExecuteChanged();
             IsCurrentProgramFavourite = CollectionService.Instance.CheckProgram(SelectedProgram.ProgramInfo);
             LoveCurrentProgram.RaiseCanExecuteChanged();
+
+            //展开侧面面板
+            ToggleSidePanel.RaiseCanExecuteChanged();
+            if(!_IsSidePanelExpaneded)
+            {
+                _IsSidePanelExpaneded = true;
+                VisualStateManager.GoToState(Host, "SideExpanded", true);
+            }
         }
 
         /// <summary>
@@ -109,14 +136,14 @@ namespace iTV6.ViewModels
             set { Set(ref _schedule, value); }
         }
 
-        private bool _isCurrentChannelFavourite;
+        private bool _IsCurrentChannelFavourite;
         /// <summary>
         /// 当前频道是否被收藏
         /// </summary>
         public bool IsCurrentChannelFavourite
         {
-            get { return _isCurrentChannelFavourite; }
-            set { Set(ref _isCurrentChannelFavourite, value); }
+            get { return _IsCurrentChannelFavourite; }
+            set { Set(ref _IsCurrentChannelFavourite, value); }
         }
 
         /// <summary>
@@ -125,20 +152,26 @@ namespace iTV6.ViewModels
         public DelegateCommand LoveCurrentChannel { get; }
 
 
-        private bool _isCurrentProgramFavourite;
+        private bool _IsCurrentProgramFavourite;
         /// <summary>
         /// 当前节目是否被收藏
         /// </summary>
         public bool IsCurrentProgramFavourite
         {
-            get { return _isCurrentProgramFavourite; }
-            set { Set(ref _isCurrentProgramFavourite, value); }
+            get { return _IsCurrentProgramFavourite; }
+            set { Set(ref _IsCurrentProgramFavourite, value); }
         }
 
         /// <summary>
         /// 收藏当前节目的Command
         /// </summary>
         public DelegateCommand LoveCurrentProgram { get; }
+        
+        /// <summary>
+        /// 收起或展开侧边栏（视频播放）
+        /// </summary>
+        public DelegateCommand ToggleSidePanel { get; }
+        private bool _IsSidePanelExpaneded = false;
     }
 
     /// <summary>

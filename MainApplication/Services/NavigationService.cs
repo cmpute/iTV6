@@ -1,4 +1,5 @@
-﻿using System;
+﻿using iTV6.Mvvm;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,12 +26,20 @@ namespace iTV6.Services
         
         public static NavigationService ShellNavigation { get; set; }
 
-        public event EventHandler<NavigationEventArgs> Navigated;
+        // public event EventHandler<NavigationEventArgs> Navigated;
 
-        public Task Navigate<T>() where T : class
+        public void Navigate<T>() where T : class
         {
+            ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedFrom(null);
             _root.Navigate(typeof(T));
-            return Task.CompletedTask;
+            ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedTo(null);
+        }
+
+        public void Navigate<T>(object paramter) where T : class
+        {
+            ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedFrom(paramter);
+            _root.Navigate(typeof(T), paramter);
+            ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedTo(paramter);
         }
     }
 }
