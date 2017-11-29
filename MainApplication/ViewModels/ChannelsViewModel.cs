@@ -10,6 +10,7 @@ using iTV6.Mvvm;
 using iTV6.Services;
 using iTV6.Utils;
 using Windows.UI.Xaml;
+using System.Collections.ObjectModel;
 
 namespace iTV6.ViewModels
 {
@@ -80,6 +81,11 @@ namespace iTV6.ViewModels
                 VisualStateManager.GoToState(Host, _IsSidePanelExpaneded ? "SideCollapsed" : "SideExpanded", true);
                 _IsSidePanelExpaneded = !_IsSidePanelExpaneded;
             }, () => SelectedProgram != null);
+
+            //初始化视频源列表并选择默认项
+            MediaSourceComboBoxOptions = new ObservableCollection<MediaSourceComboBoxItem>();
+            MediaSourceComboBoxOptionsManager.GetMediaSourceComboBoxList(MediaSourceComboBoxOptions);
+            MediaSourceSelectedComboBoxOption = MediaSourceComboBoxOptions[chosenindex];
         }
     
         // 这个方法只是为了实现在刚进入时播放界面是被折叠的。这样的实现避免设计器的设计困难，也能避免实现过于繁琐
@@ -88,10 +94,6 @@ namespace iTV6.ViewModels
             // 设定初始VisualState
             if (SelectedProgram == null)
                 VisualStateManager.GoToState(Host, "SideCollapsed", true);
-            //初始化视频源列表并选择默认项
-            MediaSourceComboBoxOptions = new ObservableCollection<MediaSourceComboBoxItem>();
-            MediaSourceComboBoxOptionsManager.GetMediaSourceComboBoxList(MediaSourceComboBoxOptions);
-            MediaSourceSelectedComboBoxOption = MediaSourceComboBoxOptions[chosenindex];
         }
 
         public ObservableCollection<MediaSourceComboBoxItem> MediaSourceComboBoxOptions;
@@ -177,7 +179,6 @@ namespace iTV6.ViewModels
         /// </summary>
         public DelegateCommand ToggleSidePanel { get; }
         private bool _IsSidePanelExpaneded = false;
-    }
 
         //static变量，TsinghuaTV.cs中的MediaSource会用到
         public static string ChosenSource = "https://iptv.tsinghua.edu.cn/hls/";
@@ -207,6 +208,7 @@ namespace iTV6.ViewModels
                 }
             }
         }
+    }
 
     /// <summary>
     /// 按频道类型分类的组
