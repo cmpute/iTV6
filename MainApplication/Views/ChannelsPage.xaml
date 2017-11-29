@@ -29,6 +29,7 @@
     </Page.Transitions>
 
     <Page.Resources>
+        <vm:MediaSourceComboBoxItemConvert x:Key="MediaSourceComboBoxItemConvert" />
         <DataTemplate x:Key="BriefNarrowProgramTemplate" x:DataType="m:PlayingProgram">
             <StackPanel>
                 <TextBlock Text="{x:Bind ProgramInfo.Channel.Name}" FontSize="16" FontWeight="Bold"/>
@@ -187,7 +188,14 @@
                 <StackPanel Orientation="Horizontal"
                             RelativePanel.AlignRightWithPanel="True"
                             RelativePanel.AlignVerticalCenterWithPanel="True">
-                    <TextBlock Text="[片源选择]" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="temp" Text="选择视频源" VerticalAlignment="Center"/>
+                    <ComboBox x:Name="ChooseSource"  Width="80" 
+                              SelectedItem="{x:Bind ViewModel.MediaSourceSelectedComboBoxOption, Mode=TwoWay, Converter={StaticResource MediaSourceComboBoxItemConvert}}" 
+                              SelectedValuePath="SourceChoice"
+                              DisplayMemberPath="MediaSourceComboBoxContent"
+                              ItemsSource="{x:Bind ViewModel.MediaSourceComboBoxOptions}" 
+                              >
+                    </ComboBox>
                     <Button x:Name="LoveProgram" Style="{StaticResource HeaderButtonStyle}"
                             ToolTipService.ToolTip="收藏节目" Command="{x:Bind ViewModel.LoveCurrentProgram}">
                         <Button.Content>

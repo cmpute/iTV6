@@ -104,13 +104,15 @@ namespace iTV6.Models.Stations
                                 current = program;
                                 break;
                             }
+
                         result.Add(new PlayingProgram()
                         {
                             ThumbImage = new Uri($"http://iptv.tsinghua.edu.cn/snapshot//{vid}.jpg"),
-                            MediaSource = new Uri($"https://iptv.tsinghua.edu.cn/hls/{vid}.m3u8"),
+                            MediaSource = new Uri(ViewModels.ChannelsViewModel.ChosenSource + vid + ".m3u8"),
                             SourceStation = this,
                             ProgramInfo = current
                         });
+                    
                     }
                 }
                 _fetched = true;
