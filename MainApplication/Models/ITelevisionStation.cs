@@ -26,6 +26,11 @@ namespace iTV6.Models
         Task<IEnumerable<PlayingProgram>> GetChannelList(bool force = false);
 
         /// <summary>
+        /// 标识是否能够提供节目单
+        /// </summary>
+        bool IsScheduleAvailable { get; }
+
+        /// <summary>
         /// 异步获取节目单
         /// </summary>
         /// <param name="channel">需要获取节目单的频道</param>

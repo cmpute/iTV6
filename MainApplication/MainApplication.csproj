@@ -91,6 +91,8 @@
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
+    <EmbeddedResource Include="Utils\big5.bin" />
+    <EmbeddedResource Include="Utils\gb2312.bin" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -103,7 +105,8 @@
     <Compile Include="Models\AvailableProgram.cs" />
     <Compile Include="Models\PlayingProgram.cs" />
     <Compile Include="Models\Program.cs" />
-    <Compile Include="Models\Stations\TsinghuaTV.cs" />
+    <Compile Include="Models\Stations\AHAU.cs" />
+    <Compile Include="Models\Stations\THU.cs" />
     <Compile Include="Mvvm\BindableBase.cs" />
     <Compile Include="Mvvm\DelegateCommand.cs" />
     <Compile Include="Mvvm\DependencyBindableBase.cs" />
@@ -112,6 +115,8 @@
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\TelevisionService.cs" />
     <Compile Include="Utils\Async.cs" />
+    <Compile Include="Utils\Debug.cs" />
+    <Compile Include="Utils\Encoding.cs" />
     <Compile Include="ViewModels\ChannelsViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />

@@ -1,38 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Web.Http;
 using Windows.Data.Json;
 using iTV6.Services;
 using iTV6.Models;
 
 namespace iTV6.Models.Stations
 {
-    public class TsinghuaTV : ITelevisionStation
+    public class THU : ITelevisionStation
     {
         public string IdentifierName => "清华";
+        public bool IsScheduleAvailable => true;
 
-        private bool _fetched = false; //判断是否获取过节目列表
+        private bool _cached = false; //判断是否获取过节目列表
         private IEnumerable<PlayingProgram> _cache;
         private List<Tuple<Channel, string /* Vid */>> _vidList;
         private Dictionary<Channel, List<Program>> _programList;
         public async Task<IEnumerable<PlayingProgram>> GetChannelList(bool force = false)
         {
-            if (_fetched && !force)
+            if (_cached && !force)
                 return _cache;
             // TODO: 继续分析https://iptv.tsinghua.edu.cn/status.txt，里面有在线观看人数
             try
             {
                 HttpClient client = new HttpClient();
                 // 频道列表json
-                var buffer = await client.GetBufferAsync(new Uri("https://iptv.tsinghua.edu.cn/channels.json"));
-                var channelstr = Encoding.UTF8.GetString(buffer.ToArray(), 0, (int)buffer.Length);
+                var buffer = await client.GetByteArrayAsync(new Uri("https://iptv.tsinghua.edu.cn/channels.json"));
+                var channelstr = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
                 // 节目单的json
-                buffer = await client.GetBufferAsync(new Uri("https://iptv.tsinghua.edu.cn/epg/todayepg.json"));
-                var epgstr = Encoding.UTF8.GetString(buffer.ToArray(), 0, (int)buffer.Length);
+                buffer = await client.GetByteArrayAsync(new Uri("https://iptv.tsinghua.edu.cn/epg/todayepg.json"));
+                var epgstr = Encoding.UTF8.GetString(buffer.ToArray(), 0, buffer.Length);
 
                 var timezero = new DateTime(1970, 1, 1, 8, 0, 0); // UTC时间
 
@@ -107,13 +107,14 @@ namespace iTV6.Models.Stations
                         result.Add(new PlayingProgram()
                         {
                             ThumbImage = new Uri($"http://iptv.tsinghua.edu.cn/snapshot//{vid}.jpg"),
+                            IsThumbAvaliable = true,
                             MediaSource = new Uri($"https://iptv.tsinghua.edu.cn/hls/{vid}.m3u8"),
                             SourceStation = this,
                             ProgramInfo = current
                         });
                     }
                 }
-                _fetched = true;
+                _cached = true;
                 _cache = result;
                 return result;
             }
@@ -127,7 +128,7 @@ namespace iTV6.Models.Stations
 
         public async Task<IEnumerable<Program>> GetSchedule(Channel channel, bool force = false)
         {
-            if (!_fetched)
+            if (!_cached || force)
                 await GetChannelList(force);
             return _programList[channel];
         }

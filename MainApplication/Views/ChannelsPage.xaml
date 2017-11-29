@@ -187,7 +187,7 @@
                 <StackPanel Orientation="Horizontal"
                             RelativePanel.AlignRightWithPanel="True"
                             RelativePanel.AlignVerticalCenterWithPanel="True">
-                    <TextBlock Text="[片源选择]" VerticalAlignment="Center"/>
+                    <ComboBox VerticalAlignment="Center" Width="80"/>
                     <Button x:Name="LoveProgram" Style="{StaticResource HeaderButtonStyle}"
                             ToolTipService.ToolTip="收藏节目" Command="{x:Bind ViewModel.LoveCurrentProgram}">
                         <Button.Content>

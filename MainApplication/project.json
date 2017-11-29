@@ -1,6 +1,7 @@
-{
+﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
+    "HtmlAgilityPack": "1.6.5",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "6.0.2",
     "Microsoft.Xaml.Behaviors.Uwp.Managed": "2.0.0"
   },
   "frameworks": {

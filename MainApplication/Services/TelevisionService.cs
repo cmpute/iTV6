@@ -33,7 +33,7 @@ namespace iTV6.Services
         private IEnumerable<ITelevisionStation> GetTelevisionStations()
         {
             // 硬编码列表
-            yield return new TsinghuaTV();
+            yield return new THU();
         }
         /// <summary>
         /// 获取视频资源来源的列表

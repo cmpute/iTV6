@@ -14,7 +14,11 @@ namespace iTV6.Models
         /// <summary>
         /// 预览图
         /// </summary>
-        /// <remarks> TODO: 这个属性是不是应该是Channel的？ </remarks>
         public Uri ThumbImage { get; set; }
+
+        /// <summary>
+        /// 是否有可用的预览图
+        /// </summary>
+        public bool IsThumbAvaliable { get; set; }
     }
 }
