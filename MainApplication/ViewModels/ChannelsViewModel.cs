@@ -10,7 +10,6 @@ using iTV6.Mvvm;
 using iTV6.Services;
 using iTV6.Utils;
 using Windows.UI.Xaml;
-using System.Collections.ObjectModel;
 
 namespace iTV6.ViewModels
 {
@@ -81,11 +80,6 @@ namespace iTV6.ViewModels
                 VisualStateManager.GoToState(Host, _IsSidePanelExpaneded ? "SideCollapsed" : "SideExpanded", true);
                 _IsSidePanelExpaneded = !_IsSidePanelExpaneded;
             }, () => SelectedProgram != null);
-
-            //初始化视频源列表并选择默认项
-            MediaSourceComboBoxOptions = new ObservableCollection<MediaSourceComboBoxItem>();
-            MediaSourceComboBoxOptionsManager.GetMediaSourceComboBoxList(MediaSourceComboBoxOptions);
-            MediaSourceSelectedComboBoxOption = MediaSourceComboBoxOptions[chosenindex];
         }
     
         // 这个方法只是为了实现在刚进入时播放界面是被折叠的。这样的实现避免设计器的设计困难，也能避免实现过于繁琐
@@ -96,7 +90,6 @@ namespace iTV6.ViewModels
                 VisualStateManager.GoToState(Host, "SideCollapsed", true);
         }
 
-        public ObservableCollection<MediaSourceComboBoxItem> MediaSourceComboBoxOptions;
         public CollectionViewSource Programs { get; set; }
 
         private PlayingProgram _selectedProgram;
@@ -173,41 +166,12 @@ namespace iTV6.ViewModels
         /// 收藏当前节目的Command
         /// </summary>
         public DelegateCommand LoveCurrentProgram { get; }
-
+        
         /// <summary>
         /// 收起或展开侧边栏（视频播放）
         /// </summary>
         public DelegateCommand ToggleSidePanel { get; }
         private bool _IsSidePanelExpaneded = false;
-
-        //static变量，TsinghuaTV.cs中的MediaSource会用到
-        public static string ChosenSource = "https://iptv.tsinghua.edu.cn/hls/";
-
-        private MediaSourceComboBoxItem _MediaSourceSelectedComboBoxOption;
-
-        //留用，以后如果有进设置选择默认视频源时修改
-        public static int chosenindex = 0;
-
-        /// <summary>
-        /// 视频源选择框发生变动的处理
-        /// </summary>
-        public MediaSourceComboBoxItem MediaSourceSelectedComboBoxOption
-        {
-            get
-            {
-                return _MediaSourceSelectedComboBoxOption;
-            }
-            set
-            {
-
-                if (_MediaSourceSelectedComboBoxOption != value)
-                {
-                    ChosenSource = value.SourceChoice;
-                    Set(ref _MediaSourceSelectedComboBoxOption, value);
-                    //需要添加：刷新
-                }
-            }
-        }
     }
 
     /// <summary>
@@ -221,59 +185,4 @@ namespace iTV6.ViewModels
     /// 按频道名称拼音首字母分类的组
     /// </summary>
     class ChannelAlphabetAdapter : List<AvailableProgram> { /* TODO: 实现按拼音分类 */ }
-
-
-    /// <summary>
-    /// 视频源选择下拉菜单中的item
-    /// </summary>
-    public class MediaSourceComboBoxItem
-    {
-        //下拉菜单显示内容
-        public string MediaSourceComboBoxContent { get; set; }
-        
-        //背后的源
-        public string SourceChoice { get; set; }
- 
-    }
-
-    /// <summary>
-    /// 下拉菜单管理
-    /// </summary>
-    public class MediaSourceComboBoxOptionsManager
-    {
-        public static void GetMediaSourceComboBoxList(ObservableCollection<MediaSourceComboBoxItem> ComboBoxItems)
-        {
-            var allItems = getMediaSourceComboBoxItems();
-            ComboBoxItems.Clear();
-            allItems.ForEach(p => ComboBoxItems.Add(p));
-        }
-
-        private static List<MediaSourceComboBoxItem> getMediaSourceComboBoxItems()
-        {
-            var items = new List<MediaSourceComboBoxItem>();
-
-            items.Add(new MediaSourceComboBoxItem() { MediaSourceComboBoxContent = "清华大学" ,SourceChoice= "https://iptv.tsinghua.edu.cn/hls/" });
-            items.Add(new MediaSourceComboBoxItem() { MediaSourceComboBoxContent = "东北大学" ,SourceChoice= "http://media2.neu6.edu.cn/hls/" });
-            items.Add(new MediaSourceComboBoxItem() { MediaSourceComboBoxContent = "安徽农业大学" ,SourceChoice= "http://itv.ahau.edu.cn/hls/" });
-            items.Add(new MediaSourceComboBoxItem() { MediaSourceComboBoxContent = "中科大", SourceChoice = "http://tv6.ustc.edu.cn/hls/" });
-
-            return items;
-        }
-    }
-
-    /// <summary>
-    /// 转换器，将选择菜单事件，变成往ViewModel传递被选中的MediaSourceComboBoxItem对象
-    /// </summary>
-    public class MediaSourceComboBoxItemConvert : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            return value;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            return value as MediaSourceComboBoxItem;
-        }
-    }
 }
