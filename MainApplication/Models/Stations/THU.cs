@@ -28,10 +28,10 @@ namespace iTV6.Models.Stations
             {
                 HttpClient client = new HttpClient();
                 // 频道列表json
-                var buffer = await client.GetByteArrayAsync(new Uri("https://iptv.tsinghua.edu.cn/channels.json"));
+                var buffer = await client.GetByteArrayAsync("https://iptv.tsinghua.edu.cn/channels.json");
                 var channelstr = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
                 // 节目单的json
-                buffer = await client.GetByteArrayAsync(new Uri("https://iptv.tsinghua.edu.cn/epg/todayepg.json"));
+                buffer = await client.GetByteArrayAsync("https://iptv.tsinghua.edu.cn/epg/todayepg.json");
                 var epgstr = Encoding.UTF8.GetString(buffer.ToArray(), 0, buffer.Length);
 
                 var timezero = new DateTime(1970, 1, 1, 8, 0, 0); // UTC时间

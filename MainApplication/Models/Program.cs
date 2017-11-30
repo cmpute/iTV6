@@ -40,5 +40,17 @@ namespace iTV6.Models
         /// 所属频道
         /// </summary>
         public Channel Channel { get; set; }
+
+        /// <summary>
+        /// 合并两个节目信息，并返回信息量更充足的信息
+        /// </summary>
+        public static Program operator | (Program p1, Program p2)
+        {
+            if (string.IsNullOrWhiteSpace(p1.Name))
+                return p2;
+            if (string.IsNullOrWhiteSpace(p2.Name))
+                return p1;
+            return p1;
+        }
     }
 }

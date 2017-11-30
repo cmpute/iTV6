@@ -12,6 +12,8 @@ namespace iTV6.Utils
         {
 #if DEBUG
             // 需要执行的函数
+            var station = new iTV6.Models.Stations.AHAU();
+            var result = await station.GetChannelList();
             System.Diagnostics.Debugger.Break();
             await Task.CompletedTask;
 #else
