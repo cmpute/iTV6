@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using iTV6.Mvvm;
 using iTV6.Services;
 using iTV6.Views;
+using iTV6.Utils;
 
 namespace iTV6.ViewModels
 {
@@ -22,12 +23,15 @@ namespace iTV6.ViewModels
                   if (ce.NavigatedPageType == typeof(ChannelsPage))
                       SelectedMenuIndex = 0;
               };
-            NavigationService.ShellNavigation.Navigate<ChannelsPage>();
-            
+            NavigateChannels.Execute();
         }
 
-        public DelegateCommand NavigateChannels { get; } = new DelegateCommand(() =>
-            NavigationService.ShellNavigation.Navigate<ChannelsPage>()); // 频道
+        public DelegateCommand NavigateChannels { get; } = new DelegateCommand(() => {
+            if (Async.InvokeAndWait(async () => await Connection.TestIPv6Connectivity()))
+                NavigationService.ShellNavigation.Navigate<ChannelsPage>();
+            else
+                NavigationService.ShellNavigation.Navigate<ConnectionStatusPage>("请检查IPv6的连接");
+        }); // 频道
         public DelegateCommand NavigateCollection { get; } = new DelegateCommand(() =>
             NavigationService.ShellNavigation.Navigate<CollectionPage>()); // 收藏
         public DelegateCommand NavigateSchedule { get; } = new DelegateCommand(() =>

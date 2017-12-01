@@ -13,6 +13,16 @@
         <vm:CollectionViewModel x:Name="ViewModel"/>
     </Page.DataContext>
 
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <EntranceNavigationTransitionInfo />
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
+
     <Page.Resources>
         <DataTemplate x:Key="BriefWideChannelTemplate" x:DataType="m:Channel">
             <RelativePanel>
