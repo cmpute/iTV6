@@ -23,7 +23,12 @@ namespace iTV6.Models
         /// 异步获取频道列表以及正在播放的节目信息
         /// </summary>
         /// <param name="force">是否强制刷新缓存</param>
-        Task<IEnumerable<PlayingProgram>> GetChannelList(bool force = false);
+        Task<IEnumerable<ProgramSource>> GetChannelList(bool force = false);
+
+        /// <summary>
+        /// 标识是否能够提供节目单
+        /// </summary>
+        bool IsScheduleAvailable { get; }
 
         /// <summary>
         /// 异步获取节目单

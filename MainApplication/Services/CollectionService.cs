@@ -53,7 +53,7 @@ namespace iTV6.Services
             }
             else
                 ChannelList = new ObservableCollection<Channel>((_container.Values[channelCollectionKey] as string)
-                    .Split(splitChar).Where(name => !string.IsNullOrWhiteSpace(name)).Select(name => Channel.GetChannel(name)));
+                    .Split(splitChar).Where(id => !string.IsNullOrWhiteSpace(id)).Select(id => Channel.GetChannel(id)));
             ChannelList.CollectionChanged += SyncChannelList;
             ChannelList.CollectionChanged += (sender, e) => ChannelListChanged?.Invoke(sender, e);
 
@@ -86,7 +86,7 @@ namespace iTV6.Services
 
         private void SyncChannelList(object sender, NotifyCollectionChangedEventArgs e)
         {
-            _container.Values[channelCollectionKey] = String.Join(splitChar.ToString(), ChannelList);
+            _container.Values[channelCollectionKey] = String.Join(splitChar.ToString(), ChannelList.Select(ch => ch.UniqueId));
         }
         public void AddChannel(Channel channel)
         {

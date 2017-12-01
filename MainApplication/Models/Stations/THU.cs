@@ -1,38 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Web.Http;
 using Windows.Data.Json;
 using iTV6.Services;
 using iTV6.Models;
 
 namespace iTV6.Models.Stations
 {
-    public class TsinghuaTV : ITelevisionStation
+    public class THU : ITelevisionStation
     {
         public string IdentifierName => "清华";
+        public bool IsScheduleAvailable => true;
 
-        private bool _fetched = false; //判断是否获取过节目列表
-        private IEnumerable<PlayingProgram> _cache;
+        private bool _cached = false; //判断是否获取过节目列表
+        private IEnumerable<ProgramSource> _cache;
         private List<Tuple<Channel, string /* Vid */>> _vidList;
         private Dictionary<Channel, List<Program>> _programList;
-        public async Task<IEnumerable<PlayingProgram>> GetChannelList(bool force = false)
+        public async Task<IEnumerable<ProgramSource>> GetChannelList(bool force = false)
         {
-            if (_fetched && !force)
+            if (_cached && !force)
                 return _cache;
             // TODO: 继续分析https://iptv.tsinghua.edu.cn/status.txt，里面有在线观看人数
             try
             {
                 HttpClient client = new HttpClient();
                 // 频道列表json
-                var buffer = await client.GetBufferAsync(new Uri("https://iptv.tsinghua.edu.cn/channels.json"));
-                var channelstr = Encoding.UTF8.GetString(buffer.ToArray(), 0, (int)buffer.Length);
+                var buffer = await client.GetByteArrayAsync("https://iptv.tsinghua.edu.cn/channels.json");
+                var channelstr = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
                 // 节目单的json
-                buffer = await client.GetBufferAsync(new Uri("https://iptv.tsinghua.edu.cn/epg/todayepg.json"));
-                var epgstr = Encoding.UTF8.GetString(buffer.ToArray(), 0, (int)buffer.Length);
+                buffer = await client.GetByteArrayAsync("https://iptv.tsinghua.edu.cn/epg/todayepg.json");
+                var epgstr = Encoding.UTF8.GetString(buffer.ToArray(), 0, buffer.Length);
 
                 var timezero = new DateTime(1970, 1, 1, 8, 0, 0); // UTC时间
 
@@ -50,8 +50,16 @@ namespace iTV6.Models.Stations
                         var channelobj = channel.GetObject();
                         var name = channelobj.GetNamedString("Name");
                         var vid = channelobj.GetNamedString("Vid");
-                        Channel ch = category == "广播" ? Channel.GetChannel(name, ChannelType.Radio) : Channel.GetChannel(name);
+                        Channel ch = null;
+                        if (category == "广播")
+                        {
+                            name += "广播"; // 电视和广播可能重名。加上广播来避免用额外的ID来表示频道
+                            ch = Channel.GetChannel(vid, name, ChannelType.Radio);
+                        }
+                        else
+                            ch = Channel.GetChannel(vid, name);
                         _vidList.Add(new Tuple<Channel, string>(ch, vid));
+                        System.Diagnostics.Debug.WriteLine($"[THU|{category}]{name:10} : {vid:10}");
                     }
                 }
                 
@@ -83,7 +91,7 @@ namespace iTV6.Models.Stations
                 }
 
                 // 解析当前节目
-                var result = new List<PlayingProgram>();
+                var result = new List<ProgramSource>();
                 foreach (var catchild in root)
                 {
                     var list = catchild.GetObject().GetNamedArray("Channels");
@@ -104,16 +112,17 @@ namespace iTV6.Models.Stations
                                 current = program;
                                 break;
                             }
-                        result.Add(new PlayingProgram()
+                        result.Add(new ProgramSource()
                         {
                             ThumbImage = new Uri($"http://iptv.tsinghua.edu.cn/snapshot//{vid}.jpg"),
+                            IsThumbAvaliable = true,
                             MediaSource = new Uri($"https://iptv.tsinghua.edu.cn/hls/{vid}.m3u8"),
                             SourceStation = this,
                             ProgramInfo = current
                         });
                     }
                 }
-                _fetched = true;
+                _cached = true;
                 _cache = result;
                 return result;
             }
@@ -121,15 +130,47 @@ namespace iTV6.Models.Stations
             {
                 System.Diagnostics.Debug.WriteLine(e.Message, "Error");
                 System.Diagnostics.Debugger.Break();
-                return new List<PlayingProgram>();
+                return new List<ProgramSource>();
             }
         }
 
         public async Task<IEnumerable<Program>> GetSchedule(Channel channel, bool force = false)
         {
-            if (!_fetched)
+            if (!_cached || force)
                 await GetChannelList(force);
-            return _programList[channel];
+            if (_programList.ContainsKey(channel))
+                return _programList[channel];
+            else
+                return Enumerable.Empty<Program>();
+        }
+        
+        /// <summary>
+        /// 统一频道列表
+        /// </summary>
+        /// <param name="name">从网站扒取的频道名称</param>
+        /// <returns>统一后的名称，用作字典的键</returns>
+        public static string GetUniqueChannelName(string name)
+        {
+            // 硬编码列表，遇到特例时手动加进来
+            switch (name)
+            {
+                case "第一剧场":
+                    return "CCTV-第一剧场";
+                case "世界地理":
+                    return "CCTV-世界地理";
+                case "风云剧场":
+                    return "CCTV-风云剧场";
+                case "风云音乐":
+                    return "CCTV-风云音乐";
+                case "风云足球":
+                    return "CCTV-风云足球";
+                case "国防军事":
+                    return "CCTV-国防军事";
+                case "怀旧剧场":
+                    return "CCTV-怀旧剧场";
+                default:
+                    return name;
+            }
         }
     }
 }

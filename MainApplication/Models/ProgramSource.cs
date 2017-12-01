@@ -7,14 +7,29 @@ using System.Threading.Tasks;
 namespace iTV6.Models
 {
     /// <summary>
-    /// 有可播放资源的节目的Model
+    /// 代表电视节目资源的Model
     /// </summary>
-    public class AvailableProgram
+    public class ProgramSource
     {
+        /// <summary>
+        /// 预览图
+        /// </summary>
+        public Uri ThumbImage { get; set; }
+
+        /// <summary>
+        /// 是否有可用的预览图
+        /// </summary>
+        public bool IsThumbAvaliable { get; set; }
+        
         /// <summary>
         /// 媒体资源地址
         /// </summary>
         public Uri MediaSource { get; set; }
+
+        /// <summary>
+        /// 是否有可用的媒体资源
+        /// </summary>
+        public bool IsMediaAvaliable { get; set; }
 
         /// <summary>
         /// 节目信息

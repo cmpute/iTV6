@@ -8,6 +8,28 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="Schedule"/>
+        <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+            <TextBlock x:Name="text" Text="输入回放开始时间：" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBox x:Name="inputyear" VerticalAlignment="Center"/>
+                <TextBlock x:Name="year" Text="年" VerticalAlignment="Center"/>
+                <TextBox x:Name="inputmonth" VerticalAlignment="Center"/>
+                <TextBlock x:Name="month" Text="月" VerticalAlignment="Center"/>
+                <TextBox x:Name="inputdate" VerticalAlignment="Center"/>
+                <TextBlock x:Name="date" Text="日" VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBox x:Name="inputhour" VerticalAlignment="Center"/>
+                <TextBlock x:Name="hour" Text="时" VerticalAlignment="Center"/>
+                <TextBox x:Name="inputminute" VerticalAlignment="Center"/>
+                <TextBlock x:Name="minute" Text="分" VerticalAlignment="Center"/>
+                <TextBox x:Name="inputsecond" VerticalAlignment="Center"/>
+                <TextBlock x:Name="second" Text="秒" VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBlock x:Name="channel" Text="秒" VerticalAlignment="Center"/>
+            <TextBox x:Name="inputchannel" VerticalAlignment="Center"/>
+            <Button x:Name="play" HorizontalAlignment="Center" Content="开始播放" Click="play_Click"></Button>
+            <TextBlock x:Name="url" Width="400" HorizontalAlignment="Center"/>
+        </StackPanel>
     </Grid>
 </Page>

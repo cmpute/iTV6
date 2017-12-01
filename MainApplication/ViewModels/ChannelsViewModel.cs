@@ -17,13 +17,14 @@ namespace iTV6.ViewModels
     {
         public ChannelsViewModel()
         {
-            System.Diagnostics.Debug.WriteLine("New Instance");
+            System.Diagnostics.Debug.WriteLine("<ChannelsViewModel> New Instance");
             // 将节目列表进行分组
             Programs = new CollectionViewSource();
             var currentPrograms = TelevisionService.Instance.AvaliablePrograms;
             var channelAdapters = new List<ChannelTypeAdapter>();
             foreach(var group in currentPrograms.GroupBy(program => program.ProgramInfo.Channel.Type))
             {
+                // TODO: 进一步完善分组
                 var adapter = new ChannelTypeAdapter();
                 adapter.AddRange(group);
                 string typeName = "";
@@ -81,7 +82,7 @@ namespace iTV6.ViewModels
                 _IsSidePanelExpaneded = !_IsSidePanelExpaneded;
             }, () => SelectedProgram != null);
         }
-
+    
         // 这个方法只是为了实现在刚进入时播放界面是被折叠的。这样的实现避免设计器的设计困难，也能避免实现过于繁琐
         public void RootGrid_Loaded(object sender, RoutedEventArgs e)
         {
@@ -92,17 +93,30 @@ namespace iTV6.ViewModels
 
         public CollectionViewSource Programs { get; set; }
 
-        private PlayingProgram _selectedProgram;
+        private MultisourceProgram _selectedProgram;
         /// <summary>
         /// 选择播放的频道（节目）
         /// </summary>
-        public PlayingProgram SelectedProgram
+        public MultisourceProgram SelectedProgram
         {
             get { return _selectedProgram; }
             set
             {
                 Set(ref _selectedProgram, value);
                 OnSelectedProgramChanged();
+            }
+        }
+
+        private SourceRecord _selectedSource;
+        /// <summary>
+        /// 选择播放的视频源
+        /// </summary>
+        public SourceRecord SelectedSource
+        {
+            get { return _selectedSource; }
+            set
+            {
+                Set(ref _selectedSource, value);
             }
         }
 
@@ -116,6 +130,9 @@ namespace iTV6.ViewModels
             LoveCurrentChannel.RaiseCanExecuteChanged();
             IsCurrentProgramFavourite = CollectionService.Instance.CheckProgram(SelectedProgram.ProgramInfo);
             LoveCurrentProgram.RaiseCanExecuteChanged();
+
+            //选择默认来源
+            SelectedSource = SelectedProgram.MediaSources.First();
 
             //展开侧面面板
             ToggleSidePanel.RaiseCanExecuteChanged();
@@ -177,12 +194,12 @@ namespace iTV6.ViewModels
     /// <summary>
     /// 按频道类型分类的组
     /// </summary>
-    class ChannelTypeAdapter : List<AvailableProgram>
+    class ChannelTypeAdapter : List<MultisourceProgram>
     {
         public string Type { get; set; }
     }
     /// <summary>
     /// 按频道名称拼音首字母分类的组
     /// </summary>
-    class ChannelAlphabetAdapter : List<AvailableProgram> { /* TODO: 实现按拼音分类 */ }
+    class ChannelAlphabetAdapter : List<MultisourceProgram> { /* TODO: 实现按拼音分类 */ }
 }
