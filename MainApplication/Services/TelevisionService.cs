@@ -34,6 +34,7 @@ namespace iTV6.Services
         {
             // 硬编码列表
             yield return new THU();
+            yield return new AHAU();
         }
         /// <summary>
         /// 获取视频资源来源的列表
@@ -45,7 +46,17 @@ namespace iTV6.Services
         /// </summary>
         public IEnumerable<PlayingProgram> AvaliablePrograms
         {
-            get { return Async.InvokeAndWait(async () => await TelevisionStations.First().GetChannelList()); }
+            get
+            {
+                return Async.InvokeAndWait(async () => {
+                    var tasks = TelevisionStations.Select(station => station.GetChannelList()).ToArray();
+                    var taskrets = await Task.WhenAll(tasks);
+                    var result = new List<PlayingProgram>();
+                    foreach(var ret in taskrets)
+                        result.AddRange(ret);
+                    return result;
+                });
+            }
         }
     }
 }

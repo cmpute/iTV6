@@ -50,8 +50,16 @@ namespace iTV6.Models.Stations
                         var channelobj = channel.GetObject();
                         var name = channelobj.GetNamedString("Name");
                         var vid = channelobj.GetNamedString("Vid");
-                        Channel ch = category == "广播" ? Channel.GetChannel(name, ChannelType.Radio) : Channel.GetChannel(name);
+                        Channel ch = null;
+                        if (category == "广播")
+                        {
+                            name += "广播"; // 电视和广播可能重名。加上广播来避免用额外的ID来表示频道
+                            ch = Channel.GetChannel(vid, name, ChannelType.Radio);
+                        }
+                        else
+                            ch = Channel.GetChannel(vid, name);
                         _vidList.Add(new Tuple<Channel, string>(ch, vid));
+                        System.Diagnostics.Debug.WriteLine($"[THU|{category}]{name:10} : {vid:10}");
                     }
                 }
                 
@@ -130,7 +138,39 @@ namespace iTV6.Models.Stations
         {
             if (!_cached || force)
                 await GetChannelList(force);
-            return _programList[channel];
+            if (_programList.ContainsKey(channel))
+                return _programList[channel];
+            else
+                return Enumerable.Empty<Program>();
+        }
+        
+        /// <summary>
+        /// 统一频道列表
+        /// </summary>
+        /// <param name="name">从网站扒取的频道名称</param>
+        /// <returns>统一后的名称，用作字典的键</returns>
+        public static string GetUniqueChannelName(string name)
+        {
+            // 硬编码列表，遇到特例时手动加进来
+            switch (name)
+            {
+                case "第一剧场":
+                    return "CCTV-第一剧场";
+                case "世界地理":
+                    return "CCTV-世界地理";
+                case "风云剧场":
+                    return "CCTV-风云剧场";
+                case "风云音乐":
+                    return "CCTV-风云音乐";
+                case "风云足球":
+                    return "CCTV-风云足球";
+                case "国防军事":
+                    return "CCTV-国防军事";
+                case "怀旧剧场":
+                    return "CCTV-怀旧剧场";
+                default:
+                    return name;
+            }
         }
     }
 }

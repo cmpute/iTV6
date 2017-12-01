@@ -294,5 +294,75 @@ namespace System.Text
 
             public byte pendingByte;
         }
+
+        #region 拼音首字母转换
+
+        /// <summary> 
+        /// 获取汉字字符串的拼音首字母，如果是一个英文字母则直接返回
+        /// </summary> 
+        /// <param name="cnstring">汉字字符串</param>
+        /// <param name="upper">若返回大写则为真，小写则为假</param>
+        /// <returns>相对应的汉语拼音首字母串</returns> 
+        public static string GetSpellCode(string cnstring, bool upper = true) =>
+            string.Concat(cnstring.Select(cnch => GetSpellCode(cnch, upper)));
+
+        /// <summary> 
+        /// 得到一个汉字的拼音第一个字母，如果是一个英文字母则直接返回
+        /// </summary> 
+        /// <param name="character">汉字字符</param>
+        /// <param name="upper">若返回大写则为真，小写则为假</param>
+        /// <returns>单个大写字母</returns> 
+        public static char GetSpellCode(char character, bool upper = true)
+        {
+            string cstr = character.ToString();
+            byte[] cnbytes = GB2312.GetBytes(cstr);
+            if (cnbytes.Length == 1) // 如果是英文字母，则直接返回
+            {
+                if (upper) return cstr.ToUpper()[0];
+                else return cstr.ToLower()[0];
+            }
+            
+            switch(character) // 二级汉字无法通过位置来判断拼音，这里直接列出来
+            {
+                case '邳': return upper ? 'P' : 'p';
+                case '睿': return upper ? 'R' : 'r';
+                case '悚':
+                case '泗':
+                    return upper ? 'S' : 's';
+                case '学':
+                case '讯':
+                    return upper ? 'X' : 'x';
+                case '圳': return upper ? 'Z' : 'z';
+                default:
+                    int ichar = cnbytes[0] << 8 | cnbytes[1];
+                    if ((ichar >= 45217) && (ichar <= 45252)) return upper ? 'A' : 'a';
+                    else if ((ichar >= 45253) && (ichar <= 45760)) return upper ? 'B' : 'b';
+                    else if ((ichar >= 45761) && (ichar <= 46317)) return upper ? 'C' : 'c';
+                    else if ((ichar >= 46318) && (ichar <= 46825)) return upper ? 'D' : 'd';
+                    else if ((ichar >= 46826) && (ichar <= 47009)) return upper ? 'E' : 'e';
+                    else if ((ichar >= 47010) && (ichar <= 47296)) return upper ? 'F' : 'f';
+                    else if ((ichar >= 47297) && (ichar <= 47613)) return upper ? 'G' : 'g';
+                    else if ((ichar >= 47614) && (ichar <= 48118)) return upper ? 'H' : 'h';
+                    else if ((ichar >= 48119) && (ichar <= 49061)) return upper ? 'J' : 'j';
+                    else if ((ichar >= 49062) && (ichar <= 49323)) return upper ? 'K' : 'k';
+                    else if ((ichar >= 49324) && (ichar <= 49895)) return upper ? 'L' : 'l';
+                    else if ((ichar >= 49896) && (ichar <= 50370)) return upper ? 'M' : 'm';
+                    else if ((ichar >= 50371) && (ichar <= 50613)) return upper ? 'N' : 'n';
+                    else if ((ichar >= 50614) && (ichar <= 50621)) return upper ? 'O' : 'o';
+                    else if ((ichar >= 50622) && (ichar <= 50905)) return upper ? 'P' : 'p';
+                    else if ((ichar >= 50906) && (ichar <= 51386)) return upper ? 'Q' : 'q';
+                    else if ((ichar >= 51387) && (ichar <= 51445)) return upper ? 'R' : 'r';
+                    else if ((ichar >= 51446) && (ichar <= 52217)) return upper ? 'S' : 's';
+                    else if ((ichar >= 52218) && (ichar <= 52697)) return upper ? 'T' : 't';
+                    else if ((ichar >= 52698) && (ichar <= 52979)) return upper ? 'W' : 'w';
+                    else if ((ichar >= 52980) && (ichar <= 53640)) return upper ? 'X' : 'x';
+                    else if ((ichar >= 53689) && (ichar <= 54480)) return upper ? 'Y' : 'y';
+                    else if ((ichar >= 54481) && (ichar <= 55289)) return upper ? 'Z' : 'z';
+                    else return ('?');
+            }
+
+        }
+
+        #endregion
     }
 }
