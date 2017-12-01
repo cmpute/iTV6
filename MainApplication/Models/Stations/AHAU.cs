@@ -12,7 +12,7 @@ namespace iTV6.Models.Stations
         public string IdentifierName => "安徽农大";
         public bool IsScheduleAvailable => false;
 
-        public async Task<IEnumerable<PlayingProgram>> GetChannelList(bool force = false)
+        public async Task<IEnumerable<ProgramSource>> GetChannelList(bool force = false)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace iTV6.Models.Stations
 
                 string group = null;
                 var sourceSet = new HashSet<string>();
-                var result = new List<PlayingProgram>();
+                var result = new List<ProgramSource>();
 
                 foreach (var cNode in channelNodes)
                 {
@@ -266,7 +266,7 @@ namespace iTV6.Models.Stations
                             continue;
 
                         Channel channel = Channel.GetChannel(chSpell, chName);
-                        result.Add(new PlayingProgram()
+                        result.Add(new ProgramSource()
                         {
                             IsThumbAvaliable = false,
                             MediaSource = new Uri(source),
@@ -288,7 +288,7 @@ namespace iTV6.Models.Stations
             {
                 System.Diagnostics.Debug.WriteLine(e.Message, "Error");
                 System.Diagnostics.Debugger.Break();
-                return new List<PlayingProgram>();
+                return new List<ProgramSource>();
             }
         }
         public Task<IEnumerable<Program>> GetSchedule(Channel channel, bool force = false)

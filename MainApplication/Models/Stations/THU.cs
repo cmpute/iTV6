@@ -16,10 +16,10 @@ namespace iTV6.Models.Stations
         public bool IsScheduleAvailable => true;
 
         private bool _cached = false; //判断是否获取过节目列表
-        private IEnumerable<PlayingProgram> _cache;
+        private IEnumerable<ProgramSource> _cache;
         private List<Tuple<Channel, string /* Vid */>> _vidList;
         private Dictionary<Channel, List<Program>> _programList;
-        public async Task<IEnumerable<PlayingProgram>> GetChannelList(bool force = false)
+        public async Task<IEnumerable<ProgramSource>> GetChannelList(bool force = false)
         {
             if (_cached && !force)
                 return _cache;
@@ -91,7 +91,7 @@ namespace iTV6.Models.Stations
                 }
 
                 // 解析当前节目
-                var result = new List<PlayingProgram>();
+                var result = new List<ProgramSource>();
                 foreach (var catchild in root)
                 {
                     var list = catchild.GetObject().GetNamedArray("Channels");
@@ -112,7 +112,7 @@ namespace iTV6.Models.Stations
                                 current = program;
                                 break;
                             }
-                        result.Add(new PlayingProgram()
+                        result.Add(new ProgramSource()
                         {
                             ThumbImage = new Uri($"http://iptv.tsinghua.edu.cn/snapshot//{vid}.jpg"),
                             IsThumbAvaliable = true,
@@ -130,7 +130,7 @@ namespace iTV6.Models.Stations
             {
                 System.Diagnostics.Debug.WriteLine(e.Message, "Error");
                 System.Diagnostics.Debugger.Break();
-                return new List<PlayingProgram>();
+                return new List<ProgramSource>();
             }
         }
 

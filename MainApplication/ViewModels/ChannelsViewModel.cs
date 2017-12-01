@@ -24,6 +24,7 @@ namespace iTV6.ViewModels
             var channelAdapters = new List<ChannelTypeAdapter>();
             foreach(var group in currentPrograms.GroupBy(program => program.ProgramInfo.Channel.Type))
             {
+                // TODO: 进一步完善分组
                 var adapter = new ChannelTypeAdapter();
                 adapter.AddRange(group);
                 string typeName = "";
@@ -92,17 +93,30 @@ namespace iTV6.ViewModels
 
         public CollectionViewSource Programs { get; set; }
 
-        private PlayingProgram _selectedProgram;
+        private MultisourceProgram _selectedProgram;
         /// <summary>
         /// 选择播放的频道（节目）
         /// </summary>
-        public PlayingProgram SelectedProgram
+        public MultisourceProgram SelectedProgram
         {
             get { return _selectedProgram; }
             set
             {
                 Set(ref _selectedProgram, value);
                 OnSelectedProgramChanged();
+            }
+        }
+
+        private SourceRecord _selectedSource;
+        /// <summary>
+        /// 选择播放的视频源
+        /// </summary>
+        public SourceRecord SelectedSource
+        {
+            get { return _selectedSource; }
+            set
+            {
+                Set(ref _selectedSource, value);
             }
         }
 
@@ -116,6 +130,9 @@ namespace iTV6.ViewModels
             LoveCurrentChannel.RaiseCanExecuteChanged();
             IsCurrentProgramFavourite = CollectionService.Instance.CheckProgram(SelectedProgram.ProgramInfo);
             LoveCurrentProgram.RaiseCanExecuteChanged();
+
+            //选择默认来源
+            SelectedSource = SelectedProgram.MediaSources.First();
 
             //展开侧面面板
             ToggleSidePanel.RaiseCanExecuteChanged();
@@ -177,12 +194,12 @@ namespace iTV6.ViewModels
     /// <summary>
     /// 按频道类型分类的组
     /// </summary>
-    class ChannelTypeAdapter : List<AvailableProgram>
+    class ChannelTypeAdapter : List<MultisourceProgram>
     {
         public string Type { get; set; }
     }
     /// <summary>
     /// 按频道名称拼音首字母分类的组
     /// </summary>
-    class ChannelAlphabetAdapter : List<AvailableProgram> { /* TODO: 实现按拼音分类 */ }
+    class ChannelAlphabetAdapter : List<MultisourceProgram> { /* TODO: 实现按拼音分类 */ }
 }

@@ -102,8 +102,8 @@
     <Compile Include="Converters\ValueWhenConverter.cs" />
     <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\ITelevisionStation.cs" />
-    <Compile Include="Models\AvailableProgram.cs" />
-    <Compile Include="Models\PlayingProgram.cs" />
+    <Compile Include="Models\MultisourceProgram.cs" />
+    <Compile Include="Models\ProgramSource.cs" />
     <Compile Include="Models\Program.cs" />
     <Compile Include="Models\Stations\AHAU.cs" />
     <Compile Include="Models\Stations\THU.cs" />

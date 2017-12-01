@@ -29,13 +29,13 @@
     </Page.Transitions>
 
     <Page.Resources>
-        <DataTemplate x:Key="BriefNarrowProgramTemplate" x:DataType="m:PlayingProgram">
+        <DataTemplate x:Key="BriefNarrowProgramTemplate" x:DataType="m:MultisourceProgram">
             <StackPanel>
                 <TextBlock Text="{x:Bind ProgramInfo.Channel.Name}" FontSize="16" FontWeight="Bold"/>
                 <TextBlock Text="{x:Bind ProgramInfo.Name}" FontSize="12"/>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate x:Key="BriefWideProgramTemplate" x:DataType="m:PlayingProgram">
+        <DataTemplate x:Key="BriefWideProgramTemplate" x:DataType="m:MultisourceProgram">
             <RelativePanel>
                 <TextBlock Text="{x:Bind ProgramInfo.Channel.Name}" FontSize="16" FontWeight="Bold"
                            RelativePanel.AlignLeftWithPanel="True"/>
@@ -172,7 +172,7 @@
                 <RowDefinition Height="48"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            <MediaElement x:Name="Player" Source="{x:Bind ViewModel.SelectedProgram.MediaSource, Mode=OneWay}"
+            <MediaElement x:Name="Player" Source="{x:Bind ViewModel.SelectedSource.Source, Mode=OneWay}"
                           AutoPlay="True" AreTransportControlsEnabled="True">
                 <MediaElement.TransportControls>
                     <MediaTransportControls IsCompact="True" IsSeekEnabled="False" IsSeekBarVisible="False"/>
@@ -187,7 +187,16 @@
                 <StackPanel Orientation="Horizontal"
                             RelativePanel.AlignRightWithPanel="True"
                             RelativePanel.AlignVerticalCenterWithPanel="True">
-                    <ComboBox VerticalAlignment="Center" Width="80"/>
+                    <ComboBox VerticalAlignment="Center" Width="120"
+                              ItemsSource="{x:Bind ViewModel.SelectedProgram.MediaSources, Mode=OneWay}"
+                              SelectedItem="{x:Bind ViewModel.SelectedSource, Mode=TwoWay, Converter={StaticResource ResourceKey=ObjectConverter}}"
+                              Margin="4, 0">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="m:SourceRecord">
+                                <TextBlock Text="{x:Bind StationName}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                     <Button x:Name="LoveProgram" Style="{StaticResource HeaderButtonStyle}"
                             ToolTipService.ToolTip="收藏节目" Command="{x:Bind ViewModel.LoveCurrentProgram}">
                         <Button.Content>

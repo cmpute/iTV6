@@ -44,17 +44,24 @@ namespace iTV6.Services
         /// <summary>
         /// 当前节目列表
         /// </summary>
-        public IEnumerable<PlayingProgram> AvaliablePrograms
+        public IEnumerable<MultisourceProgram> AvaliablePrograms
         {
             get
             {
                 return Async.InvokeAndWait(async () => {
                     var tasks = TelevisionStations.Select(station => station.GetChannelList()).ToArray();
-                    var taskrets = await Task.WhenAll(tasks);
-                    var result = new List<PlayingProgram>();
-                    foreach(var ret in taskrets)
-                        result.AddRange(ret);
-                    return result;
+                    var taskvals = await Task.WhenAll(tasks);
+
+                    var mapping = new Dictionary<Channel, MultisourceProgram>();
+                    foreach(var programList in taskvals)
+                        foreach(var program in programList)
+                        {
+                            Channel ch = program.ProgramInfo.Channel;
+                            if (!mapping.ContainsKey(ch))
+                                mapping.Add(ch, new MultisourceProgram());
+                            mapping[ch].AddSource(program);
+                        }
+                    return mapping.Values;
                 });
             }
         }
