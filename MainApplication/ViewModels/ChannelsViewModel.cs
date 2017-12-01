@@ -91,6 +91,17 @@ namespace iTV6.ViewModels
                 VisualStateManager.GoToState(Host, "SideCollapsed", true);
         }
 
+        public override void OnNavigatedTo(object paramter)
+        {
+            if (paramter is Channel)
+                foreach (MultisourceProgram program in Programs.View)
+                    if (program.ProgramInfo.Channel == paramter)
+                    {
+                        SelectedProgram = program;
+                        break;
+                    }
+        }
+
         public CollectionViewSource Programs { get; set; }
 
         private MultisourceProgram _selectedProgram;

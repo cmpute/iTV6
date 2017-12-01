@@ -17,7 +17,13 @@ namespace iTV6.ViewModels
         {
             // 注册外层菜单的导航服务
             NavigationService.ShellNavigation = new NavigationService((Host as Shell).NavigationFrame);
+            NavigationService.ShellNavigation.Navigated += (csender, ce) =>
+              {
+                  if (ce.NavigatedPageType == typeof(ChannelsPage))
+                      SelectedMenuIndex = 0;
+              };
             NavigationService.ShellNavigation.Navigate<ChannelsPage>();
+            
         }
 
         public DelegateCommand NavigateChannels { get; } = new DelegateCommand(() =>
@@ -34,6 +40,13 @@ namespace iTV6.ViewModels
             NavigationService.ShellNavigation.Navigate<SettingsPage>()); // 设置
 
         public List<NavigationItem> NavigationItems { get; } = new List<NavigationItem>();
+
+        private int _SelectedMenuIndex;
+        public int SelectedMenuIndex
+        {
+            get { return _SelectedMenuIndex; }
+            set { Set(ref _SelectedMenuIndex, value); }
+        }
     }
 
     /// <summary>

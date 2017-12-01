@@ -51,7 +51,8 @@
                 <!-- 留给功能按钮 -->
             </StackPanel>
         </RelativePanel>
-        <ListView Grid.Row="1"
+        <ListView Grid.Row="1" IsItemClickEnabled="True"
+                  ItemClick="{x:Bind ViewModel.ListView_ItemClick}"
                   ItemsSource="{x:Bind ViewModel.ChannelList}"
                   ItemTemplate="{StaticResource BriefWideChannelTemplate}">
         </ListView>

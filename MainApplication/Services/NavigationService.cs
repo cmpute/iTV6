@@ -26,20 +26,30 @@ namespace iTV6.Services
         
         public static NavigationService ShellNavigation { get; set; }
 
-        // public event EventHandler<NavigationEventArgs> Navigated;
+        public event EventHandler<NavigatedEventArgs> Navigated;
 
         public void Navigate<T>() where T : class
         {
+            var targetType = typeof(T);
             ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedFrom(null);
-            _root.Navigate(typeof(T));
+            _root.Navigate(targetType);
             ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedTo(null);
+            Navigated.Invoke(this, new NavigatedEventArgs() { NavigatedPageType = targetType });
+            
         }
 
         public void Navigate<T>(object paramter) where T : class
         {
+            var targetType = typeof(T);
             ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedFrom(paramter);
-            _root.Navigate(typeof(T), paramter);
+            _root.Navigate(targetType);
             ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedTo(paramter);
+            Navigated.Invoke(this, new NavigatedEventArgs() { NavigatedPageType = targetType });
         }
+    }
+
+    public class NavigatedEventArgs : EventArgs
+    {
+        public Type NavigatedPageType { get; set; }
     }
 }
