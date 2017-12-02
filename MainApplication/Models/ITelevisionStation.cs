@@ -29,7 +29,7 @@ namespace iTV6.Models
     /// <summary>
     /// 能够提供节目单的电视源
     /// </summary>
-    public interface IScheduleStation : ITelevisionStation
+    public interface IScheduleStation
     {
         /// <summary>
         /// 异步获取节目单
@@ -51,6 +51,7 @@ namespace iTV6.Models
         /// <param name="start">开始时间</param>
         /// <param name="end">结束时间</param>
         /// <returns>回放视频的地址</returns>
-        Task<Uri> GetPlaybackSource(Channel channel, DateTime start, DateTime end);
+        Task<Uri> GetPlaybackSource(Channel channel, DateTimeOffset start, DateTimeOffset end);
     }
+    // TODO: 其实应该是传入频道代号参数来产生链接的，因为存在多视频源情况。但是这里图方便，直接使用channel本身的ID去生成了
 }
