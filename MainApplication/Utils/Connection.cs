@@ -20,9 +20,18 @@ namespace iTV6.Utils
         /// <returns>能正常连接则返回true</returns>
         public static async Task<bool> TestConnectivity(string hostname)
         {
-            HostName host = new HostName(hostname);
-            var eps = await DatagramSocket.GetEndpointPairsAsync(host, "80");
-            return eps.Count >= 1;
+            try
+            {
+                HostName host = new HostName(hostname);
+                var eps = await DatagramSocket.GetEndpointPairsAsync(host, "80");
+                return eps.Count >= 1;
+            }
+            catch(Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("在测试连接性中发生异常");
+                System.Diagnostics.Debug.WriteLine(e.Message);
+                return false;
+            }
         }
 
         private static bool? IPv6Connected = null;
