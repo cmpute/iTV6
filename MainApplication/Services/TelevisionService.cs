@@ -9,7 +9,8 @@ using iTV6.Utils;
 
 namespace iTV6.Services
 {
-    public class TelevisionService
+    public class TelevisionService : // 实际上没有必要继承，这里只是为了方便IntelliSence
+        IScheduleStation, IPlaybackStation 
     {
         private TelevisionService()
         {
@@ -66,5 +67,24 @@ namespace iTV6.Services
                 });
             }
         }
+
+        /// <summary>
+        /// 提供统一的获取频道节目单接口
+        /// </summary>
+        /// <param name="channel">需要获取的频道</param>
+        /// <param name="force">强制从网络获取</param>
+        /// <returns>节目单</returns>
+        public Task<IEnumerable<Models.Program>> GetSchedule(Channel channel, bool force = false) =>
+            (TelevisionStations.First(station => station is IScheduleStation) as IScheduleStation).GetSchedule(channel, force);
+
+        /// <summary>
+        /// 提供统一的获取回放地址的接口
+        /// </summary>
+        /// <param name="channel">需要获取的频道</param>
+        /// <param name="start">开始时间</param>
+        /// <param name="end">结束时间</param>
+        /// <returns>回放视频的地址</returns>
+        public Task<Uri> GetPlaybackSource(Channel channel, DateTimeOffset start, DateTimeOffset end) =>
+            (TelevisionStations.First(station => station is IPlaybackStation) as IPlaybackStation).GetPlaybackSource(channel, start, end);
     }
 }

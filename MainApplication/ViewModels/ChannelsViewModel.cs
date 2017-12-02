@@ -135,8 +135,7 @@ namespace iTV6.ViewModels
         {
             //获得节目单，默认使用第一个可用的节目单源
             var channel = SelectedProgram.ProgramInfo.Channel;
-            var scheduleSource = TelevisionService.Instance.TelevisionStations.First(station => station is IScheduleStation) as IScheduleStation;
-            Schedule = await scheduleSource.GetSchedule(channel);
+            Schedule = await TelevisionService.Instance.GetSchedule(channel);
 
             //更新收藏状况
             IsCurrentChannelFavourite = CollectionService.Instance.CheckChannel(channel);
