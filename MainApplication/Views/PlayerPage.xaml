@@ -34,10 +34,25 @@
             <StackPanel Orientation="Horizontal"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
                         RelativePanel.AlignRightWithPanel="True">
-                <!-- 留给功能按钮 -->
+                <TextBox PlaceholderText="输入指定地址直接播放"
+                         Width="400"/>
+                <Button x:Name="PlayUrl"
+                        Style="{StaticResource HeaderButtonStyle}"
+                        ToolTipService.ToolTip="播放指定地址的节目">
+                    <FontIcon Glyph="&#xE893;"/>
+                </Button>
+                <Button x:Name="Download"
+                        Style="{StaticResource HeaderButtonStyle}"
+                        ToolTipService.ToolTip="下载当前视频">
+                    <FontIcon Glyph="&#xEA35;"/>
+                </Button>
             </StackPanel>
         </RelativePanel>
-        <MediaElement Grid.Row="1"
-                      Source="{x:Bind ViewModel.PlaySource}"/>
+        <MediaElement Grid.Row="1" Source="{x:Bind ViewModel.PlaySource}"
+                      AutoPlay="True" AreTransportControlsEnabled="True">
+            <MediaElement.TransportControls>
+                <MediaTransportControls IsCompact="True"/>
+            </MediaElement.TransportControls>
+        </MediaElement>
     </Grid>
 </Page>

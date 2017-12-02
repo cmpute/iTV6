@@ -45,6 +45,7 @@ namespace iTV6.Views
         {
             var pbStation = TelevisionService.Instance.TelevisionStations.First(station => station is IPlaybackStation) as ITelevisionStation;
             ChannelPicker.ItemsSource = (await pbStation.GetChannelList()).Select(program => program.ProgramInfo.Channel).Distinct();
+            ChannelPicker.SelectedIndex = 0;
             StartDatePicker.Date = EndDatePicker.Date = DateTimeOffset.Now;
         }
     }
