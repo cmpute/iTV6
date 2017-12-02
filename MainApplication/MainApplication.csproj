@@ -106,7 +106,9 @@
     <Compile Include="Models\ProgramSource.cs" />
     <Compile Include="Models\Program.cs" />
     <Compile Include="Models\Stations\AHAU.cs" />
+    <Compile Include="Models\Stations\NEU.cs" />
     <Compile Include="Models\Stations\THU.cs" />
+    <Compile Include="Models\TelevisionStationBase.cs" />
     <Compile Include="Mvvm\BindableBase.cs" />
     <Compile Include="Mvvm\DelegateCommand.cs" />
     <Compile Include="Mvvm\DependencyBindableBase.cs" />
