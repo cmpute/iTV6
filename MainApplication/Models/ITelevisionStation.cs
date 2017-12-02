@@ -24,17 +24,33 @@ namespace iTV6.Models
         /// </summary>
         /// <param name="force">是否强制刷新缓存</param>
         Task<IEnumerable<ProgramSource>> GetChannelList(bool force = false);
+    }
 
-        /// <summary>
-        /// 标识是否能够提供节目单
-        /// </summary>
-        bool IsScheduleAvailable { get; }
-
+    /// <summary>
+    /// 能够提供节目单的电视源
+    /// </summary>
+    public interface IScheduleStation : ITelevisionStation
+    {
         /// <summary>
         /// 异步获取节目单
         /// </summary>
         /// <param name="channel">需要获取节目单的频道</param>
         /// <param name="force">是否强制刷新缓存</param>
         Task<IEnumerable<Program>> GetSchedule(Channel channel, bool force = false);
+    }
+
+    /// <summary>
+    /// 能够获取回放的电视源
+    /// </summary>
+    public interface IPlaybackStation
+    {
+        /// <summary>
+        /// 获取某频道从指定时间到指定时间的视频地址
+        /// </summary>
+        /// <param name="channel">需要获取的频道</param>
+        /// <param name="start">开始时间</param>
+        /// <param name="end">结束时间</param>
+        /// <returns>回放视频的地址</returns>
+        Task<Uri> GetPlaybackSource(Channel channel, DateTime start, DateTime end);
     }
 }

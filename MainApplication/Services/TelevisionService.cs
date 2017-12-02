@@ -34,6 +34,7 @@ namespace iTV6.Services
         {
             // 硬编码列表
             yield return new THU();
+            yield return new NEU();
             yield return new AHAU();
         }
         /// <summary>
