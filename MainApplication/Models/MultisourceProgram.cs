@@ -12,7 +12,7 @@ namespace iTV6.Models
     public class MultisourceProgram
     {
 
-        // 重名计数器
+        // 重名计数器, 现在没有用到，预计用来自动编号用
         private Dictionary<string, int> counter = new Dictionary<string, int>();
 
         /// <summary>
@@ -54,16 +54,13 @@ namespace iTV6.Models
                     throw new InvalidOperationException("添加的节目不属于同一个频道");
                 ProgramInfo |= program.ProgramInfo;
                 var idn = program.SourceStation.IdentifierName;
-                if (counter.ContainsKey(idn))
-                {
-                    MediaSources.Add(new SourceRecord($"{idn}-{counter[idn]}", program.MediaSource));
-                    counter[idn]++;
-                }
+                if (!counter.ContainsKey(idn))
+                    counter.Add(idn, 0);
+                if(!string.IsNullOrWhiteSpace(program.MediaSourceTag))
+                    MediaSources.Add(new SourceRecord($"{idn}-{program.MediaSourceTag}", program.MediaSource));
                 else
-                {
-                    MediaSources.Add(new SourceRecord(idn, program.MediaSource));
-                    counter.Add(idn, 1);
-                }
+                    MediaSources.Add(new SourceRecord($"{idn}", program.MediaSource));
+                counter[idn]++;
 
                 if(!IsThumbAvaliable && program.IsThumbAvaliable)
                 {

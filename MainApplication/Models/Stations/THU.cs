@@ -117,6 +117,7 @@ namespace iTV6.Models.Stations
                             ThumbImage = new Uri($"http://iptv.tsinghua.edu.cn/snapshot//{vid}.jpg"),
                             IsThumbAvaliable = true,
                             MediaSource = new Uri($"https://iptv.tsinghua.edu.cn/hls/{vid}.m3u8"),
+                            IsMediaAvaliable = true,
                             SourceStation = this,
                             ProgramInfo = current
                         });

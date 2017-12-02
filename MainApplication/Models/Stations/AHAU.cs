@@ -270,6 +270,8 @@ namespace iTV6.Models.Stations
                         {
                             IsThumbAvaliable = false,
                             MediaSource = new Uri(source),
+                            MediaSourceTag = channelCode,
+                            IsMediaAvaliable = true,
                             SourceStation = this,
                             ProgramInfo = new Program()
                             {
