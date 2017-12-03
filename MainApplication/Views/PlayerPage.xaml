@@ -9,7 +9,7 @@
     mc:Ignorable="d">
 
     <Page.DataContext>
-        <vm:PlayerViewModel x:Name="ViewModel"/>
+        <vm:PlayerViewModel x:Name="ViewModel" Host="{x:Bind}"/>
     </Page.DataContext>
     
     <Page.Transitions>
@@ -35,9 +35,9 @@
                         RelativePanel.AlignVerticalCenterWithPanel="True"
                         RelativePanel.AlignRightWithPanel="True">
                 <TextBox PlaceholderText="输入指定地址直接播放"
-                         Width="400"/>
-                <Button x:Name="PlayUrl"
-                        Style="{StaticResource HeaderButtonStyle}"
+                         Text="{x:Bind ViewModel.CustomSource, Mode=TwoWay}" Width="400"/>
+                <Button x:Name="PlayUrl" Style="{StaticResource HeaderButtonStyle}"
+                        Command="{x:Bind ViewModel.PlayCustomSource}"
                         ToolTipService.ToolTip="播放指定地址的节目">
                     <FontIcon Glyph="&#xE893;"/>
                 </Button>
@@ -48,10 +48,10 @@
                 </Button>
             </StackPanel>
         </RelativePanel>
-        <MediaElement Grid.Row="1" Source="{x:Bind ViewModel.PlaySource}"
+        <MediaElement Grid.Row="1" Source="{x:Bind ViewModel.PlayerSource, Mode=OneWay}"
                       AutoPlay="True" AreTransportControlsEnabled="True">
             <MediaElement.TransportControls>
-                <MediaTransportControls IsCompact="True"/>
+                <MediaTransportControls/>
             </MediaElement.TransportControls>
         </MediaElement>
     </Grid>

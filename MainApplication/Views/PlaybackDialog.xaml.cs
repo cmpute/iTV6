@@ -29,10 +29,10 @@ namespace iTV6.Views
         private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             var channel = ChannelPicker.SelectedItem as Channel;
-            var startTime = StartDatePicker.Date.Value.Add(StartTimePicker.Time);
-            var endTime = EndDatePicker.Date.Value.Add(EndTimePicker.Time);
+            var startTime = StartDatePicker.Date.Value.Date.Add(StartTimePicker.Time);
+            var endTime = EndDatePicker.Date.Value.Date.Add(EndTimePicker.Time);
             var source = await TelevisionService.Instance.GetPlaybackSource(channel, startTime, endTime);
-            NavigationService.ShellNavigation.Navigate<PlayerPage>(new Tuple<Uri, string>(source, channel.Name + "回看"));
+            NavigationService.ShellNavigation.Navigate<PlayerPage>(new Tuple<Uri, string>(source, "回看：" + channel.Name));
             this.Hide();
         }
 

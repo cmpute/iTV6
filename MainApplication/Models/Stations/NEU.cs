@@ -86,7 +86,9 @@ namespace iTV6.Models.Stations
             var timezero = new DateTime(1970, 1, 1, 8, 0, 0); // UTC时间
             string startTick = start.ToUnixTimeSeconds().ToString();
             string endTick = end.ToUnixTimeSeconds().ToString();
-            return new Uri($"http://media2.neu6.edu.cn/review/{startTick}-{endTick}-{channel.UniqueId}.m3u8");
+            string link = $"http://media2.neu6.edu.cn/review/program-{startTick}-{endTick}-{channel.UniqueId}.m3u8";
+            System.Diagnostics.Debug.WriteLine("回看地址：" + link);
+            return new Uri(link);
         }
     }
 }

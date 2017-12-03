@@ -13,6 +13,6 @@ namespace iTV6.ViewModels
         public DelegateCommand CustomPlayback => new DelegateCommand(() =>
         {
             new PlaybackDialog().ShowAsync();
-        }, () => true);
+        });
     }
 }
