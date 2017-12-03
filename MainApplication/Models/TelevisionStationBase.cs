@@ -31,5 +31,6 @@ namespace iTV6.Models
         /// </summary>
         /// <returns></returns>
         protected abstract Task<IEnumerable<ProgramSource>> GetNewChannelList();
+        public abstract Task<bool> CheckConnectivity();
     }
 }

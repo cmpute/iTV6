@@ -165,5 +165,10 @@ namespace iTV6.Models.Stations
                     return name;
             }
         }
+
+        public override async Task<bool> CheckConnectivity()
+        {
+            return await Utils.Connection.TestConnectivity("ipv6.tsinghua.edu.cn");
+        }
     }
 }

@@ -11,6 +11,11 @@ namespace iTV6.Models.Stations
     {
         public override string IdentifierName => "安徽农大";
 
+        public override async Task<bool> CheckConnectivity()
+        {
+            return await Utils.Connection.TestConnectivity("itv.ahau.edu.cn");
+        }
+
         protected override async Task<IEnumerable<ProgramSource>> GetNewChannelList()
         {
             var result = new List<ProgramSource>();

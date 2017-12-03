@@ -24,6 +24,11 @@ namespace iTV6.Models
         /// </summary>
         /// <param name="force">是否强制刷新缓存</param>
         Task<IEnumerable<ProgramSource>> GetChannelList(bool force = false);
+
+        /// <summary>
+        /// 测试与该视频源站的连接性
+        /// </summary>
+        Task<bool> CheckConnectivity();
     }
 
     /// <summary>

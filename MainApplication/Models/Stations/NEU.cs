@@ -90,5 +90,10 @@ namespace iTV6.Models.Stations
             System.Diagnostics.Debug.WriteLine("回看地址：" + link);
             return new Uri(link);
         }
+
+        public override async Task<bool> CheckConnectivity()
+        {
+            return await Utils.Connection.TestConnectivity("hdtv.neu6.edu.cn");
+        }
     }
 }

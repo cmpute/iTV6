@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using iTV6.Mvvm;
@@ -26,8 +27,17 @@ namespace iTV6.ViewModels
             NavigateChannels.Execute();
         }
 
+        private static async Task<bool> CheckConnection()
+        {
+            if (await Connection.TestIPv6Connectivity())
+                return true;
+            var tasks = TelevisionService.Instance.TelevisionStations.Select(station => station.CheckConnectivity());
+            var result = await Task.WhenAll(tasks);
+            return result.Any(res => res);
+        }
+
         public DelegateCommand NavigateChannels { get; } = new DelegateCommand(() => {
-            if (Async.InvokeAndWait(async () => await Connection.TestIPv6Connectivity()))
+        if (Async.InvokeAndWait(async () => await CheckConnection()))
                 NavigationService.ShellNavigation.Navigate<ChannelsPage>();
             else
                 NavigationService.ShellNavigation.Navigate<ConnectionStatusPage>("请检查IPv6的连接");
