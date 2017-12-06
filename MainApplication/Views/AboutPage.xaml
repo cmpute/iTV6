@@ -6,8 +6,46 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <EntranceNavigationTransitionInfo />
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="About"/>
+    <Grid MinWidth="500" MinHeight="400">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <RelativePanel>
+            <TextBlock Style="{StaticResource HeaderTextStyle}" Text="关于"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True"/>
+        </RelativePanel>
+        
+        <TextBlock Grid.Row="2" Text="夕阳红小组" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <TextBlock Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock.Text>项目地址：</TextBlock.Text>
+            <Hyperlink NavigateUri="https://github.com/cmpute/iTV6">https://github.com/cmpute/iTV6</Hyperlink>
+        </TextBlock>
+        <TextBlock Grid.Row="4" Text="组长：钟元鑫" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <TextBlock Grid.Row="5" Text="组员：王嘉伟，仇泽民，张翰宇，张文哲，陈苇航" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <TextBlock Grid.Row="6" Text="鸣谢：清华IPTV，北邮人TV，中国农大TV，东北大学IPTV" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <TextBlock Grid.Row="7" Text="鸣谢：董渊老师，清华大学《软件工程》2017年秋助教团队 " VerticalAlignment="Center" HorizontalAlignment="Center" />
     </Grid>
+    
+
+    
 </Page>
