@@ -27,6 +27,7 @@
             <RowDefinition Height="48"/>
             <RowDefinition Height="48"/>
             <RowDefinition Height="48"/>
+            <RowDefinition Height="48"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <RelativePanel>
@@ -44,6 +45,7 @@
         <TextBlock Grid.Row="5" Text="组员：王嘉伟，仇泽民，张翰宇，张文哲，陈苇航" VerticalAlignment="Center" HorizontalAlignment="Center" />
         <TextBlock Grid.Row="6" Text="鸣谢：清华IPTV，北邮人TV，中国农大TV，东北大学IPTV" VerticalAlignment="Center" HorizontalAlignment="Center" />
         <TextBlock Grid.Row="7" Text="鸣谢：董渊老师，清华大学《软件工程》2017年秋助教团队 " VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <TextBlock Grid.Row="8" Text="v0.4" HorizontalAlignment="Center" />
     </Grid>
     
 

@@ -7,7 +7,80 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="Settings"/>
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <EntranceNavigationTransitionInfo />
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <RelativePanel>
+            <TextBlock Style="{StaticResource HeaderTextStyle}" Text="设置"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True"/>
+        </RelativePanel>
+        <Pivot Grid.Row="1">
+            <PivotItem>
+                <PivotItem.Header>
+                    <TextBlock Text="播放" FontSize="20"/>
+                </PivotItem.Header>
+                <StackPanel Width="300" HorizontalAlignment="Left">
+                    <TextBlock Text="--播放设置页面--"/>
+                    <TextBlock Text="默认视频源" Margin="0,10,0,10"/>
+                    <ComboBox/>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem >
+                <PivotItem.Header>
+                    <TextBlock Text="录播" FontSize="20"/>
+                </PivotItem.Header>
+                <StackPanel Width="300" HorizontalAlignment="Left">
+                    <TextBlock Text="--录播设置页面--" />
+                    <TextBlock Text="存储位置" Margin="0,10,0,10"/>
+                    <RelativePanel>
+                        <TextBox Width="200" x:Name="savepos" Text="C:\Temp"/>
+                        <Button Margin="10,0,0,0"   RelativePanel.RightOf="savepos" RelativePanel.AlignTopWith="savepos" RelativePanel.AlignBottomWith="savepos" >
+                            浏览...
+                        </Button>
+                    </RelativePanel>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem>
+                <PivotItem.Header>
+                    <TextBlock Text="主题" FontSize="20"/>
+                </PivotItem.Header>
+                <StackPanel Width="300" HorizontalAlignment="Left">
+                    <TextBlock Text="--主题设置页面--"/>
+                    <TextBlock Text="界面风格" Margin="0,10,0,10"/>
+                    <ComboBox>
+                        <ComboBoxItem Content="浅色" IsSelected="True" />
+                        <ComboBoxItem Content="深色" />
+                        <ComboBoxItem Content="蓝色" />
+                    </ComboBox>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem>
+                <PivotItem.Header>
+                    <TextBlock Text="消息" FontSize="20"/>
+                </PivotItem.Header>
+                <StackPanel Width="300" HorizontalAlignment="Left">
+                    <TextBlock Text="--消息设置页面--"/>
+                    <TextBlock Text="发送桌面通知" Margin="0,10,0,10"/>
+                    <ToggleSwitch IsOn="False"/>
+                    <TextBlock Text="将节目提醒集成到日历" Margin="0,10,0,10"/>
+                    <ToggleSwitch IsOn="False"/>
+                </StackPanel>
+            </PivotItem>
+        </Pivot>
+
     </Grid>
 </Page>
