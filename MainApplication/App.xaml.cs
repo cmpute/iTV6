@@ -40,7 +40,7 @@ namespace iTV6
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             // 调试用
-            Utils.Debug.DebugMethod();
+            Utils.Async.InvokeAndWait(async () => await Utils.Debug.DebugMethod());
 
             Frame rootFrame = Window.Current.Content as Frame;
 
