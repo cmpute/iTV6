@@ -3,9 +3,16 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:iTV6.Views"
+    xmlns:vm="using:iTV6.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    xmlns:m="using:iTV6.Models"
+    mc:Ignorable="d"
+    NavigationCacheMode="Required">
+
+    <Page.DataContext>
+        <vm:SettingsViewModel x:Name="ViewModel" Host="{x:Bind}"/>
+    </Page.DataContext>
 
     <Page.Transitions>
         <TransitionCollection>
@@ -33,22 +40,26 @@
                 <PivotItem.Header>
                     <TextBlock Text="播放" FontSize="20"/>
                 </PivotItem.Header>
-                <StackPanel Width="300" HorizontalAlignment="Left">
-                    <TextBlock Text="--播放设置页面--"/>
+                <StackPanel Margin="20,0,0,0" Width="300" HorizontalAlignment="Left">
                     <TextBlock Text="默认视频源" Margin="0,10,0,10"/>
-                    <ComboBox/>
+                    <ComboBox ItemsSource="{x:Bind ViewModel.MediaSources,Mode=OneWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="m:SourceRecord">
+                                <TextBlock Text="{x:Bind StationName}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </StackPanel>
             </PivotItem>
-            <PivotItem >
+            <PivotItem>
                 <PivotItem.Header>
                     <TextBlock Text="录播" FontSize="20"/>
                 </PivotItem.Header>
-                <StackPanel Width="300" HorizontalAlignment="Left">
-                    <TextBlock Text="--录播设置页面--" />
+                <StackPanel  Margin="20,0,0,0" Width="300" HorizontalAlignment="Left">
                     <TextBlock Text="存储位置" Margin="0,10,0,10"/>
                     <RelativePanel>
-                        <TextBox Width="200" x:Name="savepos" Text="C:\Temp"/>
-                        <Button Margin="10,0,0,0"   RelativePanel.RightOf="savepos" RelativePanel.AlignTopWith="savepos" RelativePanel.AlignBottomWith="savepos" >
+                        <TextBox Width="200" x:Name="savepos" IsReadOnly="True"  Text="{x:Bind ViewModel.FilePath,Mode=OneWay}"/>
+                        <Button Margin="10,0,0,0"  Tapped="{x:Bind ViewModel.BrowseButtonTapped,Mode=OneWay}" RelativePanel.RightOf="savepos" RelativePanel.AlignTopWith="savepos" RelativePanel.AlignBottomWith="savepos" >
                             浏览...
                         </Button>
                     </RelativePanel>
@@ -58,8 +69,7 @@
                 <PivotItem.Header>
                     <TextBlock Text="主题" FontSize="20"/>
                 </PivotItem.Header>
-                <StackPanel Width="300" HorizontalAlignment="Left">
-                    <TextBlock Text="--主题设置页面--"/>
+                <StackPanel Margin="20,0,0,0" Width="300" HorizontalAlignment="Left">
                     <TextBlock Text="界面风格" Margin="0,10,0,10"/>
                     <ComboBox>
                         <ComboBoxItem Content="浅色" IsSelected="True" />
@@ -72,8 +82,7 @@
                 <PivotItem.Header>
                     <TextBlock Text="消息" FontSize="20"/>
                 </PivotItem.Header>
-                <StackPanel Width="300" HorizontalAlignment="Left">
-                    <TextBlock Text="--消息设置页面--"/>
+                <StackPanel Margin="20,0,0,0" Width="300" HorizontalAlignment="Left">
                     <TextBlock Text="发送桌面通知" Margin="0,10,0,10"/>
                     <ToggleSwitch IsOn="False"/>
                     <TextBlock Text="将节目提醒集成到日历" Margin="0,10,0,10"/>
