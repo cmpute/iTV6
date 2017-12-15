@@ -1,0 +1,38 @@
+﻿<ContentDialog
+    x:Class="iTV6.Views.PlaybackDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:m="using:iTV6.Models"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="选择回看时间"
+    PrimaryButtonText="回看"
+    SecondaryButtonText="取消"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick"
+    Opened="ContentDialog_Opened">
+
+    <StackPanel Margin="0,8,0,0" Padding="4">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="回看频道：" Margin="4" VerticalAlignment="Center"/>
+            <ComboBox x:Name="ChannelPicker" Margin="4" Width="200">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="m:Channel">
+                        <TextBlock Text="{x:Bind Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock VerticalAlignment="Center" Text="开始时间：" Margin="4"/>
+            <CalendarDatePicker x:Name="StartDatePicker" Margin="4"/>
+            <TimePicker x:Name="StartTimePicker" Margin="4"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock VerticalAlignment="Center" Text="结束时间：" Margin="4"/>
+            <CalendarDatePicker x:Name="EndDatePicker" Margin="4"/>
+            <TimePicker x:Name="EndTimePicker" Margin="4"/>
+        </StackPanel>
+    </StackPanel>
+</ContentDialog>

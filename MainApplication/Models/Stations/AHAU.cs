@@ -7,13 +7,18 @@ using HtmlAgilityPack;
 
 namespace iTV6.Models.Stations
 {
-    public class AHAU : ITelevisionStation
+    public class AHAU : TelevisionStationBase
     {
-        public string IdentifierName => "安徽农大";
-        public bool IsScheduleAvailable => false;
+        public override string IdentifierName => "安徽农大";
 
-        public async Task<IEnumerable<ProgramSource>> GetChannelList(bool force = false)
+        public override async Task<bool> CheckConnectivity()
         {
+            return await Utils.Connection.TestConnectivity("itv.ahau.edu.cn");
+        }
+
+        protected override async Task<IEnumerable<ProgramSource>> GetNewChannelList()
+        {
+            var result = new List<ProgramSource>();
             try
             {
                 HttpClient client = new HttpClient();
@@ -24,7 +29,6 @@ namespace iTV6.Models.Stations
 
                 string group = null;
                 var sourceSet = new HashSet<string>();
-                var result = new List<ProgramSource>();
 
                 foreach (var cNode in channelNodes)
                 {
@@ -43,13 +47,9 @@ namespace iTV6.Models.Stations
                         var chName = linkNode.InnerText.Trim();
                         string editName = null;
                         if(group.StartsWith("高清"))
-                        {
                             editName = chName.Replace("卫视", "hd");
-                        }
                         else
-                        {
                             editName = chName.Replace("卫视", "tv");
-                        }
                         var chSpell = SuperEncoding.GetSpellCode(editName, false);
                         string channelCode = link.Substring(link.LastIndexOf('=') + 1);
 
@@ -120,6 +120,8 @@ namespace iTV6.Models.Stations
                                             chSpell = "btv1hd";
                                         else if (chName == "CGTN")
                                             chSpell = "cgtnhd";
+                                        else if (chName == "CGTN-DOC")
+                                            chSpell = "cgtndochd";
                                         else if (chName.StartsWith("CCTV") || chName.StartsWith("CETV"))
                                         {
                                             if (chName[5] == '+')
@@ -270,6 +272,8 @@ namespace iTV6.Models.Stations
                         {
                             IsThumbAvaliable = false,
                             MediaSource = new Uri(source),
+                            MediaSourceTag = channelCode,
+                            IsMediaAvaliable = true,
                             SourceStation = this,
                             ProgramInfo = new Program()
                             {
@@ -282,18 +286,13 @@ namespace iTV6.Models.Stations
                     else
                         group = cNode.InnerText;
                 }
-                return result;
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.Message, "Error");
                 System.Diagnostics.Debugger.Break();
-                return new List<ProgramSource>();
             }
-        }
-        public Task<IEnumerable<Program>> GetSchedule(Channel channel, bool force = false)
-        {
-            throw new NotImplementedException("Schedule Not Avaliable");
+            return result;
         }
     }
 }

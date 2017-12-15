@@ -15,7 +15,7 @@
     <Page.DataContext>
         <vm:ShellViewModel x:Name="ViewModel" Host="{x:Bind}">
             <vm:ShellViewModel.NavigationItems>
-                <vm:NavigationItem x:Name="DefaultItem" Name="频道" Glyph="&#xE173;" Navigate="{x:Bind ViewModel.NavigateChannels}"/>
+                <vm:NavigationItem Name="频道" Glyph="&#xE173;" Navigate="{x:Bind ViewModel.NavigateChannels}"/>
                 <vm:NavigationItem Name="收藏" Glyph="&#xE728;" Navigate="{x:Bind ViewModel.NavigateCollection}"/>
                 <vm:NavigationItem Name="节目单" Glyph="&#xE162;" Navigate="{x:Bind ViewModel.NavigateSchedule}"/>
                 <vm:NavigationItem Name="录播" Glyph="&#xE953;" Navigate="{x:Bind ViewModel.NavigateRecordings}"/>
@@ -72,7 +72,8 @@
                     <ListBox x:Name="MenuItems" Grid.Row="1"
                              Background="Transparent" Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
                              ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollMode="Disabled"
-                             ItemsSource="{x:Bind ViewModel.NavigationItems}" SelectedItem="{x:Bind DefaultItem}">
+                             ItemsSource="{x:Bind ViewModel.NavigationItems}"
+                             SelectedIndex="{x:Bind ViewModel.SelectedMenuIndex, Mode=TwoWay}">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="Background" Value="Transparent" />

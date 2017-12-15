@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using iTV6.Mvvm;
 using iTV6.Services;
 using iTV6.Views;
+using iTV6.Utils;
 
 namespace iTV6.ViewModels
 {
@@ -17,11 +19,29 @@ namespace iTV6.ViewModels
         {
             // 注册外层菜单的导航服务
             NavigationService.ShellNavigation = new NavigationService((Host as Shell).NavigationFrame);
-            NavigationService.ShellNavigation.Navigate<ChannelsPage>();
+            NavigationService.ShellNavigation.Navigated += (csender, ce) =>
+              {
+                  if (ce.NavigatedPageType == typeof(ChannelsPage))
+                      SelectedMenuIndex = 0;
+              };
+            NavigateChannels.Execute();
         }
 
-        public DelegateCommand NavigateChannels { get; } = new DelegateCommand(() =>
-            NavigationService.ShellNavigation.Navigate<ChannelsPage>()); // 频道
+        private static async Task<bool> CheckConnection()
+        {
+            if (await Connection.TestIPv6Connectivity())
+                return true;
+            var tasks = TelevisionService.Instance.TelevisionStations.Select(station => station.CheckConnectivity());
+            var result = await Task.WhenAll(tasks);
+            return result.Any(res => res);
+        }
+
+        public DelegateCommand NavigateChannels { get; } = new DelegateCommand(() => {
+        if (Async.InvokeAndWait(async () => await CheckConnection()))
+                NavigationService.ShellNavigation.Navigate<ChannelsPage>();
+            else
+                NavigationService.ShellNavigation.Navigate<ConnectionStatusPage>("请检查IPv6的连接");
+        }); // 频道
         public DelegateCommand NavigateCollection { get; } = new DelegateCommand(() =>
             NavigationService.ShellNavigation.Navigate<CollectionPage>()); // 收藏
         public DelegateCommand NavigateSchedule { get; } = new DelegateCommand(() =>
@@ -34,6 +54,13 @@ namespace iTV6.ViewModels
             NavigationService.ShellNavigation.Navigate<SettingsPage>()); // 设置
 
         public List<NavigationItem> NavigationItems { get; } = new List<NavigationItem>();
+
+        private int _SelectedMenuIndex;
+        public int SelectedMenuIndex
+        {
+            get { return _SelectedMenuIndex; }
+            set { Set(ref _SelectedMenuIndex, value); }
+        }
     }
 
     /// <summary>

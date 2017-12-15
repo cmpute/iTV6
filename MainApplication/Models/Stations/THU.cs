@@ -10,20 +10,16 @@ using iTV6.Models;
 
 namespace iTV6.Models.Stations
 {
-    public class THU : ITelevisionStation
+    public class THU : TelevisionStationBase, IScheduleStation
     {
-        public string IdentifierName => "清华";
-        public bool IsScheduleAvailable => true;
+        public override string IdentifierName => "清华";
 
-        private bool _cached = false; //判断是否获取过节目列表
-        private IEnumerable<ProgramSource> _cache;
         private List<Tuple<Channel, string /* Vid */>> _vidList;
         private Dictionary<Channel, List<Program>> _programList;
-        public async Task<IEnumerable<ProgramSource>> GetChannelList(bool force = false)
+        protected override async Task<IEnumerable<ProgramSource>> GetNewChannelList()
         {
-            if (_cached && !force)
-                return _cache;
             // TODO: 继续分析https://iptv.tsinghua.edu.cn/status.txt，里面有在线观看人数
+            var result = new List<ProgramSource>();
             try
             {
                 HttpClient client = new HttpClient();
@@ -91,7 +87,6 @@ namespace iTV6.Models.Stations
                 }
 
                 // 解析当前节目
-                var result = new List<ProgramSource>();
                 foreach (var catchild in root)
                 {
                     var list = catchild.GetObject().GetNamedArray("Channels");
@@ -117,21 +112,19 @@ namespace iTV6.Models.Stations
                             ThumbImage = new Uri($"http://iptv.tsinghua.edu.cn/snapshot//{vid}.jpg"),
                             IsThumbAvaliable = true,
                             MediaSource = new Uri($"https://iptv.tsinghua.edu.cn/hls/{vid}.m3u8"),
+                            IsMediaAvaliable = true,
                             SourceStation = this,
                             ProgramInfo = current
                         });
                     }
                 }
-                _cached = true;
-                _cache = result;
-                return result;
             }
             catch(Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.Message, "Error");
                 System.Diagnostics.Debugger.Break();
-                return new List<ProgramSource>();
             }
+            return result;
         }
 
         public async Task<IEnumerable<Program>> GetSchedule(Channel channel, bool force = false)
@@ -171,6 +164,11 @@ namespace iTV6.Models.Stations
                 default:
                     return name;
             }
+        }
+
+        public override async Task<bool> CheckConnectivity()
+        {
+            return await Utils.Connection.TestConnectivity("ipv6.tsinghua.edu.cn");
         }
     }
 }

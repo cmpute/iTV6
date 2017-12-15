@@ -5,31 +5,45 @@
     xmlns:local="using:iTV6.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:iTV6.ViewModels"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-            <TextBlock x:Name="text" Text="输入回放开始时间：" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBox x:Name="inputyear" VerticalAlignment="Center"/>
-                <TextBlock x:Name="year" Text="年" VerticalAlignment="Center"/>
-                <TextBox x:Name="inputmonth" VerticalAlignment="Center"/>
-                <TextBlock x:Name="month" Text="月" VerticalAlignment="Center"/>
-                <TextBox x:Name="inputdate" VerticalAlignment="Center"/>
-                <TextBlock x:Name="date" Text="日" VerticalAlignment="Center"/>
+    <Page.DataContext>
+        <vm:ScheduleViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
+    
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <EntranceNavigationTransitionInfo />
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <RelativePanel>
+            <TextBlock Style="{StaticResource HeaderTextStyle}" Text="节目单"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True"/>
+            <StackPanel Orientation="Horizontal"
+                        RelativePanel.AlignVerticalCenterWithPanel="True"
+                        RelativePanel.AlignRightWithPanel="True">
+                <Button Style="{StaticResource HeaderButtonStyle}"
+                        Command="{x:Bind ViewModel.CustomPlayback}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE1DB;" Margin="4,0"/>
+                            <TextBlock Text="回看指定时间段" Margin="4,0"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
             </StackPanel>
-            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBox x:Name="inputhour" VerticalAlignment="Center"/>
-                <TextBlock x:Name="hour" Text="时" VerticalAlignment="Center"/>
-                <TextBox x:Name="inputminute" VerticalAlignment="Center"/>
-                <TextBlock x:Name="minute" Text="分" VerticalAlignment="Center"/>
-                <TextBox x:Name="inputsecond" VerticalAlignment="Center"/>
-                <TextBlock x:Name="second" Text="秒" VerticalAlignment="Center"/>
-            </StackPanel>
-            <TextBlock x:Name="channel" Text="秒" VerticalAlignment="Center"/>
-            <TextBox x:Name="inputchannel" VerticalAlignment="Center"/>
-            <Button x:Name="play" HorizontalAlignment="Center" Content="开始播放" Click="play_Click"></Button>
-            <TextBlock x:Name="url" Width="400" HorizontalAlignment="Center"/>
-        </StackPanel>
+        </RelativePanel>
     </Grid>
 </Page>

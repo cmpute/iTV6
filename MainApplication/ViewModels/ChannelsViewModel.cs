@@ -91,6 +91,17 @@ namespace iTV6.ViewModels
                 VisualStateManager.GoToState(Host, "SideCollapsed", true);
         }
 
+        public override void OnNavigatedTo(object paramter)
+        {
+            if (paramter is Channel)
+                foreach (MultisourceProgram program in Programs.View)
+                    if (program.ProgramInfo.Channel == paramter)
+                    {
+                        SelectedProgram = program;
+                        break;
+                    }
+        }
+
         public CollectionViewSource Programs { get; set; }
 
         private MultisourceProgram _selectedProgram;
@@ -122,8 +133,9 @@ namespace iTV6.ViewModels
 
         private async void OnSelectedProgramChanged()
         {
+            //获得节目单，默认使用第一个可用的节目单源
             var channel = SelectedProgram.ProgramInfo.Channel;
-            Schedule = await TelevisionService.Instance.TelevisionStations.First().GetSchedule(channel);
+            Schedule = await TelevisionService.Instance.GetSchedule(channel);
 
             //更新收藏状况
             IsCurrentChannelFavourite = CollectionService.Instance.CheckChannel(channel);

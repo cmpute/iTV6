@@ -27,6 +27,11 @@ namespace iTV6.Models
         public Uri MediaSource { get; set; }
 
         /// <summary>
+        /// 当有多个视频源选择时给的标签
+        /// </summary>
+        public string MediaSourceTag { get; set; } = string.Empty;
+
+        /// <summary>
         /// 是否有可用的媒体资源
         /// </summary>
         public bool IsMediaAvaliable { get; set; }

@@ -13,6 +13,16 @@
         <vm:CollectionViewModel x:Name="ViewModel"/>
     </Page.DataContext>
 
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <EntranceNavigationTransitionInfo />
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
+
     <Page.Resources>
         <DataTemplate x:Key="BriefWideChannelTemplate" x:DataType="m:Channel">
             <RelativePanel>
@@ -51,7 +61,8 @@
                 <!-- 留给功能按钮 -->
             </StackPanel>
         </RelativePanel>
-        <ListView Grid.Row="1"
+        <ListView Grid.Row="1" IsItemClickEnabled="True"
+                  ItemClick="{x:Bind ViewModel.ListView_ItemClick}"
                   ItemsSource="{x:Bind ViewModel.ChannelList}"
                   ItemTemplate="{StaticResource BriefWideChannelTemplate}">
         </ListView>

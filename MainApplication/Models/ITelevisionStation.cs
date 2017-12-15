@@ -26,10 +26,16 @@ namespace iTV6.Models
         Task<IEnumerable<ProgramSource>> GetChannelList(bool force = false);
 
         /// <summary>
-        /// 标识是否能够提供节目单
+        /// 测试与该视频源站的连接性
         /// </summary>
-        bool IsScheduleAvailable { get; }
+        Task<bool> CheckConnectivity();
+    }
 
+    /// <summary>
+    /// 能够提供节目单的电视源
+    /// </summary>
+    public interface IScheduleStation
+    {
         /// <summary>
         /// 异步获取节目单
         /// </summary>
@@ -37,4 +43,20 @@ namespace iTV6.Models
         /// <param name="force">是否强制刷新缓存</param>
         Task<IEnumerable<Program>> GetSchedule(Channel channel, bool force = false);
     }
+
+    /// <summary>
+    /// 能够获取回放的电视源
+    /// </summary>
+    public interface IPlaybackStation
+    {
+        /// <summary>
+        /// 获取某频道从指定时间到指定时间的视频地址
+        /// </summary>
+        /// <param name="channel">需要获取的频道</param>
+        /// <param name="start">开始时间</param>
+        /// <param name="end">结束时间</param>
+        /// <returns>回放视频的地址</returns>
+        Task<Uri> GetPlaybackSource(Channel channel, DateTimeOffset start, DateTimeOffset end);
+    }
+    // TODO: 其实应该是传入频道代号参数来产生链接的，因为存在多视频源情况。但是这里图方便，直接使用channel本身的ID去生成了
 }
