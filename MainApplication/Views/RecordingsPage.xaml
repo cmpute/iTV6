@@ -3,11 +3,60 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:iTV6.Views"
+    xmlns:vm="using:iTV6.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    
+    <Page.DataContext>
+        <vm:RecordingsViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="Recordings"/>
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <EntranceNavigationTransitionInfo />
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="48"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <RelativePanel>
+            <TextBlock Style="{StaticResource HeaderTextStyle}" Text="录播"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True"/>
+        </RelativePanel>
+        <RelativePanel Grid.Row="1">
+            <TextBlock  Text="未完成任务" RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True" FontSize="20" Margin="12,0"/>
+
+            <Button RelativePanel.AlignVerticalCenterWithPanel="True"
+                    RelativePanel.AlignRightWithPanel="True" 
+                    x:Name="ShowThumb" Style="{StaticResource HeaderButtonStyle}"
+                    Margin="0,0,20,0"  ToolTipService.ToolTip="添加任务"
+                    Command="{x:Bind ViewModel.CustomRecord}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="添加任务" FontSize="18" Margin="0,0,10,0"/>
+                    <FontIcon Glyph="&#xE710;" Width="24" Height="24"/>
+                </StackPanel>
+            </Button>
+        </RelativePanel>
+        <RelativePanel Grid.Row="1" Grid.Column="1">
+            <TextBlock  Text="已完成任务" RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True" FontSize="20" Margin="12,0"/>
+       
+        </RelativePanel>
     </Grid>
 </Page>

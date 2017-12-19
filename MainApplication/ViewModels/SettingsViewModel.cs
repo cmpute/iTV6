@@ -39,8 +39,10 @@ namespace iTV6.ViewModels
 
         public async void BrowseButtonTapped()//点了“浏览”之后，选取文件夹
         {
-            var folderPicker = new Windows.Storage.Pickers.FolderPicker();
-            folderPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.ComputerFolder;
+            var folderPicker = new Windows.Storage.Pickers.FolderPicker
+            {
+                SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.ComputerFolder
+            };
             folderPicker.FileTypeFilter.Add("*");
 
             Windows.Storage.StorageFolder folder = await folderPicker.PickSingleFolderAsync();
