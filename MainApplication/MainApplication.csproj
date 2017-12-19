@@ -100,7 +100,6 @@
     </Compile>
     <Compile Include="Converters\PassConverter.cs" />
     <Compile Include="Converters\ValueWhenConverter.cs" />
-    <Compile Include="Models\Allschedule.cs" />
     <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\ITelevisionStation.cs" />
     <Compile Include="Models\MultisourceProgram.cs" />

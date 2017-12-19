@@ -14,7 +14,7 @@ namespace iTV6.Utils
         public static async Task DebugMethod()
         {
 #if DEBUG
-            /**
+            
             Uri UriBase = new Uri("https://www.tvmao.com/program");
             Uri UriInit = new Uri("http://www.tvmao.com/program/duration");
             HttpClient client = new HttpClient();
@@ -23,6 +23,7 @@ namespace iTV6.Utils
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(result);
 
+            /**
             //parse channelHref
             List<Tuple<Models.Channel, Uri>> ChannelHref = new List<Tuple<Models.Channel, Uri>>();
             HtmlNode rootNode = document.DocumentNode;
@@ -48,10 +49,22 @@ namespace iTV6.Utils
                 ch = Channel.GetChannel(uniqueKey, channelName, ChannelType.Central);
                 ChannelHref.Add(new Tuple<Models.Channel,Uri>(ch,uriChannel));
             }
-    **/
+            **/
 
-            //parse programList
-            //Dictionary<Channel,List<Program>> ProgramList = new Dictionary<Channel,List<Program>>();
+            //parse programList for one single program
+            HtmlNode rootNode = document.DocumentNode;
+            HtmlNodeCollection programNodeList = rootNode.SelectNodes("body/div[@class='page-content clear']/div[@class='pgmain']/div[@class='epg mt30 mb10 clear']/ul[@id='pgrow']");
+            HtmlNode pNode = programNodeList[0];
+            programNodeList = pNode.ChildNodes;
+            List<string> SingleChannelSchedule = new List<string>();
+            HtmlNode temp = null;
+            foreach(HtmlNode programNode in programNodeList)
+            {
+                temp = HtmlNode.CreateNode(programNode.OuterHtml);
+                string ProgramInfo = temp.InnerText;
+                SingleChannelSchedule.Add(ProgramInfo);
+            }
+
             await Task.CompletedTask;
 
 #else

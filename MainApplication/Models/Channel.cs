@@ -53,6 +53,11 @@ namespace iTV6.Models
         /// </summary>
         public ChannelType Type { get; set; }
 
+        ///<summary>
+        ///频道节目单
+        /// </summary>
+        public List<Program> ChannelSchedule { get; set; }
+
         /// <summary>
         /// 根据名称推测频道分类列表
         /// </summary>
