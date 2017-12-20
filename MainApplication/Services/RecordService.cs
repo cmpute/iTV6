@@ -45,32 +45,33 @@ namespace iTV6.Services
             string uri = RequestUri.ToString();
             int hlsPos = uri.IndexOf("hls");
             Uri tempTsUri;
+            sampleFile = await storageFolder.CreateFileAsync("sample.ts", CreationCollisionOption.ReplaceExisting);
+            var stream = await sampleFile.OpenAsync(FileAccessMode.ReadWrite);
             foreach (object i in tsContent)
             {
                 tempTs = i.ToString();
                 tempTsUri = new Uri(uri.Substring(0, hlsPos + ("hls/").Length) + tempTs, UriKind.RelativeOrAbsolute);
                 http = new Windows.Web.Http.HttpClient();
 
-
                 buffer = await http.GetBufferAsync(tempTsUri);
-                sampleFile = await storageFolder.CreateFileAsync("sample.ts", CreationCollisionOption.ReplaceExisting);
-                await FileIO.WriteBufferAsync(sampleFile, buffer);
-
+                using (var outputStream = stream.GetOutputStreamAt(stream.Size))
+                {
+                    using (var dataWriter = new Windows.Storage.Streams.DataWriter(outputStream))
+                    {
+                        dataWriter.WriteBuffer(buffer);
+                        await dataWriter.StoreAsync();
+                        await outputStream.FlushAsync();
+                    }                  
+                }
             }
-
-
-
-
+            stream.Dispose();
 
             //StorageFile sampleFile = await storageFolder.GetFileAsync("sample.txt");
-
-
-
 
         }
 
         //返回.m3u8文件中所有.ts文件的名字
-        //目前版本中使用-11的操作，这是固定.ts文件的长度确定的，之后可以更改
+        //目前版本中使用-14的操作，这是固定.ts文件的长度确定的，之后可以更改
         public ArrayList TSposition(string text)
         {
             ArrayList newlist = new ArrayList();
