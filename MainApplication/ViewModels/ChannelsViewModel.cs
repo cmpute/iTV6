@@ -62,7 +62,10 @@ namespace iTV6.ViewModels
                 else
                     CollectionService.Instance.AddProgram(SelectedProgram.ProgramInfo);
             }, () => SelectedProgram != null);
-
+            AddRecordTask = new DelegateCommand(() =>
+            {
+                NavigationService.ShellNavigation.Navigate<Views.RecordingsPage>(new Tuple<MultisourceProgram,SourceRecord,Uri>(SelectedProgram,SelectedSource,SelectedSource.Source));
+            }, () => (SelectedProgram != null && SelectedSource != null));
             // 监听收藏的变动
             CollectionService.Instance.ChannelListChanged += (sender, e) =>
             {
@@ -142,7 +145,7 @@ namespace iTV6.ViewModels
             LoveCurrentChannel.RaiseCanExecuteChanged();
             IsCurrentProgramFavourite = CollectionService.Instance.CheckProgram(SelectedProgram.ProgramInfo);
             LoveCurrentProgram.RaiseCanExecuteChanged();
-
+            AddRecordTask.RaiseCanExecuteChanged();
             //选择默认来源
             SelectedSource = SelectedProgram.MediaSources.First();
 
@@ -179,7 +182,7 @@ namespace iTV6.ViewModels
         /// 收藏当前频道的Command
         /// </summary>
         public DelegateCommand LoveCurrentChannel { get; }
-
+        public DelegateCommand AddRecordTask { get; }
 
         private bool _IsCurrentProgramFavourite;
         /// <summary>

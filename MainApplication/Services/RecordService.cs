@@ -15,7 +15,21 @@ namespace iTV6.Services
 {
     class RecordService
     {
-        public async static void download(Uri RequestUri,StorageFolder storageFolder)
+        public RecordService() { }
+        private static RecordService _instance;
+        /// <summary>
+        /// 获取录播服务实例，实例为单例
+        /// </summary>
+        public static RecordService Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new RecordService();
+                return _instance;
+            }
+        }
+        public async void download(Uri RequestUri,StorageFolder storageFolder)
         {
             //StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
             StorageFile sampleFile = null;// await storageFolder.CreateFileAsync("sample.txt", CreationCollisionOption.ReplaceExisting);
@@ -57,7 +71,7 @@ namespace iTV6.Services
 
         //返回.m3u8文件中所有.ts文件的名字
         //目前版本中使用-11的操作，这是固定.ts文件的长度确定的，之后可以更改
-        public static ArrayList TSposition(string text)
+        public ArrayList TSposition(string text)
         {
             ArrayList newlist = new ArrayList();
             int i = 0;

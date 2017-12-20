@@ -16,13 +16,11 @@
     <StackPanel Margin="0,8,0,0" Padding="4">
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="录播频道：" Margin="4" VerticalAlignment="Center"/>
-            <ComboBox x:Name="ChannelPicker" Margin="4" Width="200">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate x:DataType="m:Channel">
-                        <TextBlock Text="{x:Bind Name}"/>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+            <TextBlock x:Name="Text_Channel" Margin="4" VerticalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="视频源：：" Margin="4" VerticalAlignment="Center"/>
+            <TextBlock x:Name="Text_Source" Margin="4" VerticalAlignment="Center"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <TextBlock VerticalAlignment="Center" Text="开始时间：" Margin="4"/>

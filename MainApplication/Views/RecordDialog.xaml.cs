@@ -21,19 +21,27 @@ namespace iTV6.Views
 {
     public sealed partial class RecordDialog : ContentDialog
     {
+        string Channel = null;
+        string Source = null;
+        Uri URI = null;
         public RecordDialog()
         {
             this.InitializeComponent();
         }
-
+        public RecordDialog(string channel, string source, Uri uri)
+        {
+            Channel = channel;
+            Source = source;
+            URI = uri;
+            this.InitializeComponent();
+        }
         private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            var channel = ChannelPicker.SelectedItem as Channel;
             var startTime = StartDatePicker.Date.Value.Date.Add(StartTimePicker.Time);
             var endTime = EndDatePicker.Date.Value.Date.Add(EndTimePicker.Time);
-            Uri source = new Uri("https://iptv.tsinghua.edu.cn/hls/cctv1hd.m3u8");//var source = await TelevisionService.Instance.GetPlaybackSource(channel, startTime, endTime);
+            //Uri source = new Uri("https://iptv.tsinghua.edu.cn/hls/cctv1hd.m3u8");//var source = await TelevisionService.Instance.GetPlaybackSource(channel, startTime, endTime);
             var folder = await RecordService.GetMyFolderAsync();
-            RecordService.download(source, folder);//NavigationService.ShellNavigation.Navigate<PlayerPage>(new Tuple<Uri, string>(source, "回看：" + channel.Name));
+            RecordService.Instance.download(URI, folder);//NavigationService.ShellNavigation.Navigate<PlayerPage>(new Tuple<Uri, string>(source, "回看：" + channel.Name));
             this.Hide();
         }
 
@@ -42,11 +50,10 @@ namespace iTV6.Views
             this.Hide();
         }
 
-        private async void ContentDialog_Opened(ContentDialog sender, ContentDialogOpenedEventArgs args)
+        private void ContentDialog_Opened(ContentDialog sender, ContentDialogOpenedEventArgs args)
         {
-            var pbStation = TelevisionService.Instance.TelevisionStations.First(station => station is IPlaybackStation) as ITelevisionStation;
-            ChannelPicker.ItemsSource = (await pbStation.GetChannelList()).Select(program => program.ProgramInfo.Channel).Distinct();
-            ChannelPicker.SelectedIndex = 0;
+            Text_Channel.Text = Channel;
+            Text_Source.Text = Source;
             StartDatePicker.Date = EndDatePicker.Date = DateTimeOffset.Now;
         }
     }

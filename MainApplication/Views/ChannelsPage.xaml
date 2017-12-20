@@ -124,7 +124,7 @@
                     </Button.Content>
                 </Button>
                 <Button x:Name="RecordChannel" Style="{StaticResource HeaderButtonStyle}"
-                        ToolTipService.ToolTip="添加频道录播计划">
+                        ToolTipService.ToolTip="添加频道录播计划" Command="{x:Bind ViewModel.AddRecordTask}">
                     <Button.Content>
                         <FontIcon Glyph="&#xE13B;" Width="24" Height="24"/>
                     </Button.Content>
