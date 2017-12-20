@@ -15,10 +15,10 @@ namespace iTV6.Services
 {
     class RecordService
     {
-        public async void download(Uri RequestUri)
+        public async static void download(Uri RequestUri,StorageFolder storageFolder)
         {
-            StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
-            StorageFile sampleFile = await storageFolder.CreateFileAsync("sample.txt", CreationCollisionOption.ReplaceExisting);
+            //StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
+            StorageFile sampleFile = null;// await storageFolder.CreateFileAsync("sample.txt", CreationCollisionOption.ReplaceExisting);
             //获取m3u8文件
             Windows.Web.Http.HttpClient http = new Windows.Web.Http.HttpClient();
             var buffer = await http.GetBufferAsync(RequestUri);
@@ -34,7 +34,7 @@ namespace iTV6.Services
             foreach (object i in tsContent)
             {
                 tempTs = i.ToString();
-                tempTsUri = new Uri(uri.Substring(0, hlsPos + ("hls/").Length) + tempTs);
+                tempTsUri = new Uri(uri.Substring(0, hlsPos + ("hls/").Length) + tempTs, UriKind.RelativeOrAbsolute);
                 http = new Windows.Web.Http.HttpClient();
 
 
@@ -57,7 +57,7 @@ namespace iTV6.Services
 
         //返回.m3u8文件中所有.ts文件的名字
         //目前版本中使用-11的操作，这是固定.ts文件的长度确定的，之后可以更改
-        public ArrayList TSposition(string text)
+        public static ArrayList TSposition(string text)
         {
             ArrayList newlist = new ArrayList();
             int i = 0;
@@ -67,10 +67,36 @@ namespace iTV6.Services
                 tempPos = text.IndexOf(".ts", i);
                 if (tempPos == -1)
                     break;
-                newlist.Add(text.Substring(tempPos - 11, 11 + (".ts").Length));
+                newlist.Add(text.Substring(tempPos - 14, 14 + (".ts").Length));
                 i = tempPos + 3;
             }
             return newlist;
+        }
+
+        /// <summary>
+        /// 获取存储文件夹
+        /// </summary>
+        public async static Task<StorageFolder> GetMyFolderAsync()
+        {
+            StorageFolder folder = null;
+            string path = SettingService.GetValue("FilePath").ToString();
+            StorageFolder defaultfolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("iTV6_Download", CreationCollisionOption.OpenIfExists);
+            if (!string.IsNullOrEmpty(path))
+            {
+                try
+                {
+                    folder = await StorageFolder.GetFolderFromPathAsync(path);
+                }
+                catch
+                {
+                    folder = defaultfolder;
+                }
+            }
+            else
+            {
+                folder = defaultfolder;
+            }
+            return folder;
         }
     }
 }
