@@ -6,6 +6,7 @@
     xmlns:vm="using:iTV6.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converter="using:iTV6.Converters"
     xmlns:m="using:iTV6.Models"
     mc:Ignorable="d"
     NavigationCacheMode="Required">
@@ -23,7 +24,11 @@
             </NavigationThemeTransition>
         </TransitionCollection>
     </Page.Transitions>
-
+    
+    <Page.Resources>
+        <converter:PassConverter x:Key="ObjectConverter"/>
+    </Page.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="48"/>
@@ -35,6 +40,7 @@
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        RelativePanel.AlignLeftWithPanel="True"/>
         </RelativePanel>
+
         <Pivot Grid.Row="1">
             <PivotItem>
                 <PivotItem.Header>
@@ -42,12 +48,7 @@
                 </PivotItem.Header>
                 <StackPanel Margin="20,0,0,0" Width="300" HorizontalAlignment="Left">
                     <TextBlock Text="默认视频源" Margin="0,10,0,10"/>
-                    <ComboBox ItemsSource="{x:Bind ViewModel.MediaSources,Mode=OneWay}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate x:DataType="m:SourceRecord">
-                                <TextBlock Text="{x:Bind StationName}"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
+                    <ComboBox ItemsSource="{x:Bind ViewModel.MediaSources,Mode=OneWay}" SelectedItem="{x:Bind ViewModel.PriorSource,Mode=TwoWay,Converter={StaticResource ObjectConverter}}">
                     </ComboBox>
                 </StackPanel>
             </PivotItem>
@@ -71,10 +72,7 @@
                 </PivotItem.Header>
                 <StackPanel Margin="20,0,0,0" Width="300" HorizontalAlignment="Left">
                     <TextBlock Text="界面风格" Margin="0,10,0,10"/>
-                    <ComboBox>
-                        <ComboBoxItem Content="浅色" IsSelected="True" />
-                        <ComboBoxItem Content="深色" />
-                        <ComboBoxItem Content="蓝色" />
+                    <ComboBox ItemsSource="{x:Bind ViewModel.ThemeList,Mode=OneWay}" SelectedItem="{x:Bind ViewModel.SelectedTheme,Mode=TwoWay,Converter={StaticResource ObjectConverter}}">
                     </ComboBox>
                 </StackPanel>
             </PivotItem>
@@ -84,12 +82,11 @@
                 </PivotItem.Header>
                 <StackPanel Margin="20,0,0,0" Width="300" HorizontalAlignment="Left">
                     <TextBlock Text="发送桌面通知" Margin="0,10,0,10"/>
-                    <ToggleSwitch IsOn="False"/>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.SendDesktopNotifications,Mode=TwoWay,Converter={StaticResource ObjectConverter}}"/>
                     <TextBlock Text="将节目提醒集成到日历" Margin="0,10,0,10"/>
-                    <ToggleSwitch IsOn="False"/>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.UseSystemCalender,Mode=TwoWay,Converter={StaticResource ObjectConverter}}"/>
                 </StackPanel>
             </PivotItem>
         </Pivot>
-
     </Grid>
 </Page>
