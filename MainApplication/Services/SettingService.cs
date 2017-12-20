@@ -1,9 +1,32 @@
-﻿using Windows.Storage;
+﻿using System.Collections.Generic;
+using Windows.Storage;
 
 namespace iTV6.Services
 {
-    class Settings
+    class SettingService
     {
+
+        public List<string> MediaSources { get; } = new List<string>();
+        public List<string> ThemeList = new List<string>();
+
+        private SettingService()
+        {
+            MediaSources.Add("清华"); MediaSources.Add("中国农大"); MediaSources.Add("东北大学"); MediaSources.Add("北邮人");
+            ThemeList.Add("浅色"); ThemeList.Add("深色"); ThemeList.Add("蓝色");
+        }
+        private static SettingService _instance;
+        /// <summary>
+        /// 获取设置服务实例，实例为单例
+        /// </summary>
+        public static SettingService Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new SettingService();
+                return _instance;
+            }
+        }
         static ApplicationDataContainer container = ApplicationData.Current.LocalSettings;
         /// <summary>
         /// 获取指定键的值
