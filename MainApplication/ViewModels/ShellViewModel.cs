@@ -23,6 +23,16 @@ namespace iTV6.ViewModels
               {
                   if (ce.NavigatedPageType == typeof(ChannelsPage))
                       SelectedMenuIndex = 0;
+                  if (ce.NavigatedPageType == typeof(CollectionPage))
+                      SelectedMenuIndex = 1;
+                  if (ce.NavigatedPageType == typeof(SchedulePage))
+                      SelectedMenuIndex = 2;
+                  if (ce.NavigatedPageType == typeof(RecordingsPage))
+                      SelectedMenuIndex = 3;
+                  if (ce.NavigatedPageType == typeof(AboutPage))
+                      SelectedMenuIndex = 4;
+                  if (ce.NavigatedPageType == typeof(SettingsPage))
+                      SelectedMenuIndex = 5;
               };
             NavigateChannels.Execute();
         }
