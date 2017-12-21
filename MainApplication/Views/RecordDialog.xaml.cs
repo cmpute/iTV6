@@ -41,7 +41,7 @@ namespace iTV6.Views
             var endTime = EndDatePicker.Date.Value.Date.Add(EndTimePicker.Time);
             //Uri source = new Uri("https://iptv.tsinghua.edu.cn/hls/cctv1hd.m3u8");//var source = await TelevisionService.Instance.GetPlaybackSource(channel, startTime, endTime);
             var folder = await RecordService.GetMyFolderAsync();
-            RecordService.Instance.download(URI, folder);//NavigationService.ShellNavigation.Navigate<PlayerPage>(new Tuple<Uri, string>(source, "回看：" + channel.Name));
+            RecordService.Instance.Download(URI, Source, folder);//NavigationService.ShellNavigation.Navigate<PlayerPage>(new Tuple<Uri, string>(source, "回看：" + channel.Name));
             this.Hide();
         }
 
