@@ -29,7 +29,7 @@ namespace iTV6.Services
                 return _instance;
             }
         }
-        public async void Download(Uri RequestUri, string Source, StorageFolder storageFolder)
+        public async void Download(Uri RequestUri, StorageFolder storageFolder)
         {
             //StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
             StorageFile sampleFile = null;// await storageFolder.CreateFileAsync("sample.txt", CreationCollisionOption.ReplaceExisting);
@@ -50,7 +50,7 @@ namespace iTV6.Services
             foreach (object i in tsContent)
             {
                 tempTs = i.ToString();
-                if (Source.Contains("东北"))//东北大学的话，m3u8中的就是完整地址
+                if (tempTs.StartsWith("http"))//m3u8中的可能就是完整地址
                     tempTsUri = new Uri(tempTs);
                 else//其他情况需要加上前面一段
                     tempTsUri = new Uri(uri.Substring(0, hlsPos + ("hls/").Length) + tempTs, UriKind.RelativeOrAbsolute);
