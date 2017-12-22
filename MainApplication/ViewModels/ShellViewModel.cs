@@ -8,12 +8,20 @@ using iTV6.Mvvm;
 using iTV6.Services;
 using iTV6.Views;
 using iTV6.Utils;
+using Windows.UI.Xaml.Media;
 
 namespace iTV6.ViewModels
 {
     public sealed class ShellViewModel : ViewModelBase
     {
-        public ShellViewModel() { }
+        bool ChangeToNightModeNotRegistered = true;
+        public ShellViewModel()
+        {
+            if (SettingService.ContainsKey("NightMode"))//读取设置：是不是夜间模式
+            {
+                Theme = ((bool)SettingService.GetValue("NightMode")) ? ElementTheme.Dark : ElementTheme.Light;
+            }
+        }
         
         public void FrameLoaded(object sender, RoutedEventArgs e)
         {
@@ -32,7 +40,14 @@ namespace iTV6.ViewModels
                   if (ce.NavigatedPageType == typeof(AboutPage))
                       SelectedMenuIndex = 4;
                   if (ce.NavigatedPageType == typeof(SettingsPage))
+                  {
                       SelectedMenuIndex = 5;
+                      if (ChangeToNightModeNotRegistered)
+                      {
+                          ((NavigationService.ShellNavigation._root.Content as SettingsPage).DataContext as SettingsViewModel).ChangeToNightMode += ChangeToNightMode;//为SettingsViewModel中的事件绑定方法
+                          ChangeToNightModeNotRegistered = false;
+                      }
+                  }
               };
             NavigateChannels.Execute();
         }
@@ -70,6 +85,29 @@ namespace iTV6.ViewModels
         {
             get { return _SelectedMenuIndex; }
             set { Set(ref _SelectedMenuIndex, value); }
+        }
+
+        public ElementTheme Theme//设置夜间模式用
+        {
+            get
+            {
+                return _theme;
+            }
+            set
+            {
+                Set(ref _theme, value);
+
+            }
+        }
+
+        private ElementTheme _theme = ElementTheme.Light;
+
+        void ChangeToNightMode(bool isOn)//切换到夜间模式
+        {
+            if (isOn)
+                Theme = ElementTheme.Dark;
+            else
+                Theme = ElementTheme.Light;
         }
     }
 

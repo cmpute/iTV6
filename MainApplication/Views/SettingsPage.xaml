@@ -71,9 +71,12 @@
                     <TextBlock Text="主题" FontSize="20"/>
                 </PivotItem.Header>
                 <StackPanel Margin="20,0,0,0" Width="300" HorizontalAlignment="Left">
-                    <TextBlock Text="界面风格" Margin="0,10,0,10"/>
+                   <!-- 目前觉得比较难搞，先不放上去了-->
+                    <!--<TextBlock Text="界面风格" Margin="0,10,0,10"/>
                     <ComboBox ItemsSource="{x:Bind ViewModel.ThemeList,Mode=OneWay}" SelectedItem="{x:Bind ViewModel.SelectedTheme,Mode=TwoWay,Converter={StaticResource ObjectConverter}}">
-                    </ComboBox>
+                    </ComboBox>-->
+                    <TextBlock Text="夜间模式" Margin="0,10,0,10"/>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.NightMode,Mode=TwoWay,Converter={StaticResource ObjectConverter}}"/>
                 </StackPanel>
             </PivotItem>
             <PivotItem>

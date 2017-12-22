@@ -13,6 +13,8 @@ namespace iTV6.ViewModels
 {
     class SettingsViewModel : ViewModelBase
     {
+        public delegate void SettingHandler(bool isOn);
+        public event SettingHandler ChangeToNightMode;//事件，用于立即显示夜间模式的效果
         //默认视频源
         public List<string> MediaSources { get; } = SettingService.Instance.MediaSources;//从service获得节目源列表
         private string _poriorSource = null;
@@ -43,6 +45,18 @@ namespace iTV6.ViewModels
             set {
                 Set(ref _selectedTheme,value);
                 SettingService.SetValue("Theme", _selectedTheme);
+            }
+        }
+        //夜间模式
+        private bool _nightMode = false;
+        public bool NightMode
+        {
+            get { return _nightMode; }
+            set
+            {
+                Set(ref _nightMode, value);
+                SettingService.SetValue("NightMode", _nightMode);
+                ChangeToNightMode?.Invoke(_nightMode);
             }
         }
         //是否发送桌面通知
@@ -79,6 +93,8 @@ namespace iTV6.ViewModels
                 SelectedTheme = SettingService.GetValue("Theme").ToString();
             else
                 SelectedTheme = ThemeList.First();
+            if (SettingService.ContainsKey("NightMode"))//读取设置：是否使用夜间模式
+                NightMode = (bool)SettingService.GetValue("NightMode");
             if (SettingService.ContainsKey("SendDesktopNotifications"))//读取设置：是否发送桌面通知
                 SendDesktopNotifications = (bool)SettingService.GetValue("SendDesktopNotifications");
             else
