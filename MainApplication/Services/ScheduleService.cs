@@ -5,94 +5,102 @@ using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.Net.Http;
-/**
+
 namespace iTV6.Services
 {
     public class ScheduleService
     {
-        private ScheduleService() { }
-        private static Task<string> uritxt;
-        
-        private List<Tuple<Models.Channel, Uri>> ChannelHref { get; set; }
-        private static Uri UriBase = new Uri("https://www.tvmao.com/program");
-        private static Uri UriInit = new Uri("http://www.tvmao.com/program/duration");
-        //private static List<Tuple<Models.Channel, List<Program>>> AllSchedule { get; set; }
+        private ScheduleService() { GetSchedule(); }
+        private static Dictionary<string, List<Models.Program>> Schedule;
+        private static Dictionary<string, string> DistrictToCode;
+        private static int[] timestamp = { 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22 };
 
-        private static void GetUriTxt()
+        public static Dictionary<string, List<Models.Program>> GetSchedule()
         {
-            uritxt = ReadFromPage(UriInit);
+            SetScheduleForSingleDistrict("cctv", -1);
+            return Schedule;
         }
 
-        private static ScheduleService _instance;
-        /// <summary>
-        /// 获取节目单服务实例，实例为单例
-        /// </summary>
-        public static ScheduleService Instance
+        public static Uri GetUri(string code, int time, int DoW = -1)
         {
-            get
+            if(DoW == -1)
             {
-                if (_instance == null)
-                    _instance = new ScheduleService();
-                return _instance;
+                DoW = (int)System.DateTime.Now.DayOfWeek;
+                if(DoW == 0)
+                {
+                    DoW = 7;
+                }
+            }
+            Uri UriTemp = new Uri("http://www.tvmao.com/program/duration/" + code + "/w" + DoW + "-h" + time + ".html");
+            return UriTemp; 
+        }
+
+        public static void SetScheduleForSingleDistrict(string code,int Dow = -1)
+        {
+            foreach(int time in timestamp)
+            {
+                Uri UriTemp = GetUri(code, time, Dow);
+                SetScheduleFromSinglePage(UriTemp);
             }
         }
-        public async static Task<string> ReadFromPage(Uri uri)
+
+        public static async void SetScheduleFromSinglePage(Uri href)
         {
             HttpClient client = new HttpClient();
-            var response = await client.GetByteArrayAsync(uri);
+            var response = await client.GetByteArrayAsync(href);
             string result = SuperEncoding.UTF8.GetString(response);
-            return result;
-        }
-        
-        public static void ParseURL(string uritxt,Uri UriInit)
-        {
             HtmlDocument document = new HtmlDocument();
-            document.LoadHtml(uritxt);
+            document.LoadHtml(result);
 
-            //parse channelHref
+
             HtmlNode rootNode = document.DocumentNode;
-            HtmlNodeCollection channelNodeList = rootNode.SelectNodes("body/div[@class='page-content clear']/div[@class='chlsnav']/ul[@class='r']/li");
-            HtmlNode temp = null;
-            string channelName = null;
-            Uri uriChannel = null;
-            foreach (HtmlNode channelNode in channelNodeList)
+            HtmlNodeCollection channelNode = rootNode.SelectNodes("/body[1]/div[@class='page-content clear']/div[@class='timeline clear']/table[@class='timetable']/table[@class='timetable']");
+            HtmlNode channel = null;
+            foreach (HtmlNode ch in channelNode)
             {
-                temp = HtmlNode.CreateNode(channelNode.OuterHtml);
-                channelName = temp.InnerText;
-                if (temp.Attributes.Contains("class"))
+                channel = HtmlNode.CreateNode(ch.OuterHtml);
+                HtmlNode chNode = channel.SelectSingleNode("tr[1]/td[@class='tdchn']");
+                HtmlNodeCollection proCollect = channel.SelectNodes("tr[1]/td[@class='tdpro']");
+                string chName = chNode.InnerText;
+                string uniqueKey = SuperEncoding.GetSpellCode(chName);
+                Models.Channel chn = null;
+                chn = Models.Channel.GetChannel(uniqueKey, chName, Models.Channel.GetChannelTypeByName(chName));
+                List<Models.Program> pro = new List<Models.Program>();
+                if (!Schedule.ContainsKey(chn.UniqueId))
                 {
-                    uriChannel = UriInit;
+                    Schedule.Add(chn.UniqueId, pro);
                 }
-                else
+
+                foreach (HtmlNode pg in proCollect)
                 {
-                    temp = HtmlNode.CreateNode(temp.FirstChild.OuterHtml);
-                    Uri.TryCreate(UriBase, temp.Attributes["href"].Value, out uriChannel);
+                    HtmlNode prog = HtmlNode.CreateNode(pg.OuterHtml);
+                    HtmlNode progInfo = prog.SelectSingleNode("/td[1]");
+                    string progName = progInfo.FirstChild.InnerText.Replace("&nbsp;", "");
+                    string startTime = progInfo.LastChild.InnerText.Replace("&nbsp;", "");
+
+                    if (string.Equals(startTime, ".."))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        Models.Program pgm = new Models.Program();
+                        DateTime starttime = Convert.ToDateTime(startTime);
+                        pgm.Name = progName;
+                        pgm.StartTime = starttime;
+                        Schedule[chn.UniqueId].Add(pgm);
+                    }
                 }
-                string uniqueKey = SuperEncoding.GetSpellCode(channelName);
-                Models.Channel ch = null;
-                ch = Models.Channel.GetChannel(uniqueKey, channelName, Models.ChannelType.Central);
-                ChannelHref.Add(new Tuple<Models.Channel, Uri>(ch, uriChannel));
             }
         }
 
-        public static void ParseSingleChannelSchedule(Uri url)
-        {
-            Task<string> webtxt = ReadFromPage(url);
-            HtmlDocument document = new HtmlDocument();
-            document.LoadHtml(webtxt);
-            List<Models.Program> ChannelSchedule = new List<Models.Program>();
-            HtmlNode rootNode = document.DocumentNode;
-            HtmlNodeCollection channelNodeList = rootNode.SelectNodes("body/div[@class='page-content clear']/div[@class='pgmain']/div[@class='epg mt30 mb10 clear']/ul[@id='pgrow']");
 
-            HtmlNode temp = null;
+        /**
+        public string SetDistrictToCode()
+        {
             
         }
-
-        public static void ParseMultiChannelSchedule(string webtxt,List<Tuple<Models.Channel,Uri>> ChannelHref)
-        {
-
-
-        }
+        **/   
     }
 }
-    **/
+    

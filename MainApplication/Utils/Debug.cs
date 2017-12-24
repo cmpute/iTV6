@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using iTV6.Models;
+using iTV6.Services;
 
 namespace iTV6.Utils
 {
@@ -15,7 +16,7 @@ namespace iTV6.Utils
         public static async Task DebugMethod()
         {
 #if DEBUG
-            
+            /**
             Uri UriBase = new Uri("https://www.tvmao.com/program/duration");
             int Dat = (int)System.DateTime.Now.DayOfWeek;
             if(Dat == 0)
@@ -23,10 +24,11 @@ namespace iTV6.Utils
                 Dat = 7;
             }
             int[] time = { 0, 2, 4, 6,8,10,12,14,16,18,20,22 };
+            string[] code = { "cctv" };
             Dictionary<string, List<Models.Program>> Schedule = new Dictionary<string, List<Models.Program>>();
             foreach (int i in time)
             {
-                Uri UriInit = new Uri("http://www.tvmao.com/program/duration/cctv/w" + Dat + "-h" + i + ".html");
+                Uri UriInit = new Uri("http://www.tvmao.com/program/duration/"+code[0]+"/w" + Dat + "-h" + i + ".html");
 
                 HttpClient client = new HttpClient();
                 var response = await client.GetByteArrayAsync(UriInit);
@@ -76,6 +78,8 @@ namespace iTV6.Utils
                 }
                 Schedule.Count();
             }
+            **/
+            Services.ScheduleService.GetSchedule();
             await Task.CompletedTask;
 
 #else
