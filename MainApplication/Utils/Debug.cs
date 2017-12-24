@@ -16,28 +16,29 @@ namespace iTV6.Utils
         public static async Task DebugMethod()
         {
 #if DEBUG
-            /**
+
             Uri UriBase = new Uri("https://www.tvmao.com/program/duration");
             int Dat = (int)System.DateTime.Now.DayOfWeek;
-            if(Dat == 0)
+            if (Dat == 0)
             {
                 Dat = 7;
             }
-            int[] time = { 0, 2, 4, 6,8,10,12,14,16,18,20,22 };
+            int[] time = { 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22 };
             string[] code = { "cctv" };
             Dictionary<string, List<Models.Program>> Schedule = new Dictionary<string, List<Models.Program>>();
             foreach (int i in time)
             {
-                Uri UriInit = new Uri("http://www.tvmao.com/program/duration/"+code[0]+"/w" + Dat + "-h" + i + ".html");
+                Uri UriInit = new Uri("http://www.tvmao.com/program/duration/" + code[0] + "/w" + Dat + "-h" + i + ".html");
 
                 HttpClient client = new HttpClient();
                 var response = await client.GetByteArrayAsync(UriInit);
                 string result = SuperEncoding.UTF8.GetString(response);
                 HtmlDocument document = new HtmlDocument();
                 document.LoadHtml(result);
-                
+
 
                 HtmlNode rootNode = document.DocumentNode;
+                /**
                 HtmlNodeCollection channelNode = rootNode.SelectNodes("/body[1]/div[@class='page-content clear']/div[@class='timeline clear']/table[@class='timetable']/table[@class='timetable']");
                 HtmlNode channel = null;
                 foreach (HtmlNode ch in channelNode)
@@ -79,12 +80,44 @@ namespace iTV6.Utils
                 Schedule.Count();
             }
             **/
-            Services.ScheduleService.GetSchedule();
-            await Task.CompletedTask;
+                Dictionary<string, string> DistrictToCode = new Dictionary<string, string>();
+                DistrictToCode.Add("央视", "cctv");
+                DistrictToCode.Add("卫视", "satellite");
+                DistrictToCode.Add("数字付费", "digital");
+                DistrictToCode.Add("香港", "honkong");
+                DistrictToCode.Add("澳门", "macau");
+                DistrictToCode.Add("台湾", "taiwan");
+                DistrictToCode.Add("境外", "foreign");
+
+                HtmlNodeCollection NodeList = rootNode.SelectNodes("/body[1]/div[@class = 'pgnav_wrap']/div[@class='lev2 clear']/form[@class='lt ml10']/select[@name='prov']");
+                NodeList = NodeList[0].ChildNodes;
+                int id = 0;
+                string disName = null;
+                string disCode = null;
+                foreach(HtmlNode nd in NodeList)
+                {
+                    HtmlNode node = HtmlNode.CreateNode(nd.OuterHtml);
+
+                    if(node.Attributes.Contains("value"))
+                    {
+                        disCode = node.Attributes["value"].Value;
+                        continue;
+                    }
+                    disName = node.InnerText;
+                    if (disName == null || disCode == null || disName =="" || disCode == "" || disCode == "0" )
+                    {
+                        continue;
+                    }
+                    DistrictToCode.Add(disName, disCode);
+                    id += 1;
+                    DistrictToCode.Count();
+                }
+                await Task.CompletedTask;
 
 #else
             await Task.CompletedTask;
 #endif
+            }
         }
     }
 }

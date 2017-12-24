@@ -10,16 +10,13 @@ namespace iTV6.Services
 {
     public class ScheduleService
     {
-        private ScheduleService() { GetSchedule(); }
+        private ScheduleService()
+        {
+            SetScheduleForSingleDistrict("cctv");
+        }
         private static Dictionary<string, List<Models.Program>> Schedule;
         private static Dictionary<string, string> DistrictToCode;
         private static int[] timestamp = { 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22 };
-
-        public static Dictionary<string, List<Models.Program>> GetSchedule()
-        {
-            SetScheduleForSingleDistrict("cctv", -1);
-            return Schedule;
-        }
 
         public static Uri GetUri(string code, int time, int DoW = -1)
         {
@@ -95,12 +92,50 @@ namespace iTV6.Services
         }
 
 
-        /**
-        public string SetDistrictToCode()
+        
+        public async void SetDistrictToCode()
         {
-            
+            HttpClient client = new HttpClient();
+            var response = await client.GetByteArrayAsync("http://www.tvmao.com/program/duration/cctv/w7-h16.html");
+            string result = SuperEncoding.UTF8.GetString(response);
+            HtmlDocument document = new HtmlDocument();
+            document.LoadHtml(result);
+
+            HtmlNode rootNode = document.DocumentNode;
+            DistrictToCode.Add("央视", "cctv");
+            DistrictToCode.Add("卫视", "satellite");
+            DistrictToCode.Add("数字付费", "digital");
+            DistrictToCode.Add("香港", "honkong");
+            DistrictToCode.Add("澳门", "macau");
+            DistrictToCode.Add("台湾", "taiwan");
+            DistrictToCode.Add("境外", "foreign");
+
+            HtmlNodeCollection NodeList = rootNode.SelectNodes("/body[1]/div[@class = 'pgnav_wrap']/div[@class='lev2 clear']/form[@class='lt ml10']/select[@name='prov']");
+            NodeList = NodeList[0].ChildNodes;
+            int id = 0;
+            string disName = null;
+            string disCode = null;
+            foreach (HtmlNode nd in NodeList)
+            {
+                HtmlNode node = HtmlNode.CreateNode(nd.OuterHtml);
+
+                if (node.Attributes.Contains("value"))
+                {
+                    disCode = node.Attributes["value"].Value;
+                    continue;
+                }
+                disName = node.InnerText;
+                if (disName == null || disCode == null || disName == "" || disCode == "" || disCode == "0")
+                {
+                    continue;
+                }
+                DistrictToCode.Add(disName, disCode);
+                id += 1;
+                DistrictToCode.Count();
+            }
+
         }
-        **/   
+         
     }
 }
     
