@@ -40,7 +40,7 @@ namespace iTV6.Views
             var startTime = StartDatePicker.Date.Value.Date.Add(StartTimePicker.Time);
             var endTime = EndDatePicker.Date.Value.Date.Add(EndTimePicker.Time);
             var folder = await RecordService.GetMyFolderAsync();
-            RecordService.Instance.Download(URI, folder);
+            RecordService.Instance.Download(URI, folder, startTime, endTime);
             this.Hide();
         }
 
