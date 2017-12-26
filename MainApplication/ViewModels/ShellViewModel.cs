@@ -13,9 +13,13 @@ namespace iTV6.ViewModels
 {
     public sealed class ShellViewModel : ViewModelBase
     {
-        public ShellViewModel() { }
-        
-        public void FrameLoaded(object sender, RoutedEventArgs e)
+        public ShellViewModel()
+        {
+            // 让CalendarService 实例化
+            CalendarService.Instance.GetHashCode();
+        }
+
+            public void FrameLoaded(object sender, RoutedEventArgs e)
         {
             // 注册外层菜单的导航服务
             NavigationService.ShellNavigation = new NavigationService((Host as Shell).NavigationFrame);

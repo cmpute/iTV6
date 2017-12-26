@@ -114,8 +114,10 @@
     <Compile Include="Mvvm\DelegateCommand.cs" />
     <Compile Include="Mvvm\DependencyBindableBase.cs" />
     <Compile Include="Mvvm\ViewModelBase.cs" />
+    <Compile Include="Services\CalendarService.cs" />
     <Compile Include="Services\CollectionService.cs" />
     <Compile Include="Services\NavigationService.cs" />
+    <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\TelevisionService.cs" />
     <Compile Include="Utils\Async.cs" />
     <Compile Include="Utils\Connection.cs" />
@@ -127,6 +129,7 @@
     <Compile Include="ViewModels\PlayerViewModel.cs" />
     <Compile Include="ViewModels\ScheduleViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="ViewModels\StaticViewModel.cs" />
     <Compile Include="Views\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>

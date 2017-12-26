@@ -17,7 +17,6 @@ namespace iTV6.ViewModels
     {
         public ChannelsViewModel()
         {
-            System.Diagnostics.Debug.WriteLine("<ChannelsViewModel> New Instance");
             // 将节目列表进行分组
             Programs = new CollectionViewSource();
             var currentPrograms = TelevisionService.Instance.AvaliablePrograms;
