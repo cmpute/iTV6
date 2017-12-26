@@ -29,19 +29,105 @@
     </Page.Transitions>
 
     <Page.Resources>
-        <DataTemplate x:Key="BriefNarrowProgramTemplate" x:DataType="m:MultisourceProgram">
-            <StackPanel>
-                <TextBlock Text="{x:Bind ProgramInfo.Channel.Name}" FontSize="16" FontWeight="Bold"/>
-                <TextBlock Text="{x:Bind ProgramInfo.Name}" FontSize="12"/>
-            </StackPanel>
+        <DataTemplate x:Key="BriefNarrowChannelTemplate" x:DataType="m:MultisourceProgram">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel RelativePanel.AlignLeftWithPanel="True">
+                    <TextBlock Text="{x:Bind ProgramInfo.Channel.Name}" FontSize="16" FontWeight="Bold"/>
+                    <TextBlock Text="{x:Bind ProgramInfo.Name}" FontSize="12"/>
+                </StackPanel>
+                <StackPanel x:Name="ToolButtonStack" Grid.Column="1"
+                            Orientation="Horizontal" Visibility="Collapsed"
+                            RelativePanel.AlignRightWithPanel="True">
+                    <Button Style="{StaticResource ListButtonStyle}"
+                            ToolTipService.ToolTip="固定到Windows开始菜单">
+                        <!-- TODO: 绑定动态图标，候选&#xE141; -->
+                        <Button.Content>
+                            <FontIcon Glyph="&#xE840;"
+                                      Width="24" Height="24"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Style="{StaticResource ListButtonStyle}"
+                            ToolTipService.ToolTip="收藏频道">
+                        <!-- TODO: 绑定动态图标和对应事件 -->
+                        <Button.Content>
+                            <FontIcon Glyph="&#xE006;"
+                                      Width="24" Height="24"/>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="RecordChannel" Style="{StaticResource HeaderButtonStyle}"
+                        ToolTipService.ToolTip="添加频道录播计划">
+                        <!-- TODO: 绑定对应事件 -->
+                        <Button.Content>
+                            <FontIcon Glyph="&#xE13B;" Width="24" Height="24"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="PointerEntered">
+                        <core:ChangePropertyAction PropertyName="Visibility" Value="Visible"
+                                                   TargetObject="{Binding ElementName=ToolButtonStack}"/>
+                    </core:EventTriggerBehavior>
+                    <core:EventTriggerBehavior EventName="PointerExited">
+                        <core:ChangePropertyAction PropertyName="Visibility" Value="Collapsed"
+                                                   TargetObject="{Binding ElementName=ToolButtonStack}"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Grid>
         </DataTemplate>
-        <DataTemplate x:Key="BriefWideProgramTemplate" x:DataType="m:MultisourceProgram">
+        <DataTemplate x:Key="BriefWideChannelTemplate" x:DataType="m:MultisourceProgram">
+            <!-- TODO: 加上按钮，并添加VisualState的判断-->
             <RelativePanel>
                 <TextBlock Text="{x:Bind ProgramInfo.Channel.Name}" FontSize="16" FontWeight="Bold"
                            RelativePanel.AlignLeftWithPanel="True"/>
                 <TextBlock Text="{x:Bind ProgramInfo.Name}" FontSize="12"
                            RelativePanel.AlignRightWithPanel="True"/>
             </RelativePanel>
+        </DataTemplate>
+        <DataTemplate x:Key="ProgramScheduleTemplate" x:DataType="m:Program">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{x:Bind Name}" FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+                <TextBlock Text="{x:Bind StartTime, Converter={StaticResource TimeConverter}}"
+                           VerticalAlignment="Center" Grid.Column="1"/>
+                <StackPanel x:Name="ToolButtonStack" Grid.Column="2"
+                            Orientation="Horizontal" Visibility="Collapsed"
+                            RelativePanel.AlignRightWithPanel="True">
+                    <Button Style="{StaticResource ListButtonStyle}"
+                            ToolTipService.ToolTip="收藏节目">
+                        <!-- TODO: 绑定动态图标和对应事件 -->
+                        <Button.Content>
+                            <FontIcon Glyph="&#xE006;"
+                                      Width="24" Height="24"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Style="{StaticResource ListButtonStyle}"
+                            ToolTipService.ToolTip="添加节目到录播计划">
+                        <!-- TODO: 绑定对应事件 -->
+                        <Button.Content>
+                            <FontIcon Glyph="&#xE20A;" Width="24" Height="24"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="PointerEntered">
+                        <core:ChangePropertyAction PropertyName="Visibility" Value="Visible"
+                                                   TargetObject="{Binding ElementName=ToolButtonStack}"/>
+                    </core:EventTriggerBehavior>
+                    <core:EventTriggerBehavior EventName="PointerExited">
+                        <core:ChangePropertyAction PropertyName="Visibility" Value="Collapsed"
+                                                   TargetObject="{Binding ElementName=ToolButtonStack}"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Grid>
         </DataTemplate>
 
         <converter:PassConverter x:Key="ObjectConverter"/>
@@ -56,6 +142,7 @@
                 <x:String>&#xE006;</x:String>
             </converter:ValueWhenConverter.Otherwise>
         </converter:ValueWhenConverter>
+        <converter:RelativeDatetimeConverter x:Key="TimeConverter"/>
     </Page.Resources>
 
     <Grid Loaded="{x:Bind ViewModel.RootGrid_Loaded}">
@@ -116,6 +203,14 @@
             <StackPanel Orientation="Horizontal"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
                         RelativePanel.AlignRightWithPanel="True">
+                <Button Style="{StaticResource ListButtonStyle}"
+                            ToolTipService.ToolTip="固定到Windows开始菜单">
+                    <!-- TODO: 绑定动态图标，候选&#xE141; -->
+                    <Button.Content>
+                        <FontIcon Glyph="&#xE840;"
+                                      Width="24" Height="24"/>
+                    </Button.Content>
+                </Button>
                 <Button x:Name="LoveChannel" Style="{StaticResource HeaderButtonStyle}"
                         ToolTipService.ToolTip="收藏频道" Command="{x:Bind ViewModel.LoveCurrentChannel}">
                     <Button.Content>
@@ -133,16 +228,11 @@
         </RelativePanel>
         <SemanticZoom x:Name="ChannelList" Grid.Row="1">
             <SemanticZoom.ZoomedInView>
-                <ListView ItemsSource="{x:Bind ViewModel.Programs.View}"
-                          ItemTemplate="{StaticResource ResourceKey=BriefNarrowProgramTemplate}"
-                          HorizontalContentAlignment="Stretch"
+                <ListView HorizontalContentAlignment="Stretch"
+                          ItemTemplate="{StaticResource ResourceKey=BriefNarrowChannelTemplate}"
+                          ItemsSource="{x:Bind ViewModel.Programs.View}"
+                          ItemContainerStyle="{StaticResource FilledListItemStyle}"
                           SelectedItem="{x:Bind ViewModel.SelectedProgram, Mode=TwoWay, Converter={StaticResource ResourceKey=ObjectConverter}}">
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
                     <ListView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>
@@ -178,12 +268,12 @@
                     <MediaTransportControls IsCompact="True" IsSeekEnabled="False" IsSeekBarVisible="False"/>
                 </MediaElement.TransportControls>
             </MediaElement>
-            <RelativePanel Grid.Row="1" Padding="12, 0"
+            <RelativePanel Grid.Row="1" Padding="12,0,4,0"
                            Background="{ThemeResource SystemControlBackgroundBaseLowBrush}">
                 <TextBlock Text="{x:Bind ViewModel.SelectedProgram.ProgramInfo.Name, Mode=OneWay}"
                            RelativePanel.AlignLeftWithPanel="True"
                            RelativePanel.AlignVerticalCenterWithPanel="True"
-                           FontSize="16"/>
+                           FontSize="20" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal"
                             RelativePanel.AlignRightWithPanel="True"
                             RelativePanel.AlignVerticalCenterWithPanel="True">
@@ -213,12 +303,9 @@
                 </StackPanel>
             </RelativePanel>
             <ListView x:Name="ScheduleList" Grid.Row="2"
-                      ItemsSource="{x:Bind ViewModel.Schedule, Mode=OneWay}">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="m:Program">
-                        <TextBlock Text="{x:Bind Name}"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
+                      ItemsSource="{x:Bind ViewModel.Schedule, Mode=OneWay}"
+                      ItemTemplate="{StaticResource ProgramScheduleTemplate}"
+                      ItemContainerStyle="{StaticResource FilledListItemStyle}">
             </ListView>
         </Grid>
     </Grid>
