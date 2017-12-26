@@ -9,6 +9,7 @@ using Windows.UI.Popups;
 
 namespace iTV6.Services
 {
+    // TODO: 在设置界面添加清空提醒的按钮，以及提前多久进行提醒的选项
     public class CalendarService
     {
         const string containerKey = "Appointments";
@@ -25,6 +26,10 @@ namespace iTV6.Services
             // 在调试状态下每次都清空节目提醒
             await DeleteAllAppointments();
 #endif
+            // 同步字典与日历内容，处理用户自行将提醒删除的情况
+            foreach (var program in _container.Values.Keys)
+                if (await _calendar.GetAppointmentAsync(_container.Values[program] as string) == null)
+                    _container.Values.Remove(program);
         }
         private CalendarService()
         {
@@ -33,7 +38,6 @@ namespace iTV6.Services
             // 在调试状态下每次都清空节目提醒
             _container.Values.Clear();
 #endif
-            // TODO: 同步节目Keys
         }
 
         private static CalendarService _instance;
@@ -80,15 +84,14 @@ namespace iTV6.Services
             };
             await _calendar.SaveAppointmentAsync(appointment);
             _container.Values.Add(program.UniqueId, appointment.LocalId);
-            System.Diagnostics.Debug.WriteLine($"为节目{program}添加日历提醒成功");
+            System.Diagnostics.Debug.WriteLine($"为节目{program}添加日历提醒成功，ID为{appointment.LocalId}");
             return true;
         }
 
         /// <summary>
         /// 删除所有日历提醒
         /// </summary>
-        /// <param name="apc"></param>
-        /// <returns></returns>
+        /// <returns>是否成功完成操作</returns>
         public async Task<bool> DeleteAllAppointments()
         {
             if (_calendar == null)

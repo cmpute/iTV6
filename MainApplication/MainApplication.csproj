@@ -117,7 +117,6 @@
     <Compile Include="Services\CalendarService.cs" />
     <Compile Include="Services\CollectionService.cs" />
     <Compile Include="Services\NavigationService.cs" />
-    <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\TelevisionService.cs" />
     <Compile Include="Utils\Async.cs" />
     <Compile Include="Utils\Connection.cs" />
