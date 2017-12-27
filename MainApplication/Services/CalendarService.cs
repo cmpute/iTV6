@@ -39,20 +39,11 @@ namespace iTV6.Services
             _container.Values.Clear();
 #endif
         }
-
-        private static CalendarService _instance;
+        
         /// <summary>
         /// 获取日历服务实例，实例为单例
         /// </summary>
-        public static CalendarService Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new CalendarService();
-                return _instance;
-            }
-        }
+        public static CalendarService Instance { get; } = new CalendarService();
 
         /// <summary>
         /// 由节目生成日历提醒

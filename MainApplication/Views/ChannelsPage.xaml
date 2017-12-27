@@ -51,8 +51,7 @@
                             ToolTipService.ToolTip="固定到Windows开始菜单">
                         <!-- TODO: 绑定动态图标，候选&#xE141; -->
                         <Button.Content>
-                            <FontIcon Glyph="&#xE840;"
-                                      Width="24" Height="24"/>
+                            <SymbolIcon Width="24" Height="24" Symbol="Pin"/>
                         </Button.Content>
                     </Button>
                     <Button Style="{StaticResource ListButtonStyle}"
@@ -118,15 +117,14 @@
                             Command="{Binding Source={StaticResource StaticVM}, Path=AddToCalendar}"
                             CommandParameter="{x:Bind}">
                         <Button.Content>
-                            <FontIcon Glyph="&#xE8F5;"
-                                      Width="24" Height="24"/>
+                            <SymbolIcon Width="24" Height="24" Symbol="CalendarReply"/>
                         </Button.Content>
                     </Button>
                     <Button Style="{StaticResource ListButtonStyle}"
                             ToolTipService.ToolTip="添加节目到录播计划">
                         <!-- TODO: 绑定对应事件 -->
                         <Button.Content>
-                            <FontIcon Glyph="&#xE20A;" Width="24" Height="24"/>
+                            <SymbolIcon Width="24" Height="24" Symbol="Video"/>
                         </Button.Content>
                     </Button>
                 </StackPanel>
@@ -195,8 +193,8 @@
                 <Button x:Name="ShowThumb" Style="{StaticResource HeaderButtonStyle}"
                         ToolTipService.ToolTip="显示缩略图">
                     <Button.Content>
-                        <!-- 替换图标有 &#xE14C; &#xE8BA; -->
-                        <FontIcon Glyph="&#xE179;" Width="24" Height="24"/>
+                        <!-- 替换图标有 Caption, List -->
+                        <SymbolIcon Width="24" Height="24" Symbol="AllApps"/>
                     </Button.Content>
                 </Button>
                 <Button x:Name="HideProgram" Style="{StaticResource HeaderButtonStyle}"
@@ -220,8 +218,7 @@
                             ToolTipService.ToolTip="固定到Windows开始菜单">
                     <!-- TODO: 绑定动态图标，候选&#xE141; -->
                     <Button.Content>
-                        <FontIcon Glyph="&#xE840;"
-                                      Width="24" Height="24"/>
+                        <SymbolIcon Width="24" Height="24" Symbol="Pin"/>
                     </Button.Content>
                 </Button>
                 <Button x:Name="LoveChannel" Style="{StaticResource HeaderButtonStyle}"
@@ -235,7 +232,7 @@
                         ToolTipService.ToolTip="添加频道录播计划">
                     <!-- TODO: 绑定对应事件 -->
                     <Button.Content>
-                        <FontIcon Glyph="&#xE13B;" Width="24" Height="24"/>
+                        <SymbolIcon Width="24" Height="24" Symbol="VideoChat"/>
                     </Button.Content>
                 </Button>
             </StackPanel>
@@ -311,7 +308,7 @@
                     <Button x:Name="RecordNow" Style="{StaticResource HeaderButtonStyle}"
                             ToolTipService.ToolTip="立即开始录播">
                         <Button.Content>
-                            <FontIcon Glyph="&#xE20A;" Width="24" Height="24"/>
+                            <SymbolIcon Width="24" Height="24" Symbol="Video"/>
                         </Button.Content>
                     </Button>
                 </StackPanel>
