@@ -1,4 +1,7 @@
-﻿using System;
+﻿using iTV6.Models;
+using iTV6.Services;
+using iTV6.Views;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,6 +33,12 @@ namespace iTV6
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            this.UnhandledException += HandledException;
+        }
+
+        private async void HandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            await new Windows.UI.Popups.MessageDialog(e.Message, e.Exception.ToString()).ShowAsync();
         }
 
         /// <summary>
@@ -71,6 +80,14 @@ namespace iTV6
                     // 参数
                     rootFrame.Navigate(typeof(Shell), e.Arguments);
                 }
+
+                // 如果是从磁贴引导过来的
+                if (!string.IsNullOrWhiteSpace(e.Arguments))
+                    if (NavigationService.ShellNavigation == null)
+                        NavigationService.DeferedShellAction.Action = (service) => service.Navigate<ChannelsPage>(Channel.GetChannel(e.Arguments));
+                    else
+                        NavigationService.ShellNavigation.Navigate<ChannelsPage>(Channel.GetChannel(e.Arguments));
+
                 // 确保当前窗口处于活动状态
                 Window.Current.Activate();
             }

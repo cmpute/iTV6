@@ -118,9 +118,11 @@
     <Compile Include="Services\CollectionService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\TelevisionService.cs" />
+    <Compile Include="Services\TileService.cs" />
     <Compile Include="Utils\Async.cs" />
     <Compile Include="Utils\Connection.cs" />
     <Compile Include="Utils\Debug.cs" />
+    <Compile Include="Utils\DeferedAction.cs" />
     <Compile Include="Utils\Encoding.cs" />
     <Compile Include="ViewModels\ChannelsViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModel.cs" />

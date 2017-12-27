@@ -35,7 +35,13 @@ namespace iTV6.Models
 
         public static Channel GetChannel(string uniqueKey)
         {
-            return _instances[uniqueKey];
+            if(_instances.ContainsKey(uniqueKey))
+                return _instances[uniqueKey];
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("访问了未知的频道：" + uniqueKey);
+                return null;
+            }
         }
 
         /// <summary>

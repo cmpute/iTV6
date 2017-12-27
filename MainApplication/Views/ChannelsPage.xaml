@@ -47,9 +47,10 @@
                 <StackPanel x:Name="ToolButtonStack" Grid.Column="1"
                             Orientation="Horizontal" Visibility="Collapsed"
                             RelativePanel.AlignRightWithPanel="True">
-                    <Button Style="{StaticResource ListButtonStyle}"
-                            ToolTipService.ToolTip="固定到Windows开始菜单">
-                        <!-- TODO: 绑定动态图标，候选&#xE141; -->
+                    <Button Style="{StaticResource ListButtonStyle}" ToolTipService.ToolTip="固定到Windows开始菜单"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=PinChannelToStart}"
+                            CommandParameter="{x:Bind ProgramInfo.Channel}">
+                        <!-- TODO: 绑定动态图标，候选 Unpin -->
                         <Button.Content>
                             <SymbolIcon Width="24" Height="24" Symbol="Pin"/>
                         </Button.Content>
@@ -57,7 +58,7 @@
                     <Button Style="{StaticResource ListButtonStyle}" ToolTipService.ToolTip="收藏频道"
                             Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteChannel}"
                             CommandParameter="{x:Bind ProgramInfo.Channel}">
-                        <!-- TODO: 绑定动态图标和对应事件 -->
+                        <!-- TODO: 绑定动态图标 -->
                         <Button.Content>
                             <FontIcon Glyph="&#xE006;"
                                       Width="24" Height="24"/>
@@ -216,14 +217,15 @@
             <StackPanel Orientation="Horizontal"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
                         RelativePanel.AlignRightWithPanel="True">
-                <Button Style="{StaticResource ListButtonStyle}"
-                            ToolTipService.ToolTip="固定到Windows开始菜单">
-                    <!-- TODO: 绑定动态图标，候选&#xE141; -->
+                <Button Style="{StaticResource HeaderButtonStyle}" ToolTipService.ToolTip="固定到Windows开始菜单"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=PinChannelToStart}"
+                            CommandParameter="{x:Bind ViewModel.SelectedProgram.ProgramInfo.Channel, Mode=OneWay}">
+                    <!-- TODO: 绑定动态图标，候选 Unpin -->
                     <Button.Content>
                         <SymbolIcon Width="24" Height="24" Symbol="Pin"/>
                     </Button.Content>
                 </Button>
-                <Button x:Name="LoveChannel" Style="{StaticResource HeaderButtonStyle}" ToolTipService.ToolTip="收藏频道"
+                <Button Style="{StaticResource HeaderButtonStyle}" ToolTipService.ToolTip="收藏频道"
                         Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteChannel}"
                         CommandParameter="{x:Bind ViewModel.SelectedProgram.ProgramInfo.Channel, Mode=OneWay}">
                     <Button.Content>
@@ -231,7 +233,7 @@
                                   Width="24" Height="24"/>
                     </Button.Content>
                 </Button>
-                <Button x:Name="RecordChannel" Style="{StaticResource HeaderButtonStyle}"
+                <Button Style="{StaticResource HeaderButtonStyle}"
                         ToolTipService.ToolTip="添加频道录播计划">
                     <!-- TODO: 绑定对应事件 -->
                     <Button.Content>
