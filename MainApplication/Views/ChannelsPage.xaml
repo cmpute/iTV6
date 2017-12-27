@@ -54,8 +54,9 @@
                             <SymbolIcon Width="24" Height="24" Symbol="Pin"/>
                         </Button.Content>
                     </Button>
-                    <Button Style="{StaticResource ListButtonStyle}"
-                            ToolTipService.ToolTip="收藏频道">
+                    <Button Style="{StaticResource ListButtonStyle}" ToolTipService.ToolTip="收藏频道"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteChannel}"
+                            CommandParameter="{x:Bind ProgramInfo.Channel}">
                         <!-- TODO: 绑定动态图标和对应事件 -->
                         <Button.Content>
                             <FontIcon Glyph="&#xE006;"
@@ -104,8 +105,9 @@
                             HorizontalAlignment="Right"
                             Orientation="Horizontal" Visibility="Collapsed"
                             RelativePanel.AlignRightWithPanel="True">
-                    <Button Style="{StaticResource ListButtonStyle}"
-                            ToolTipService.ToolTip="收藏节目">
+                    <Button Style="{StaticResource ListButtonStyle}" ToolTipService.ToolTip="收藏节目"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteProgram}"
+                            CommandParameter="{x:Bind}">
                         <!-- TODO: 绑定动态图标和对应事件 -->
                         <Button.Content>
                             <FontIcon Glyph="&#xE006;"
@@ -221,8 +223,9 @@
                         <SymbolIcon Width="24" Height="24" Symbol="Pin"/>
                     </Button.Content>
                 </Button>
-                <Button x:Name="LoveChannel" Style="{StaticResource HeaderButtonStyle}"
-                        ToolTipService.ToolTip="收藏频道" Command="{x:Bind ViewModel.LoveCurrentChannel}">
+                <Button x:Name="LoveChannel" Style="{StaticResource HeaderButtonStyle}" ToolTipService.ToolTip="收藏频道"
+                        Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteChannel}"
+                        CommandParameter="{x:Bind ViewModel.SelectedProgram.ProgramInfo.Channel, Mode=OneWay}">
                     <Button.Content>
                         <FontIcon Glyph="{x:Bind ViewModel.IsCurrentChannelFavourite, Converter={StaticResource LoveConverter}, Mode=OneWay}"
                                   Width="24" Height="24"/>
@@ -298,8 +301,9 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button x:Name="LoveProgram" Style="{StaticResource HeaderButtonStyle}"
-                            ToolTipService.ToolTip="收藏节目" Command="{x:Bind ViewModel.LoveCurrentProgram}">
+                    <Button x:Name="LoveProgram" Style="{StaticResource HeaderButtonStyle}" ToolTipService.ToolTip="收藏节目"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteProgram}"
+                            CommandParameter="{x:Bind ViewModel.SelectedProgram.ProgramInfo, Mode=OneWay}">
                         <Button.Content>
                             <FontIcon Glyph="{x:Bind ViewModel.IsCurrentProgramFavourite, Converter={StaticResource LoveConverter}, Mode=OneWay}"
                                       Width="24" Height="24"/>

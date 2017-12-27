@@ -47,21 +47,6 @@ namespace iTV6.ViewModels
             Programs.Source = channelAdapters;
             Programs.IsSourceGrouped = true;
 
-            // 新建Command的实例
-            LoveCurrentChannel = new DelegateCommand(() => {
-                if (IsCurrentChannelFavourite)
-                    CollectionService.Instance.RemoveChannel(SelectedProgram.ProgramInfo.Channel);
-                else
-                    CollectionService.Instance.AddChannel(SelectedProgram.ProgramInfo.Channel);
-            }, () => SelectedProgram != null);
-            LoveCurrentProgram = new DelegateCommand(() =>
-            {
-                if (IsCurrentProgramFavourite)
-                    CollectionService.Instance.RemoveProgram(SelectedProgram.ProgramInfo);
-                else
-                    CollectionService.Instance.AddProgram(SelectedProgram.ProgramInfo);
-            }, () => SelectedProgram != null);
-
             // 监听收藏的变动
             CollectionService.Instance.ChannelListChanged += (sender, e) =>
             {
@@ -138,9 +123,7 @@ namespace iTV6.ViewModels
 
             //更新收藏状况
             IsCurrentChannelFavourite = CollectionService.Instance.CheckChannel(channel);
-            LoveCurrentChannel.RaiseCanExecuteChanged();
             IsCurrentProgramFavourite = CollectionService.Instance.CheckProgram(SelectedProgram.ProgramInfo);
-            LoveCurrentProgram.RaiseCanExecuteChanged();
 
             //选择默认来源
             SelectedSource = SelectedProgram.MediaSources.First();
@@ -174,12 +157,6 @@ namespace iTV6.ViewModels
             set { Set(ref _IsCurrentChannelFavourite, value); }
         }
 
-        /// <summary>
-        /// 收藏当前频道的Command
-        /// </summary>
-        public DelegateCommand LoveCurrentChannel { get; }
-
-
         private bool _IsCurrentProgramFavourite;
         /// <summary>
         /// 当前节目是否被收藏
@@ -189,11 +166,6 @@ namespace iTV6.ViewModels
             get { return _IsCurrentProgramFavourite; }
             set { Set(ref _IsCurrentProgramFavourite, value); }
         }
-
-        /// <summary>
-        /// 收藏当前节目的Command
-        /// </summary>
-        public DelegateCommand LoveCurrentProgram { get; }
         
         /// <summary>
         /// 收起或展开侧边栏（视频播放）

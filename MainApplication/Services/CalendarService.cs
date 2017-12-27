@@ -53,14 +53,12 @@ namespace iTV6.Services
         {
             if(_calendar == null)
             {
-                var dialog = new MessageDialog("添加日历失败，请稍后重试", "提醒");
-                await dialog.ShowAsync();
+                new MessageDialog("添加日历失败，请稍后重试", "提醒").ShowAsync();
                 return false;
             }
             if (_container.Values.Keys.Contains(program.UniqueId))
             {
-                var dialog = new MessageDialog("节目提醒已存在", "添加日历提醒失败");
-                await dialog.ShowAsync();
+                new MessageDialog("节目提醒已存在", "添加日历提醒失败").ShowAsync();
                 return false;
             }
             var appointment = new Appointment()
@@ -76,6 +74,7 @@ namespace iTV6.Services
             await _calendar.SaveAppointmentAsync(appointment);
             _container.Values.Add(program.UniqueId, appointment.LocalId);
             System.Diagnostics.Debug.WriteLine($"为节目{program}添加日历提醒成功，ID为{appointment.LocalId}");
+            new MessageDialog("为节目{program}添加日历提醒成功", "添加提醒成功").ShowAsync();
             return true;
         }
 
@@ -87,8 +86,7 @@ namespace iTV6.Services
         {
             if (_calendar == null)
             {
-                var dialog = new MessageDialog("清空日历失败，请稍后重试", "提醒");
-                await dialog.ShowAsync();
+                new MessageDialog("清空日历失败，请稍后重试", "提醒").ShowAsync();
                 return false;
             }
             var appointments = await _calendar.FindAppointmentsAsync(DateTime.Now.AddYears(-10), TimeSpan.FromDays(365 * 20));
