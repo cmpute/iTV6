@@ -23,7 +23,7 @@ namespace iTV6.ViewModels
             switch (await CalendarService.Instance.CreateAppoint(program))
             {
                 case CalendarService.Messages.Sucess:
-                    await new MessageDialog("为节目{program}添加日历提醒成功", "添加提醒成功").ShowAsync();
+                    await new MessageDialog($"成功为节目 {program} 添加日历提醒", "添加提醒成功").ShowAsync();
                     break;
                 case CalendarService.Messages.NotInitialized:
                     await new MessageDialog("添加日历失败，请稍后重试", "提醒").ShowAsync();

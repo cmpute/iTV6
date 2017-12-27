@@ -130,10 +130,13 @@ namespace iTV6.ViewModels
 
             //展开侧面面板
             ToggleSidePanel.RaiseCanExecuteChanged();
-            if(!_IsSidePanelExpaneded)
+            if (!_IsSidePanelExpaneded)
             {
                 _IsSidePanelExpaneded = true;
-                VisualStateManager.GoToState(Host, "SideExpanded", true);
+                if (Host != null)
+                    VisualStateManager.GoToState(Host, "SideExpanded", true);
+                else
+                    HostLoaded.Action = (host) => VisualStateManager.GoToState(host, "SideExpanded", true);
             }
         }
 

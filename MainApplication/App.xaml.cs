@@ -51,6 +51,9 @@ namespace iTV6
             // 调试用
             Utils.Async.InvokeAndWait(async () => await Utils.Debug.DebugMethod());
 
+            // 读取缓存
+            Channel.RestoreChannels();
+
             Frame rootFrame = Window.Current.Content as Frame;
 
             // 不要在窗口已包含内容时重复应用程序初始化，
@@ -113,7 +116,10 @@ namespace iTV6
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: 保存应用程序状态并停止任何后台活动
+
+            // 保存应用程序状态并停止任何后台活动
+            Channel.StoreChannels();
+
             deferral.Complete();
         }
     }

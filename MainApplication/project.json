@@ -2,7 +2,8 @@
   "dependencies": {
     "HtmlAgilityPack": "1.6.5",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
-    "Microsoft.Xaml.Behaviors.Uwp.Managed": "2.0.0"
+    "Microsoft.Xaml.Behaviors.Uwp.Managed": "2.0.0",
+    "MsgPack.Cli": "0.9.2"
   },
   "frameworks": {
     "uap10.0": {}
