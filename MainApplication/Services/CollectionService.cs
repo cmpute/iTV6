@@ -69,20 +69,11 @@ namespace iTV6.Services
             ProgramList.CollectionChanged += SyncProgramList;
             ProgramList.CollectionChanged += (sender, e) => ProgramListChanged?.Invoke(sender, e);
         }
-
-        private static CollectionService _instance;
+        
         /// <summary>
         /// 获取收藏服务实例，实例为单例
         /// </summary>
-        public static CollectionService Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new CollectionService();
-                return _instance;
-            }
-        }
+        public static CollectionService Instance { get; } = new CollectionService();
 
         private void SyncChannelList(object sender, NotifyCollectionChangedEventArgs e)
         {
