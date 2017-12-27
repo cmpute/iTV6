@@ -17,7 +17,6 @@ namespace iTV6.ViewModels
     {
         public ChannelsViewModel()
         {
-            System.Diagnostics.Debug.WriteLine("<ChannelsViewModel> New Instance");
             // 将节目列表进行分组
             Programs = new CollectionViewSource();
             var currentPrograms = TelevisionService.Instance.AvaliablePrograms;
@@ -48,20 +47,6 @@ namespace iTV6.ViewModels
             Programs.Source = channelAdapters;
             Programs.IsSourceGrouped = true;
 
-            // 新建Command的实例
-            LoveCurrentChannel = new DelegateCommand(() => {
-                if (IsCurrentChannelFavourite)
-                    CollectionService.Instance.RemoveChannel(SelectedProgram.ProgramInfo.Channel);
-                else
-                    CollectionService.Instance.AddChannel(SelectedProgram.ProgramInfo.Channel);
-            }, () => SelectedProgram != null);
-            LoveCurrentProgram = new DelegateCommand(() =>
-            {
-                if (IsCurrentProgramFavourite)
-                    CollectionService.Instance.RemoveProgram(SelectedProgram.ProgramInfo);
-                else
-                    CollectionService.Instance.AddProgram(SelectedProgram.ProgramInfo);
-            }, () => SelectedProgram != null);
             AddRecordTask = new DelegateCommand(() =>
             {
                 NavigationService.ShellNavigation.Navigate<Views.RecordingsPage>(new Tuple<MultisourceProgram,SourceRecord,Uri>(SelectedProgram,SelectedSource,SelectedSource.Source));
@@ -142,19 +127,20 @@ namespace iTV6.ViewModels
 
             //更新收藏状况
             IsCurrentChannelFavourite = CollectionService.Instance.CheckChannel(channel);
-            LoveCurrentChannel.RaiseCanExecuteChanged();
             IsCurrentProgramFavourite = CollectionService.Instance.CheckProgram(SelectedProgram.ProgramInfo);
-            LoveCurrentProgram.RaiseCanExecuteChanged();
             AddRecordTask.RaiseCanExecuteChanged();
             //选择默认来源
             SelectedSource = SelectedProgram.MediaSources.First();
 
             //展开侧面面板
             ToggleSidePanel.RaiseCanExecuteChanged();
-            if(!_IsSidePanelExpaneded)
+            if (!_IsSidePanelExpaneded)
             {
                 _IsSidePanelExpaneded = true;
-                VisualStateManager.GoToState(Host, "SideExpanded", true);
+                if (Host != null)
+                    VisualStateManager.GoToState(Host, "SideExpanded", true);
+                else
+                    HostLoaded.Action = (host) => VisualStateManager.GoToState(host, "SideExpanded", true);
             }
         }
 
@@ -178,10 +164,6 @@ namespace iTV6.ViewModels
             set { Set(ref _IsCurrentChannelFavourite, value); }
         }
 
-        /// <summary>
-        /// 收藏当前频道的Command
-        /// </summary>
-        public DelegateCommand LoveCurrentChannel { get; }
         public DelegateCommand AddRecordTask { get; }
 
         private bool _IsCurrentProgramFavourite;
@@ -193,11 +175,6 @@ namespace iTV6.ViewModels
             get { return _IsCurrentProgramFavourite; }
             set { Set(ref _IsCurrentProgramFavourite, value); }
         }
-
-        /// <summary>
-        /// 收藏当前节目的Command
-        /// </summary>
-        public DelegateCommand LoveCurrentProgram { get; }
         
         /// <summary>
         /// 收起或展开侧边栏（视频播放）

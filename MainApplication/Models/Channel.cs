@@ -1,8 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MsgPack;
+using MsgPack.Serialization;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using WBuffer = Windows.Storage.Streams.Buffer;
+using iTV6.Services;
 
 namespace iTV6.Models
 {
@@ -35,7 +42,13 @@ namespace iTV6.Models
 
         public static Channel GetChannel(string uniqueKey)
         {
-            return _instances[uniqueKey];
+            if(_instances.ContainsKey(uniqueKey))
+                return _instances[uniqueKey];
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("访问了未知的频道：" + uniqueKey);
+                return null;
+            }
         }
 
         /// <summary>
@@ -74,6 +87,68 @@ namespace iTV6.Models
                 return result | ChannelType.Local;
             return result | ChannelType.Special;
         }
+
+        #region Cache & Serialization
+
+        const string storageFile = "channels_cache.dat";
+
+        /// <summary>
+        /// 将频道列表缓存
+        /// </summary>
+        public static async void StoreChannels()
+        {
+            var storage = await ApplicationData.Current.LocalFolder.CreateFileAsync(storageFile, CreationCollisionOption.ReplaceExisting);
+            var serializer = SerializationService.Instance.Get<IEnumerable<Channel>>();
+            using (var stream = await storage.OpenStreamForWriteAsync())
+                serializer.Pack(stream, _instances.Values);
+        }
+
+        /// <summary>
+        /// 从缓存中恢复频道列表
+        /// </summary>
+        public static async void RestoreChannels()
+        {
+            var storage = await ApplicationData.Current.LocalFolder.TryGetItemAsync(storageFile) as StorageFile;
+            if (storage != null)
+            {
+                using (var stream = await storage.OpenStreamForReadAsync())
+                    SerializationService.Instance.Get<IEnumerable<Channel>>().Unpack(stream);
+            }
+        }
+
+        /// <summary>
+        /// 清楚频道列表的缓存
+        /// </summary>
+        public static async void ClearChannelsStorage()
+        {
+            var storage = await ApplicationData.Current.LocalFolder.TryGetItemAsync(storageFile) as StorageFile;
+            if (storage != null)
+                await storage.DeleteAsync();
+        }
+
+        public class ChannelSerializer : MessagePackSerializer<Channel>
+        {
+            public ChannelSerializer(SerializationContext ownerContext) : base(ownerContext) { }
+
+            protected override void PackToCore(Packer packer, Channel obj)
+            {
+                packer.PackString(obj.Name);
+                packer.PackString(obj.UniqueId);
+                packer.Pack((byte)obj.Type);
+            }
+
+            protected override Channel UnpackFromCore(Unpacker unpacker)
+            {
+                string name = unpacker.Unpack<string>();
+                unpacker.Read();
+                string id = unpacker.Unpack<string>();
+                unpacker.Read();
+                ChannelType ctype = (ChannelType)Enum.ToObject(typeof(ChannelType), unpacker.Unpack<byte>());
+                return GetChannel(id, name, ctype);
+            }
+        }
+
+        #endregion
     }
 
     /// <summary>

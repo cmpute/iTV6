@@ -2,6 +2,7 @@
     x:Class="iTV6.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:iTV6.ViewModels"
     RequestedTheme="Light">
 
     <Application.Resources>
@@ -9,6 +10,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <vm:StaticViewModel x:Key="StaticVM"/>
         </ResourceDictionary>
     </Application.Resources>
     

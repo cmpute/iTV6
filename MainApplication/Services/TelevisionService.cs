@@ -16,20 +16,11 @@ namespace iTV6.Services
         {
             TelevisionStations = new List<ITelevisionStation>(GetTelevisionStations());
         }
-
-        private static TelevisionService _instance;
+        
         /// <summary>
         /// 获取电视服务实例，实例为单例
         /// </summary>
-        public static TelevisionService Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new TelevisionService();
-                return _instance;
-            }
-        }
+        public static TelevisionService Instance { get; } = new TelevisionService();
         
         private IEnumerable<ITelevisionStation> GetTelevisionStations()
         {

@@ -47,17 +47,18 @@
                 <StackPanel x:Name="ToolButtonStack" Grid.Column="1"
                             Orientation="Horizontal" Visibility="Collapsed"
                             RelativePanel.AlignRightWithPanel="True">
-                    <Button Style="{StaticResource ListButtonStyle}"
-                            ToolTipService.ToolTip="固定到Windows开始菜单">
-                        <!-- TODO: 绑定动态图标，候选&#xE141; -->
+                    <Button Style="{StaticResource ListButtonStyle}" ToolTipService.ToolTip="固定到Windows开始菜单"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=PinChannelToStart}"
+                            CommandParameter="{x:Bind ProgramInfo.Channel}">
+                        <!-- TODO: 绑定动态图标，候选 Unpin -->
                         <Button.Content>
-                            <FontIcon Glyph="&#xE840;"
-                                      Width="24" Height="24"/>
+                            <SymbolIcon Width="24" Height="24" Symbol="Pin"/>
                         </Button.Content>
                     </Button>
-                    <Button Style="{StaticResource ListButtonStyle}"
-                            ToolTipService.ToolTip="收藏频道">
-                        <!-- TODO: 绑定动态图标和对应事件 -->
+                    <Button Style="{StaticResource ListButtonStyle}" ToolTipService.ToolTip="收藏频道"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteChannel}"
+                            CommandParameter="{x:Bind ProgramInfo.Channel}">
+                        <!-- TODO: 绑定动态图标 -->
                         <Button.Content>
                             <FontIcon Glyph="&#xE006;"
                                       Width="24" Height="24"/>
@@ -105,8 +106,9 @@
                             HorizontalAlignment="Right"
                             Orientation="Horizontal" Visibility="Collapsed"
                             RelativePanel.AlignRightWithPanel="True">
-                    <Button Style="{StaticResource ListButtonStyle}"
-                            ToolTipService.ToolTip="收藏节目">
+                    <Button Style="{StaticResource ListButtonStyle}" ToolTipService.ToolTip="收藏节目"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteProgram}"
+                            CommandParameter="{x:Bind}">
                         <!-- TODO: 绑定动态图标和对应事件 -->
                         <Button.Content>
                             <FontIcon Glyph="&#xE006;"
@@ -114,10 +116,18 @@
                         </Button.Content>
                     </Button>
                     <Button Style="{StaticResource ListButtonStyle}"
+                            ToolTipService.ToolTip="添加节目到日历提醒"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=AddToCalendar}"
+                            CommandParameter="{x:Bind}">
+                        <Button.Content>
+                            <SymbolIcon Width="24" Height="24" Symbol="CalendarReply"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Style="{StaticResource ListButtonStyle}"
                             ToolTipService.ToolTip="添加节目到录播计划">
                         <!-- TODO: 绑定对应事件 -->
                         <Button.Content>
-                            <FontIcon Glyph="&#xE20A;" Width="24" Height="24"/>
+                            <SymbolIcon Width="24" Height="24" Symbol="Video"/>
                         </Button.Content>
                     </Button>
                 </StackPanel>
@@ -186,8 +196,8 @@
                 <Button x:Name="ShowThumb" Style="{StaticResource HeaderButtonStyle}"
                         ToolTipService.ToolTip="显示缩略图">
                     <Button.Content>
-                        <!-- 替换图标有 &#xE14C; &#xE8BA; -->
-                        <FontIcon Glyph="&#xE179;" Width="24" Height="24"/>
+                        <!-- 替换图标有 Caption, List -->
+                        <SymbolIcon Width="24" Height="24" Symbol="AllApps"/>
                     </Button.Content>
                 </Button>
                 <Button x:Name="HideProgram" Style="{StaticResource HeaderButtonStyle}"
@@ -207,16 +217,17 @@
             <StackPanel Orientation="Horizontal"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
                         RelativePanel.AlignRightWithPanel="True">
-                <Button Style="{StaticResource ListButtonStyle}"
-                            ToolTipService.ToolTip="固定到Windows开始菜单">
-                    <!-- TODO: 绑定动态图标，候选&#xE141; -->
+                <Button Style="{StaticResource HeaderButtonStyle}" ToolTipService.ToolTip="固定到Windows开始菜单"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=PinChannelToStart}"
+                            CommandParameter="{x:Bind ViewModel.SelectedProgram.ProgramInfo.Channel, Mode=OneWay}">
+                    <!-- TODO: 绑定动态图标，候选 Unpin -->
                     <Button.Content>
-                        <FontIcon Glyph="&#xE840;"
-                                      Width="24" Height="24"/>
+                        <SymbolIcon Width="24" Height="24" Symbol="Pin"/>
                     </Button.Content>
                 </Button>
-                <Button x:Name="LoveChannel" Style="{StaticResource HeaderButtonStyle}"
-                        ToolTipService.ToolTip="收藏频道" Command="{x:Bind ViewModel.LoveCurrentChannel}">
+                <Button Style="{StaticResource HeaderButtonStyle}" ToolTipService.ToolTip="收藏频道"
+                        Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteChannel}"
+                        CommandParameter="{x:Bind ViewModel.SelectedProgram.ProgramInfo.Channel, Mode=OneWay}">
                     <Button.Content>
                         <FontIcon Glyph="{x:Bind ViewModel.IsCurrentChannelFavourite, Converter={StaticResource LoveConverter}, Mode=OneWay}"
                                   Width="24" Height="24"/>
@@ -225,7 +236,7 @@
                 <Button x:Name="RecordChannel" Style="{StaticResource HeaderButtonStyle}"
                         ToolTipService.ToolTip="添加频道录播计划" Command="{x:Bind ViewModel.AddRecordTask}">
                     <Button.Content>
-                        <FontIcon Glyph="&#xE13B;" Width="24" Height="24"/>
+                        <SymbolIcon Width="24" Height="24" Symbol="VideoChat"/>
                     </Button.Content>
                 </Button>
             </StackPanel>
@@ -291,8 +302,9 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button x:Name="LoveProgram" Style="{StaticResource HeaderButtonStyle}"
-                            ToolTipService.ToolTip="收藏节目" Command="{x:Bind ViewModel.LoveCurrentProgram}">
+                    <Button x:Name="LoveProgram" Style="{StaticResource HeaderButtonStyle}" ToolTipService.ToolTip="收藏节目"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteProgram}"
+                            CommandParameter="{x:Bind ViewModel.SelectedProgram.ProgramInfo, Mode=OneWay}">
                         <Button.Content>
                             <FontIcon Glyph="{x:Bind ViewModel.IsCurrentProgramFavourite, Converter={StaticResource LoveConverter}, Mode=OneWay}"
                                       Width="24" Height="24"/>
@@ -301,7 +313,7 @@
                     <Button x:Name="RecordNow" Style="{StaticResource HeaderButtonStyle}"
                             ToolTipService.ToolTip="立即开始录播">
                         <Button.Content>
-                            <FontIcon Glyph="&#xE20A;" Width="24" Height="24"/>
+                            <SymbolIcon Width="24" Height="24" Symbol="Video"/>
                         </Button.Content>
                     </Button>
                 </StackPanel>

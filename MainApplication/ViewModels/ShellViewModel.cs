@@ -25,6 +25,16 @@ namespace iTV6.ViewModels
         
         public void FrameLoaded(object sender, RoutedEventArgs e)
         {
+            // 如果没有预定转到的界面则默认转到频道界面
+            if (NavigationService.DeferedShellAction.Action == null)
+                NavigationService.DeferedShellAction.Action = async (service) =>
+                {
+                    if (await CheckConnection())
+                        service.Navigate<ChannelsPage>();
+                    else
+                        service.Navigate<ConnectionStatusPage>("请检查IPv6的连接");
+                };
+
             // 注册外层菜单的导航服务
             NavigationService.ShellNavigation = new NavigationService((Host as Shell).NavigationFrame);
             NavigationService.ShellNavigation.Navigated += (csender, ce) =>
