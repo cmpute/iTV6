@@ -21,31 +21,24 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="48"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="48"/>
-            <RowDefinition Height="48"/>
-            <RowDefinition Height="48"/>
-            <RowDefinition Height="48"/>
-            <RowDefinition Height="48"/>
-            <RowDefinition Height="48"/>
-            <RowDefinition Height="48"/>
-            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <RelativePanel>
             <TextBlock Style="{StaticResource HeaderTextStyle}" Text="关于"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        RelativePanel.AlignLeftWithPanel="True"/>
         </RelativePanel>
-        
-        <TextBlock Grid.Row="2" Text="夕阳红小组" VerticalAlignment="Center" HorizontalAlignment="Center" />
-        <TextBlock Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock.Text>项目地址：</TextBlock.Text>
-            <Hyperlink NavigateUri="https://github.com/cmpute/iTV6">https://github.com/cmpute/iTV6</Hyperlink>
-        </TextBlock>
-        <TextBlock Grid.Row="4" Text="组长：钟元鑫" VerticalAlignment="Center" HorizontalAlignment="Center" />
-        <TextBlock Grid.Row="5" Text="组员：王嘉伟，仇泽民，张翰宇，张文哲，陈苇航" VerticalAlignment="Center" HorizontalAlignment="Center" />
-        <TextBlock Grid.Row="6" Text="鸣谢：清华IPTV，安徽农大IPTV，东北大学IPTV" VerticalAlignment="Center" HorizontalAlignment="Center" />
-        <TextBlock Grid.Row="7" Text="鸣谢：董渊老师，清华大学《软件工程》2017年秋助教团队 " VerticalAlignment="Center" HorizontalAlignment="Center" />
-        <TextBlock Grid.Row="8" Text="v0.4" HorizontalAlignment="Center" />
+        <StackPanel Grid.Row="1" Margin="16">
+            <TextBlock>
+                <Span FontSize="64"><Bold>iTV6 - IPTV for IPV6</Bold></Span>
+                <LineBreak/>
+                <Run FontSize="24">Work By 夕阳红小组</Run><LineBreak/>
+                <LineBreak/>
+                <Span><Run FontFamily="Segoe MDL2 Assets" Text="&#xEBC3;  "/>
+                    <Hyperlink NavigateUri="https://github.com/cmpute/iTV6">代码托管：Github</Hyperlink>
+                </Span><LineBreak/>
+                <Span><Run FontFamily="Segoe MDL2 Assets" Text="&#xEC26;  "/>鸣谢视频来源：清华IPTV，安徽农大IPTV，东北大学IPTV</Span>
+            </TextBlock>
+        </StackPanel>
     </Grid>
     
 

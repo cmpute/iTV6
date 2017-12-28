@@ -162,9 +162,6 @@
     <Compile Include="Views\RecordingsPage.xaml.cs">
       <DependentUpon>RecordingsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\RecordPromptDialog.xaml.cs">
-      <DependentUpon>RecordPromptDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\SchedulePage.xaml.cs">
       <DependentUpon>SchedulePage.xaml</DependentUpon>
     </Compile>
@@ -231,10 +228,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RecordingsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\RecordPromptDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
