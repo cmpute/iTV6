@@ -51,7 +51,6 @@ namespace iTV6.ViewModels
             catch(Exception e)
             {
 #if DEBUG
-                new MessageDialog(e.Message, $"在获取{name}区域列表时发生{e.GetType()}类型的异常").ShowAsync();
                 System.Diagnostics.Debugger.Break();
 #else
                 new MessageDialog(e.Message, $"在获取{name}区域列表时发生{e.GetType()}类型的异常").ShowAsync();
@@ -89,25 +88,37 @@ namespace iTV6.ViewModels
             }
         }
 
-        public ObservableCollection<Models.Program> SchedulePrograms { get; set; } = new ObservableCollection<Models.Program>();
+        private List<Models.Program> _schedulePrograms;
+        /// <summary>
+        /// 节目列表
+        /// </summary>
+        public List<Models.Program> SchedulePrograms
+        {
+            get { return _schedulePrograms; }
+            set { Set(ref _schedulePrograms, value); }
+        }
 
         private async void FetchSchedule()
         {
-            SchedulePrograms.Clear();
+            ShowScheduleLoading = true;
+            // 获取频道所属区域 TODO:目前的写法太暴力，比较慢
             string district = null;
             foreach (var group in ScheduleChannelList.Source as IEnumerable<ChannelDistrictAdapter>)
                 if (group.Contains(SelectedChannel))
                     district = group.District;
             var districtMap = await ScheduleService.Instance.GetDistrictCodeMap();
+
+            // 获取频道节目单
             var result = await ScheduleService.Instance.GetDailySchedule(districtMap[district], (DayOfWeek)Enum.ToObject(typeof(DayOfWeek), SelectedDow));
             foreach (var ch in result.Keys)
                 if (ch == SelectedChannel)
                 {
-                    // TODO: 第一次加载的时候会出现节目重复的情况
-                    foreach (var program in result[ch])
-                        SchedulePrograms.Add(program);
+                    SchedulePrograms = result[ch];
                     break;
                 }
+
+            // 更新显示状态
+            ShowScheduleLoading = false;
             ShowSelectChannel = false;
         }
 
@@ -119,6 +130,16 @@ namespace iTV6.ViewModels
         {
             get { return _showChannelLoading; }
             set { Set(ref _showChannelLoading, value); }
+        }
+
+        private bool _showScheduleLoading;
+        /// <summary>
+        /// 是否显示正在加载频道列表的进度条
+        /// </summary>
+        public bool ShowScheduleLoading
+        {
+            get { return _showScheduleLoading; }
+            set { Set(ref _showScheduleLoading, value); }
         }
 
         private double _channelLoadingProgress;

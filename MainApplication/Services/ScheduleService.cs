@@ -30,7 +30,7 @@ namespace iTV6.Services
         private static Uri GetUri(string code, int time, int DoW)
         {
             Uri UriTemp = new Uri($"http://www.tvmao.com/program/duration/{code}/w{DoW}-h{time}.html");
-            System.Diagnostics.Debug.WriteLine("Request: " + UriTemp.AbsoluteUri);
+            System.Diagnostics.Debug.WriteLine("获取节目单: " + UriTemp.AbsoluteUri);
             return UriTemp; 
         }
 
@@ -128,6 +128,8 @@ namespace iTV6.Services
                 {
                     string progName = WebUtility.HtmlDecode(prog.FirstChild.InnerText).Trim();
                     string startTime = WebUtility.HtmlDecode(prog.LastChild.InnerText).Trim();
+                    Models.Program program = null;
+                    char[] space = { ' ' };
 
                     var judgeLast = startTime.Trim().Distinct();
                     if (judgeLast.Count() == 1 && judgeLast.First() == '.')
@@ -135,37 +137,46 @@ namespace iTV6.Services
                         if (progName == startTime)
                         {
                             // 只有省略号的情况
-                            var texts = prog.GetAttributeValue("title", string.Empty).Split(new char[] { ' ' }, 2);
-                            proList.Add(new Models.Program()
+                            var texts = prog.GetAttributeValue("title", string.Empty).Split(space, 2);
+                            program = new Models.Program()
                             {
-                                Name = texts[1],
-                                StartTime = Convert.ToDateTime(texts[0]).Subtract(daydiff)
-                            });
+                                Name = texts[1].TrimStart(space),
+                                StartTime = Convert.ToDateTime(texts[0])
+                            };
                         }
                         else
                         {
+                            // 节目时间为省略号的情况
                             var timestr = prog.GetAttributeValue("title", string.Empty);
                             DateTime time;
                             if (!DateTime.TryParse(timestr, out time))
-                                time = Convert.ToDateTime(timestr.Split(new char[] { ' ' }, 2)[0]);
-
-                            // 节目时间为省略号的情况
-                            proList.Add(new Models.Program()
+                                // 部分情况下节目名称也会进来。。因此还是取空格前面的
+                                time = Convert.ToDateTime(timestr.Split(space, 2)[0]);
+                            program = new Models.Program()
                             {
                                 Name = progName,
-                                StartTime = time.Subtract(daydiff)
-                            });
+                                StartTime = time
+                            };
                         }
                     }
                     else
                     {
-                        // 正常情况
-                        proList.Add(new Models.Program()
+                        // 节目名字靠边被省略的情况
+                        if (prog.Attributes.Contains("title"))
+                            progName = prog.Attributes["title"].DeEntitizeValue.Trim();
+                        program = new Models.Program()
                         {
                             Name = progName,
-                            StartTime = Convert.ToDateTime(startTime).Subtract(daydiff)
-                        });
+                            StartTime = Convert.ToDateTime(startTime)
+                        };
                     }
+                    // 处理节目时间跨天的情况
+                    if (href.AbsoluteUri.EndsWith("h0.html"))
+                        if (program.StartTime > Convert.ToDateTime("02:00"))
+                            program.StartTime -= TimeSpan.FromDays(1);
+                    program.StartTime -= daydiff;
+
+                    proList.Add(program);
                 }
             }
 
