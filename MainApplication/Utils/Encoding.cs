@@ -324,11 +324,15 @@ namespace System.Text
             
             switch(character) // 二级汉字无法通过位置来判断拼音，这里直接列出来
             {
+                case '魅': return upper ? 'M' : 'm';
                 case '邳': return upper ? 'P' : 'p';
                 case '睿': return upper ? 'R' : 'r';
                 case '悚':
                 case '泗':
                     return upper ? 'S' : 's';
+                case '怡':
+                case '易':
+                    return upper ? 'Y' : 'y';
                 case '学':
                 case '讯':
                     return upper ? 'X' : 'x';

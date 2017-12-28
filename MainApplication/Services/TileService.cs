@@ -8,6 +8,7 @@ using Windows.UI.StartScreen;
 
 namespace iTV6.Services
 {
+    // TODO: 可以添加更多的参数，如是否为LiveTile，选择尺寸，背景为频道缩略图或者台标等等
     public class TileService
     {
         private TileService() { }
@@ -20,7 +21,6 @@ namespace iTV6.Services
         /// 将频道固定至开始菜单
         /// </summary>
         /// <param name="channel">需要固定的频道</param>
-        /// <remarks> TODO: 可以添加更多的参数，如是否为LiveTile，选择尺寸，背景为频道缩略图等等 </remarks>
         public async Task<bool> PinChannel(Channel channel)
         {
             Uri logo = new Uri("ms-appx:///Assets/Square150x150Logo.scale-200.png");

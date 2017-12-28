@@ -29,11 +29,6 @@
     </Page.Transitions>
 
     <Page.Resources>
-        <Style x:Key="SingleLineListText" TargetType="TextBlock">
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="Padding" Value="0, 10"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
         <DataTemplate x:Key="BriefNarrowChannelTemplate" x:DataType="m:MultisourceProgram">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -120,7 +115,7 @@
                             Command="{Binding Source={StaticResource StaticVM}, Path=AddToCalendar}"
                             CommandParameter="{x:Bind}">
                         <Button.Content>
-                            <SymbolIcon Width="24" Height="24" Symbol="CalendarReply"/>
+                            <SymbolIcon Width="24" Height="24" Symbol="GoToToday"/>
                         </Button.Content>
                     </Button>
                     <Button Style="{StaticResource ListButtonStyle}"
@@ -143,19 +138,6 @@
                 </interactivity:Interaction.Behaviors>
             </Grid>
         </DataTemplate>
-
-        <converter:PassConverter x:Key="ObjectConverter"/>
-        <converter:ValueWhenConverter x:Key="LoveConverter">
-            <converter:ValueWhenConverter.When>
-                <x:Boolean>True</x:Boolean>
-            </converter:ValueWhenConverter.When>
-            <converter:ValueWhenConverter.Value>
-                <x:String>&#xE00B;</x:String>
-            </converter:ValueWhenConverter.Value>
-            <converter:ValueWhenConverter.Otherwise>
-                <x:String>&#xE006;</x:String>
-            </converter:ValueWhenConverter.Otherwise>
-        </converter:ValueWhenConverter>
         <converter:RelativeDatetimeConverter x:Key="TimeConverter"/>
     </Page.Resources>
 
@@ -262,11 +244,13 @@
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
                 <ListView ItemsSource="{x:Bind ViewModel.Programs.View.CollectionGroups}"
-                          HorizontalAlignment="Center" VerticalAlignment="Center">
+                          ItemContainerStyle="{StaticResource FilledListItemStyle}"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Center">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="wuxdata:ICollectionViewGroup">
                             <TextBlock Text="{x:Bind Group.(vm:ChannelTypeAdapter.Type)}"
-                                       FontSize="28" FontWeight="Bold" Margin="0,16"/>
+                                       TextAlignment="Center" Margin="0,16"
+                                       FontSize="28" FontWeight="Bold"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
