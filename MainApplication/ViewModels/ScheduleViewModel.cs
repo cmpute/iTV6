@@ -44,7 +44,7 @@ namespace iTV6.ViewModels
         {
             try
             {
-                var list = await ScheduleService.Instance.GetScheduleToday(code);
+                var list = await ScheduleService.Instance.GetDailySchedule(code);
                 var adapter = new ChannelDistrictAdapter(list.Keys, name);
                 (ScheduleChannelList.Source as IList<ChannelDistrictAdapter>).Add(adapter);
             }
@@ -73,13 +73,42 @@ namespace iTV6.ViewModels
             set
             {
                 Set(ref _selectedChannel, value);
-                OnSelectedProgramChanged();
+                FetchSchedule();
             }
         }
 
-        private void OnSelectedProgramChanged()
+        private int _selectedDoW = (int)DateTime.Now.DayOfWeek;
+        /// <summary>
+        /// 选中的是星期几
+        /// </summary>
+        public int SelectedDow
         {
+            get { return _selectedDoW; }
+            set { Set(ref _selectedDoW, value);
+                FetchSchedule();
+            }
+        }
 
+        public ObservableCollection<Models.Program> SchedulePrograms { get; set; } = new ObservableCollection<Models.Program>();
+
+        private async void FetchSchedule()
+        {
+            SchedulePrograms.Clear();
+            string district = null;
+            foreach (var group in ScheduleChannelList.Source as IEnumerable<ChannelDistrictAdapter>)
+                if (group.Contains(SelectedChannel))
+                    district = group.District;
+            var districtMap = await ScheduleService.Instance.GetDistrictCodeMap();
+            var result = await ScheduleService.Instance.GetDailySchedule(districtMap[district], (DayOfWeek)Enum.ToObject(typeof(DayOfWeek), SelectedDow));
+            foreach (var ch in result.Keys)
+                if (ch == SelectedChannel)
+                {
+                    // TODO: 第一次加载的时候会出现节目重复的情况
+                    foreach (var program in result[ch])
+                        SchedulePrograms.Add(program);
+                    break;
+                }
+            ShowSelectChannel = false;
         }
 
         private bool _showChannelLoading;
@@ -110,6 +139,16 @@ namespace iTV6.ViewModels
         {
             get { return _channelLoadingMaximum; }
             set { Set(ref _channelLoadingMaximum, value); }
+        }
+
+        private bool _showSelectChannel = true;
+        /// <summary>
+        /// 是否显示请选择频道的提示
+        /// </summary>
+        public bool ShowSelectChannel
+        {
+            get { return _showSelectChannel; }
+            set { Set(ref _showSelectChannel, value); }
         }
     }
 

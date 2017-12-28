@@ -29,11 +29,6 @@
     </Page.Transitions>
 
     <Page.Resources>
-        <Style x:Key="SingleLineListText" TargetType="TextBlock">
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="Padding" Value="0, 10"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
         <DataTemplate x:Key="BriefNarrowChannelTemplate" x:DataType="m:MultisourceProgram">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -144,7 +139,6 @@
             </Grid>
         </DataTemplate>
 
-        <converter:RelativeDatetimeConverter x:Key="TimeConverter"/>
     </Page.Resources>
 
     <Grid Loaded="{x:Bind ViewModel.RootGrid_Loaded}">

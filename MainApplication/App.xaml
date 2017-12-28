@@ -37,6 +37,7 @@
                     <Visibility>Collapsed</Visibility>
                 </converter:ValueWhenConverter.Otherwise>
             </converter:ValueWhenConverter>
+            <converter:RelativeDatetimeConverter x:Key="TimeConverter"/>
         </ResourceDictionary>
     </Application.Resources>
     

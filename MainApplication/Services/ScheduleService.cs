@@ -25,36 +25,29 @@ namespace iTV6.Services
         /// </summary>
         /// <param name="code">区域代码</param>
         /// <param name="time">小时</param>
-        /// <param name="DoW">星期几, -1代表今天</param>
+        /// <param name="DoW">星期几（数字）</param>
         /// <returns></returns>
-        private static Uri GetUri(string code, int time, int DoW = -1)
+        private static Uri GetUri(string code, int time, int DoW)
         {
-            if(DoW == -1)
-            {
-                DoW = (int)System.DateTime.Now.DayOfWeek;
-                if(DoW == 0)
-                {
-                    DoW = 7;
-                }
-            }
-            Uri UriTemp = new Uri("http://www.tvmao.com/program/duration/" + code + "/w" + DoW + "-h" + time + ".html");
+            Uri UriTemp = new Uri($"http://www.tvmao.com/program/duration/{code}/w{DoW}-h{time}.html");
+            System.Diagnostics.Debug.WriteLine("Request: " + UriTemp.AbsoluteUri);
             return UriTemp; 
         }
 
         /// <summary>
-        /// 获取指定区域的当天节目单
+        /// 获取指定区域一天的节目单
         /// </summary>
         /// <param name="districtCode">区域代码</param>
-        /// <param name="Dow">第几天</param>
-        public async Task<ScheduleList> GetScheduleToday(string districtCode, int Dow = -1)
+        /// <param name="Dow">星期几</param>
+        public async Task<ScheduleList> GetDailySchedule(string districtCode, DayOfWeek? DoW = null)
         {
+            // 建立并发任务
             List<Task<ScheduleList>> tasks = new List<Task<ScheduleList>>();
             for (int time = 0; time < 24; time += 2)
-            {
-                Uri UriTemp = GetUri(districtCode, time, Dow);
-                tasks.Add(GetScheduleFromPage(UriTemp));
-            }
+                tasks.Add(GetSchedule(districtCode, time, DoW));
             var results = await Task.WhenAll(tasks);
+
+            // 合并获取结果
             var resultList = new ScheduleList();
             foreach (var schedule in results)
             {
@@ -65,20 +58,39 @@ namespace iTV6.Services
                     resultList[item.Key].AddRange(item.Value);
                 }
             }
+
+            // 排序并计算时长
+            foreach (var programs in resultList.Values)
+                ComputeProgramDuration(programs);
             return resultList;
         }
 
         /// <summary>
         /// 获取指定区域、时间的节目单
         /// </summary>
-        public async Task<ScheduleList> GetSchedule(string districtCode, int hour, int DoW = -1)
-            => await GetScheduleFromPage(GetUri(districtCode, hour, DoW));
+        public async Task<ScheduleList> GetSchedule(string districtCode, int hour, DayOfWeek? DoW = null)
+        {
+            int dowint, daynow = (int)DateTime.Now.DayOfWeek;
+            if (DoW == null)
+            {
+                dowint = daynow;
+                if (dowint == 0)
+                {
+                    dowint = 7;
+                }
+            }
+            else
+                dowint = (int)DoW;
+            TimeSpan diff = TimeSpan.FromDays(daynow - dowint);
+            return await GetScheduleFromPage(GetUri(districtCode, hour, dowint), diff);
+        }
 
         /// <summary>
         /// 根据电视猫页面链接获取节目单
         /// </summary>
         /// <param name="href">节目单链接</param>
-        private async Task<ScheduleList> GetScheduleFromPage(Uri href)
+        /// <param name="daydiff">日期的偏差值</param>
+        private async Task<ScheduleList> GetScheduleFromPage(Uri href, TimeSpan daydiff)
         {
             HttpClient client = new HttpClient();
             var response = await client.GetByteArrayAsync(href);
@@ -127,7 +139,7 @@ namespace iTV6.Services
                             proList.Add(new Models.Program()
                             {
                                 Name = texts[1],
-                                StartTime = Convert.ToDateTime(texts[0])
+                                StartTime = Convert.ToDateTime(texts[0]).Subtract(daydiff)
                             });
                         }
                         else
@@ -141,7 +153,7 @@ namespace iTV6.Services
                             proList.Add(new Models.Program()
                             {
                                 Name = progName,
-                                StartTime = time
+                                StartTime = time.Subtract(daydiff)
                             });
                         }
                     }
@@ -151,7 +163,7 @@ namespace iTV6.Services
                         proList.Add(new Models.Program()
                         {
                             Name = progName,
-                            StartTime = Convert.ToDateTime(startTime)
+                            StartTime = Convert.ToDateTime(startTime).Subtract(daydiff)
                         });
                     }
                 }
@@ -163,10 +175,10 @@ namespace iTV6.Services
         /// <summary>
         /// 获取频道区域与代码关系表
         /// </summary>
-        public async Task<Dictionary<string,string>> GetDistrictCodeMap()
+        public async Task<Dictionary<string /*频道名*/, string /*频道编号*/>> GetDistrictCodeMap()
         {
             HttpClient client = new HttpClient();
-            var response = await client.GetByteArrayAsync("http://www.tvmao.com/program");
+            var response = await client.GetByteArrayAsync("http://www.tvmao.com/program/duration/100000"); //用异常页面提高加载速度
             string result = SuperEncoding.UTF8.GetString(response);
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(result);
@@ -200,6 +212,22 @@ namespace iTV6.Services
             }
 
             return codes;
+        }
+
+        /// <summary>
+        /// 根据列表顺序计算出各节目的时长
+        /// </summary>
+        /// <param name="programs"></param>
+        /// <remarks>TV猫的节目单中不含时长，因此要自行推算</remarks>
+        public void ComputeProgramDuration(List<Models.Program> programs)
+        {
+            // 貌似没有Inplace的去重方法，这里用一个比较快的
+            HashSet<Models.Program> set = new HashSet<Models.Program>(programs, Models.Program.TimeComparer);
+            programs.Clear();
+            programs.AddRange(set);
+            programs.Sort(Models.Program.TimeComparer);
+            for (int i = 1; i < programs.Count; i++)
+                programs[i - 1].Duration = programs[i].StartTime - programs[i - 1].StartTime;
         }
     }
 }

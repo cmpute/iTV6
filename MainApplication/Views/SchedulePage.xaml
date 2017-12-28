@@ -8,6 +8,8 @@
     xmlns:vm="using:iTV6.ViewModels"
     xmlns:wuxdata="using:Windows.UI.Xaml.Data"
     xmlns:m="using:iTV6.Models"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
 
     <Page.DataContext>
@@ -27,6 +29,56 @@
     <Page.Resources>
         <DataTemplate x:Key="ChannelTemplate" x:DataType="m:Channel">
             <TextBlock Text="{x:Bind Name}" FontSize="16" FontWeight="Bold"/>
+        </DataTemplate>
+        <DataTemplate x:Key="FutureProgramTemplate" x:DataType="m:Program">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{x:Bind Name}" FontWeight="Bold" Style="{StaticResource SingleLineListText}"/>
+                <TextBlock Text="{x:Bind StartTime, Converter={StaticResource TimeConverter}}"
+                           Style="{StaticResource SingleLineListText}" Grid.Column="1"/>
+                <StackPanel x:Name="ToolButtonStack" Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal" Visibility="Collapsed"
+                            RelativePanel.AlignRightWithPanel="True">
+                    <Button Style="{StaticResource ListButtonStyle}" ToolTipService.ToolTip="收藏节目"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteProgram}"
+                            CommandParameter="{x:Bind}">
+                        <!-- TODO: 绑定动态图标和对应事件 -->
+                        <Button.Content>
+                            <FontIcon Glyph="&#xE006;"
+                                      Width="24" Height="24"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Style="{StaticResource ListButtonStyle}"
+                            ToolTipService.ToolTip="添加节目到日历提醒"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=AddToCalendar}"
+                            CommandParameter="{x:Bind}">
+                        <Button.Content>
+                            <SymbolIcon Width="24" Height="24" Symbol="CalendarReply"/>
+                        </Button.Content>
+                    </Button>
+                    <Button Style="{StaticResource ListButtonStyle}"
+                            ToolTipService.ToolTip="添加节目到录播计划">
+                        <!-- TODO: 绑定对应事件 -->
+                        <Button.Content>
+                            <SymbolIcon Width="24" Height="24" Symbol="Video"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="PointerEntered">
+                        <core:ChangePropertyAction PropertyName="Visibility" Value="Visible"
+                                                   TargetObject="{Binding ElementName=ToolButtonStack}"/>
+                    </core:EventTriggerBehavior>
+                    <core:EventTriggerBehavior EventName="PointerExited">
+                        <core:ChangePropertyAction PropertyName="Visibility" Value="Collapsed"
+                                                   TargetObject="{Binding ElementName=ToolButtonStack}"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Grid>
         </DataTemplate>
     </Page.Resources>
 
@@ -55,14 +107,15 @@
                         RelativePanel.AlignVerticalCenterWithPanel="True"
                         RelativePanel.AlignRightWithPanel="True">
                 <TextBlock Text="选择星期" VerticalAlignment="Center" Margin="4,0"/>
-                <ComboBox Margin="4,0,12,0">
+                <ComboBox Margin="4,0,12,0" Width="100"
+                          SelectedIndex="{x:Bind ViewModel.SelectedDow, Mode=TwoWay}">
+                    <ComboBoxItem Content="周日"/>
                     <ComboBoxItem Content="周一"/>
                     <ComboBoxItem Content="周二"/>
                     <ComboBoxItem Content="周三"/>
                     <ComboBoxItem Content="周四"/>
                     <ComboBoxItem Content="周五"/>
                     <ComboBoxItem Content="周六"/>
-                    <ComboBoxItem Content="周日"/>
                 </ComboBox>
                 <Button Style="{StaticResource HeaderButtonStyle}"
                         Command="{x:Bind ViewModel.CustomPlayback}">
@@ -81,7 +134,7 @@
                           ItemTemplate="{StaticResource ChannelTemplate}"
                           ItemsSource="{x:Bind ViewModel.ScheduleChannelList.View, Mode=OneWay}"
                           ItemContainerStyle="{StaticResource FilledListItemStyle}"
-                          SelectedItem="{x:Bind ViewModel.SelectedChannel, Mode=TwoWay, Converter={StaticResource ResourceKey=ObjectConverter}}">
+                          SelectedItem="{x:Bind ViewModel.SelectedChannel, Mode=TwoWay, Converter={StaticResource ObjectConverter}}">
                     <ListView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>
@@ -107,12 +160,15 @@
                 </ListView>
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>
-        <Grid Grid.Row="2" Grid.Column="1">
+        <Grid Grid.Row="2" Grid.Column="1" Visibility="{x:Bind ViewModel.ShowSelectChannel, Converter={StaticResource VisibilityConverter}, Mode=OneWay}">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <FontIcon Glyph="&#xE298;" FontSize="200" FontWeight="Bold"/>
                 <TextBlock Text="请从左侧选择频道" FontSize="32"/>
             </StackPanel>
         </Grid>
-        <ListView x:Name="ScheduleListView" Grid.Row="2" Grid.Column="1"/>
+        <ListView Grid.Row="2" Grid.Column="1"
+                  ItemContainerStyle="{StaticResource FilledListItemStyle}"
+                  ItemsSource="{x:Bind ViewModel.SchedulePrograms, Mode=OneWay}"
+                  ItemTemplate="{StaticResource FutureProgramTemplate}"/>
     </Grid>
 </Page>

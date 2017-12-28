@@ -18,6 +18,7 @@ namespace iTV6.Models
     /// </summary>
     public class Channel
     {
+        #region 频道的获取
         private Channel() { }
         private static Dictionary<string, Channel> _instances = new Dictionary<string, Channel>();
         /// <summary>
@@ -52,26 +53,6 @@ namespace iTV6.Models
         }
 
         /// <summary>
-        /// 频道名称
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 唯一标识符
-        /// </summary>
-        public string UniqueId { get; set; }
-
-        /// <summary>
-        /// 频道类型
-        /// </summary>
-        public ChannelType Type { get; set; }
-
-        /// <summary>
-        /// 用来获取LOGO的TV猫ID
-        /// </summary>
-        public string LogoID { get; set; }
-
-        /// <summary>
         /// 根据名称推测频道分类列表
         /// </summary>
         /// <param name="channelName">统一后的频道名称</param>
@@ -93,9 +74,31 @@ namespace iTV6.Models
             return result | ChannelType.Special;
         }
 
+        #endregion
+
+        /// <summary>
+        /// 频道名称
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 唯一标识符
+        /// </summary>
+        public string UniqueId { get; set; }
+
+        /// <summary>
+        /// 频道类型
+        /// </summary>
+        public ChannelType Type { get; set; }
+
+        /// <summary>
+        /// 用来获取LOGO的TV猫ID
+        /// </summary>
+        public string LogoID { get; set; }
+
         public override string ToString() => $"{Name}[{UniqueId}]"; // 调试用
 
-        #region Cache & Serialization
+        #region 缓存和序列化
 
         const string storageFile = "channels_cache.dat";
 
