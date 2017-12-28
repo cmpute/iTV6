@@ -24,7 +24,6 @@ namespace iTV6.Utils
 #else // 以下代码不要改动
             await Task.CompletedTask;
 #endif
-            }
         }
     }
 }

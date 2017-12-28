@@ -6,6 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:iTV6.ViewModels"
+    xmlns:wuxdata="using:Windows.UI.Xaml.Data"
+    xmlns:m="using:iTV6.Models"
     mc:Ignorable="d">
 
     <Page.DataContext>
@@ -21,10 +23,15 @@
             </NavigationThemeTransition>
         </TransitionCollection>
     </Page.Transitions>
-    
+
+    <Page.Resources>
+        <DataTemplate x:Key="ChannelTemplate" x:DataType="m:Channel">
+            <TextBlock Text="{x:Bind Name}" FontSize="16" FontWeight="Bold"/>
+        </DataTemplate>
+    </Page.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="48"/>
             <RowDefinition Height="48"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -36,13 +43,27 @@
             <TextBlock Style="{StaticResource HeaderTextStyle}" Text="节目单"
                        RelativePanel.AlignVerticalCenterWithPanel="True"
                        RelativePanel.AlignLeftWithPanel="True"/>
-    
+            <ProgressBar RelativePanel.AlignBottomWithPanel="True"
+                         RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True"
+                         Visibility="{x:Bind ViewModel.ShowChannelLoading, Converter={StaticResource VisibilityConverter}, Mode=OneWay}"
+                         Value="{x:Bind ViewModel.ChannelLoadingProgress, Mode=OneWay}"
+                         Maximum="{x:Bind ViewModel.ChannelLoadingMaximum, Mode=OneWay}"/>
         </RelativePanel>
-        
+
         <RelativePanel Grid.Column="1">
             <StackPanel Orientation="Horizontal"
                         RelativePanel.AlignVerticalCenterWithPanel="True"
                         RelativePanel.AlignRightWithPanel="True">
+                <TextBlock Text="选择星期" VerticalAlignment="Center" Margin="4,0"/>
+                <ComboBox Margin="4,0,12,0">
+                    <ComboBoxItem Content="周一"/>
+                    <ComboBoxItem Content="周二"/>
+                    <ComboBoxItem Content="周三"/>
+                    <ComboBoxItem Content="周四"/>
+                    <ComboBoxItem Content="周五"/>
+                    <ComboBoxItem Content="周六"/>
+                    <ComboBoxItem Content="周日"/>
+                </ComboBox>
                 <Button Style="{StaticResource HeaderButtonStyle}"
                         Command="{x:Bind ViewModel.CustomPlayback}">
                     <Button.Content>
@@ -54,30 +75,44 @@
                 </Button>
             </StackPanel>
         </RelativePanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Stretch">
-            <TextBlock Text="频道类型" VerticalAlignment="Center"/>
-            <ComboBox/>
-        </StackPanel>
-        <Grid Grid.Column="1" Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-            <Button x:Name="Mon" Grid.Column="0" Height="30" Margin="5" HorizontalAlignment="Stretch" Content="周一" FontSize="15"/>
-            <Button x:Name="Tue" Grid.Column="1" Height="30" Margin="5" HorizontalAlignment="Stretch" Content="周二" FontSize="15"/>
-            <Button x:Name="Wen" Grid.Column="2" Height="30" Margin="5" HorizontalAlignment="Stretch" Content="周三" FontSize="15"/>
-            <Button x:Name="Thu" Grid.Column="3" Height="30" Margin="5" HorizontalAlignment="Stretch" Content="周四" FontSize="15"/>
-            <Button x:Name="Fri" Grid.Column="4" Height="30" Margin="5" HorizontalAlignment="Stretch" Content="周五" FontSize="15"/>
-            <Button x:Name="Sat" Grid.Column="5" Height="30" Margin="5" HorizontalAlignment="Stretch" Content="周六" FontSize="15"/>
-            <Button x:Name="Sun" Grid.Column="6" Height="30" Margin="5" HorizontalAlignment="Stretch" Content="周日" FontSize="15"/>
+        <SemanticZoom Grid.Row="2">
+            <SemanticZoom.ZoomedInView>
+                <ListView HorizontalContentAlignment="Stretch"
+                          ItemTemplate="{StaticResource ChannelTemplate}"
+                          ItemsSource="{x:Bind ViewModel.ScheduleChannelList.View, Mode=OneWay}"
+                          ItemContainerStyle="{StaticResource FilledListItemStyle}"
+                          SelectedItem="{x:Bind ViewModel.SelectedChannel, Mode=TwoWay, Converter={StaticResource ResourceKey=ObjectConverter}}">
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate x:DataType="vm:ChannelDistrictAdapter">
+                                    <TextBlock Text="{x:Bind District}" FontSize="24"/>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                </ListView>
+            </SemanticZoom.ZoomedInView>
+            <SemanticZoom.ZoomedOutView>
+                <ListView ItemsSource="{x:Bind ViewModel.ScheduleChannelList.View.CollectionGroups, Mode=OneWay}"
+                          ItemContainerStyle="{StaticResource FilledListItemStyle}"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="wuxdata:ICollectionViewGroup">
+                            <TextBlock Text="{x:Bind Group.(vm:ChannelDistrictAdapter.District)}"
+                                       TextAlignment="Center" Margin="0,16"
+                                       FontSize="28" FontWeight="Bold"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
+        <Grid Grid.Row="2" Grid.Column="1">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <FontIcon Glyph="&#xE298;" FontSize="200" FontWeight="Bold"/>
+                <TextBlock Text="请从左侧选择频道" FontSize="32"/>
+            </StackPanel>
         </Grid>
-        <ListView x:Name="ChannelsListView" Grid.Row="2"/>
         <ListView x:Name="ScheduleListView" Grid.Row="2" Grid.Column="1"/>
     </Grid>
-    
 </Page>

@@ -1,21 +1,22 @@
-﻿using System;
+﻿// #define DEBUG_SCHEDULE
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using System.Net.Http;
+using iTV6.Models;
+using ScheduleList = System.Collections.Generic.Dictionary<
+    iTV6.Models.Channel, System.Collections.Generic.List<iTV6.Models.Program>>;
 
 namespace iTV6.Services
 {
     public class ScheduleService
     {
         private ScheduleService() { }
-        private Dictionary<string, string> _districtCodes = new Dictionary<string, string>();
-        private Dictionary<string, List<Models.Program>> _schedule = new Dictionary<string, List<Models.Program>>();
-        public IReadOnlyDictionary<string, List<Models.Program>> Schedule => _schedule;
-        public IReadOnlyDictionary<string, string> DistrictToCode => _districtCodes;
 
         public static ScheduleService Instance { get; } = new ScheduleService();
 
@@ -43,31 +44,48 @@ namespace iTV6.Services
         /// <summary>
         /// 获取指定区域的当天节目单
         /// </summary>
-        /// <param name="code">区域代码</param>
+        /// <param name="districtCode">区域代码</param>
         /// <param name="Dow">第几天</param>
-        public async Task SetScheduleForDistrict(string code, int Dow = -1)
+        public async Task<ScheduleList> GetScheduleToday(string districtCode, int Dow = -1)
         {
-            List<Task> tasks = new List<Task>();
+            List<Task<ScheduleList>> tasks = new List<Task<ScheduleList>>();
             for (int time = 0; time < 24; time += 2)
             {
-                Uri UriTemp = GetUri(code, time, Dow);
-                await SetScheduleFromPage(UriTemp);
-                //tasks.Add(SetScheduleFromPage(UriTemp));
+                Uri UriTemp = GetUri(districtCode, time, Dow);
+                tasks.Add(GetScheduleFromPage(UriTemp));
             }
-            // await Task.WhenAll(tasks);
+            var results = await Task.WhenAll(tasks);
+            var resultList = new ScheduleList();
+            foreach (var schedule in results)
+            {
+                foreach (var item in schedule)
+                {
+                    if (!resultList.ContainsKey(item.Key))
+                        resultList.Add(item.Key, new List<Models.Program>());
+                    resultList[item.Key].AddRange(item.Value);
+                }
+            }
+            return resultList;
         }
+
+        /// <summary>
+        /// 获取指定区域、时间的节目单
+        /// </summary>
+        public async Task<ScheduleList> GetSchedule(string districtCode, int hour, int DoW = -1)
+            => await GetScheduleFromPage(GetUri(districtCode, hour, DoW));
 
         /// <summary>
         /// 根据电视猫页面链接获取节目单
         /// </summary>
         /// <param name="href">节目单链接</param>
-        private async Task SetScheduleFromPage(Uri href)
+        private async Task<ScheduleList> GetScheduleFromPage(Uri href)
         {
             HttpClient client = new HttpClient();
             var response = await client.GetByteArrayAsync(href);
             string result = Encoding.UTF8.GetString(response);
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(result);
+            var schedules = new ScheduleList();
 
             HtmlNode rootNode = document.DocumentNode;
             HtmlNodeCollection channelNode = rootNode.SelectNodes("/body[1]/div[@class='page-content clear']/div[@class='timeline clear']/table[@class='timetable']/table[@class='timetable']");
@@ -76,38 +94,76 @@ namespace iTV6.Services
                 HtmlNode chNode = channel.SelectSingleNode("./tr[1]/td[@class='tdchn']");
                 HtmlNodeCollection proCollect = channel.SelectNodes("./tr[1]/td[@class='tdpro']");
                 string chName = chNode.InnerText;
-                string uniqueKey = SuperEncoding.GetSpellCode(chName);
-                Models.Channel chn = Models.Channel.GetChannel(uniqueKey, chName);
-                List<Models.Program> pro = new List<Models.Program>();
-                if (!_schedule.ContainsKey(chn.UniqueId))
-                    _schedule.Add(chn.UniqueId, pro);
+                string chLink = chNode.FirstChild.GetAttributeValue("href", "--");
+
+                var chLinkSIdx = chLink.IndexOf('-') + 1;
+                var key = chLink.Substring(chLinkSIdx, chLink.LastIndexOf('-') - chLinkSIdx);
+                var uniqueKey = key.ToLower();
+                Channel chn = Channel.GetChannel(key, chName);
+                chn.LogoID = key;
+
+                if (schedules.ContainsKey(chn))
+                {
+#if DEBUG && DEBUG_SCHEDULE
+                    System.Diagnostics.Debugger.Break(); // 存在重复频道，需要调试
+#endif
+                    continue;
+                }
+                List<Models.Program> proList = new List<Models.Program>();
+                schedules.Add(chn, proList);
 
                 foreach (HtmlNode prog in proCollect)
                 {
-                    HtmlNode progInfo = prog.SelectSingleNode("./td[1]");
                     string progName = WebUtility.HtmlDecode(prog.FirstChild.InnerText).Trim();
                     string startTime = WebUtility.HtmlDecode(prog.LastChild.InnerText).Trim();
 
-                    if (string.Equals(startTime, ".."))
+                    var judgeLast = startTime.Trim().Distinct();
+                    if (judgeLast.Count() == 1 && judgeLast.First() == '.')
                     {
-                        continue;
+                        if (progName == startTime)
+                        {
+                            // 只有省略号的情况
+                            var texts = prog.GetAttributeValue("title", string.Empty).Split(new char[] { ' ' }, 2);
+                            proList.Add(new Models.Program()
+                            {
+                                Name = texts[1],
+                                StartTime = Convert.ToDateTime(texts[0])
+                            });
+                        }
+                        else
+                        {
+                            var timestr = prog.GetAttributeValue("title", string.Empty);
+                            DateTime time;
+                            if (!DateTime.TryParse(timestr, out time))
+                                time = Convert.ToDateTime(timestr.Split(new char[] { ' ' }, 2)[0]);
+
+                            // 节目时间为省略号的情况
+                            proList.Add(new Models.Program()
+                            {
+                                Name = progName,
+                                StartTime = time
+                            });
+                        }
                     }
                     else
                     {
-                        Models.Program pgm = new Models.Program();
-                        DateTime starttime = Convert.ToDateTime(startTime);
-                        pgm.Name = progName;
-                        pgm.StartTime = starttime;
-                        _schedule[chn.UniqueId].Add(pgm);
+                        // 正常情况
+                        proList.Add(new Models.Program()
+                        {
+                            Name = progName,
+                            StartTime = Convert.ToDateTime(startTime)
+                        });
                     }
                 }
             }
+
+            return schedules;
         }
         
         /// <summary>
         /// 获取频道区域与代码关系表
         /// </summary>
-        public async Task SetDistrictToCode()
+        public async Task<Dictionary<string,string>> GetDistrictCodeMap()
         {
             HttpClient client = new HttpClient();
             var response = await client.GetByteArrayAsync("http://www.tvmao.com/program");
@@ -115,14 +171,15 @@ namespace iTV6.Services
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(result);
 
+            var codes = new Dictionary<string, string>();
             HtmlNode rootNode = document.DocumentNode;
-            _districtCodes.Add("央视", "cctv");
-            _districtCodes.Add("卫视", "satellite");
-            _districtCodes.Add("数字付费", "digital");
-            _districtCodes.Add("香港", "honkong");
-            _districtCodes.Add("澳门", "macau");
-            _districtCodes.Add("台湾", "taiwan");
-            _districtCodes.Add("境外", "foreign");
+            codes.Add("央视", "cctv");
+            codes.Add("卫视", "satellite");
+            codes.Add("数字付费", "digital");
+            codes.Add("香港", "honkong");
+            codes.Add("澳门", "macau");
+            codes.Add("台湾", "taiwan");
+            codes.Add("境外", "foreign");
 
             HtmlNodeCollection NodeList = rootNode.SelectNodes("/body/div[@class='pgnav_wrap']/div[@class='lev2 clear']/form[@class='lt ml10']/select[@name='prov']");
             string disName = null;
@@ -139,8 +196,10 @@ namespace iTV6.Services
                 {
                     continue;
                 }
-                _districtCodes.Add(disName, disCode);
+                codes.Add(disName, disCode);
             }
+
+            return codes;
         }
     }
 }

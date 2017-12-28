@@ -9,6 +9,7 @@ using Windows.Storage;
 namespace iTV6.Services
 {
     // TODO: 在设置界面添加清空提醒的按钮，以及提前多久进行提醒的选项
+    // TODO: 另外，提醒应该可以选择是单次提醒还是每周提醒
     public class CalendarService
     {
         const string containerKey = "Appointments";
