@@ -18,6 +18,7 @@ namespace iTV6.Models
     /// </summary>
     public class Channel
     {
+        #region 频道的获取
         private Channel() { }
         private static Dictionary<string, Channel> _instances = new Dictionary<string, Channel>();
         /// <summary>
@@ -52,21 +53,6 @@ namespace iTV6.Models
         }
 
         /// <summary>
-        /// 频道名称
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 唯一标识符
-        /// </summary>
-        public string UniqueId { get; set; }
-
-        /// <summary>
-        /// 频道类型
-        /// </summary>
-        public ChannelType Type { get; set; }
-
-        /// <summary>
         /// 根据名称推测频道分类列表
         /// </summary>
         /// <param name="channelName">统一后的频道名称</param>
@@ -88,17 +74,46 @@ namespace iTV6.Models
             return result | ChannelType.Special;
         }
 
-        #region Cache & Serialization
+        #endregion
+
+        /// <summary>
+        /// 频道名称
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 唯一标识符
+        /// </summary>
+        public string UniqueId { get; set; }
+
+        /// <summary>
+        /// 频道类型
+        /// </summary>
+        public ChannelType Type { get; set; }
+
+        /// <summary>
+        /// 用来获取LOGO的TV猫ID
+        /// </summary>
+        public string LogoID { get; set; }
+
+        public override string ToString() => $"{Name}[{UniqueId}]"; // 调试用
+
+        #region 缓存和序列化
 
         const string storageFile = "channels_cache.dat";
+        private static readonly SerializationContext channelContext = new SerializationContext();
+        static Channel()
+        {
+            channelContext.Serializers.RegisterOverride(new ChannelSerializer(channelContext));
+        }
 
         /// <summary>
         /// 将频道列表缓存
         /// </summary>
-        public static async void StoreChannels()
+        public static async Task StoreChannels()
         {
             var storage = await ApplicationData.Current.LocalFolder.CreateFileAsync(storageFile, CreationCollisionOption.ReplaceExisting);
-            var serializer = SerializationService.Instance.Get<IEnumerable<Channel>>();
+            var serializer = MessagePackSerializer.Get<IEnumerable<Channel>>(channelContext);
             using (var stream = await storage.OpenStreamForWriteAsync())
                 serializer.Pack(stream, _instances.Values);
         }
@@ -106,20 +121,20 @@ namespace iTV6.Models
         /// <summary>
         /// 从缓存中恢复频道列表
         /// </summary>
-        public static async void RestoreChannels()
+        public static async Task RestoreChannels()
         {
             var storage = await ApplicationData.Current.LocalFolder.TryGetItemAsync(storageFile) as StorageFile;
             if (storage != null)
             {
                 using (var stream = await storage.OpenStreamForReadAsync())
-                    SerializationService.Instance.Get<IEnumerable<Channel>>().Unpack(stream);
+                    MessagePackSerializer.Get<IEnumerable<Channel>>(channelContext).Unpack(stream);
             }
         }
 
         /// <summary>
-        /// 清楚频道列表的缓存
+        /// 清除频道列表的缓存
         /// </summary>
-        public static async void ClearChannelsStorage()
+        public static async Task ClearChannelsStorage()
         {
             var storage = await ApplicationData.Current.LocalFolder.TryGetItemAsync(storageFile) as StorageFile;
             if (storage != null)
@@ -146,6 +161,25 @@ namespace iTV6.Models
                 ChannelType ctype = (ChannelType)Enum.ToObject(typeof(ChannelType), unpacker.Unpack<byte>());
                 return GetChannel(id, name, ctype);
             }
+        }
+
+        /// <summary>
+        /// 在Channel字典已经加载完成的情况下可以使用该序列化对象
+        /// </summary>
+        public class ExistingChannelSerializer : MessagePackSerializer<Channel>
+        {
+            public ExistingChannelSerializer(SerializationContext ownerContext) : base(ownerContext)
+            {
+#if DEBUG
+                if (_instances.Count == 0) throw new InvalidDataException("使用Key序列化Channel之前应初始化Channel的实例字典");
+#endif
+            }
+
+            protected override void PackToCore(Packer packer, Channel obj) =>
+                packer.PackString(obj.UniqueId);
+
+            protected override Channel UnpackFromCore(Unpacker unpacker) =>
+                GetChannel(unpacker.Unpack<string>());
         }
 
         #endregion

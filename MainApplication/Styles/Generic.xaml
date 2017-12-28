@@ -25,5 +25,11 @@
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
-    
+
+    <Style x:Key="SingleLineListText" TargetType="TextBlock">
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Padding" Value="0, 10"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
 </ResourceDictionary>
