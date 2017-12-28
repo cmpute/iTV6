@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -52,7 +53,7 @@ namespace iTV6
             Utils.Async.InvokeAndWait(async () => await Utils.Debug.DebugMethod());
 
             // 读取缓存
-            Channel.RestoreChannels();
+            RestoreCache();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -113,14 +114,38 @@ namespace iTV6
         /// </summary>
         /// <param name="sender">挂起的请求的源。</param>
         /// <param name="e">有关挂起请求的详细信息。</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
             // 保存应用程序状态并停止任何后台活动
-            Channel.StoreChannels();
+            await SaveCache();
 
             deferral.Complete();
+        }
+
+        /// <summary>
+        /// 读取各种缓存
+        /// </summary>
+        private async void RestoreCache()
+        {
+#if DEBUG && CLEAR_CACHE
+            await Channel.ClearChannelsStorage();
+            await ScheduleService.Instance.ClearCache();
+#else
+            await Channel.RestoreChannels();
+            await ScheduleService.Instance.RestoreCache();
+#endif
+
+        }
+
+        /// <summary>
+        /// 保存各种缓存
+        /// </summary>
+        private async Task SaveCache()
+        {
+            await Channel.StoreChannels();
+            await ScheduleService.Instance.SaveCache();
         }
     }
 }

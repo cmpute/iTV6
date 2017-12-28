@@ -1,6 +1,4 @@
-﻿// #define DEBUG_SCHEDULE
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -16,9 +14,55 @@ namespace iTV6.Services
 {
     public class ScheduleService
     {
-        private ScheduleService() { }
+        private ScheduleService()
+        {
+            _districtCodeCache = new CachedDictionary<string, string>(districtCodeFile);
+            _scheduleCache = new CachedDictionary<Tuple<string, DayOfWeek, int>, ScheduleList>(scheduleFile);
+        }
 
+        /// <summary>
+        /// 获取节目单服务实例，实例为单例
+        /// </summary>
         public static ScheduleService Instance { get; } = new ScheduleService();
+
+        #region 缓存相关
+
+        const string districtCodeFile = "district_code_map.dat";
+        const string scheduleFile = "schedule_map.dat";
+        private CachedDictionary<string, string> _districtCodeCache;
+        private CachedDictionary<Tuple<string, DayOfWeek, int>, ScheduleList> _scheduleCache;
+
+        /// <summary>
+        /// 读取节目单缓存
+        /// </summary>
+        public async Task RestoreCache()
+        {
+            await _districtCodeCache.Restore();
+            await _scheduleCache.Restore();
+        }
+
+        /// <summary>
+        /// 保存节目单缓存
+        /// </summary>
+        public async Task SaveCache()
+        {
+            // 节目单缓存只在本周有效
+            var time = DateTime.Today;
+            for (; time.DayOfWeek != DayOfWeek.Monday; time += TimeSpan.FromDays(1)) ;
+            await _districtCodeCache.Save(time);
+            await _scheduleCache.Save(time);
+        }
+
+        /// <summary>
+        /// 清除节目单缓存
+        /// </summary>
+        public async Task ClearCache()
+        {
+            await _districtCodeCache.ClearCache();
+            await _scheduleCache.ClearCache();
+        }
+
+        #endregion
 
         /// <summary>
         /// 计算节目单页面的网址
@@ -44,7 +88,7 @@ namespace iTV6.Services
             // 建立并发任务
             List<Task<ScheduleList>> tasks = new List<Task<ScheduleList>>();
             for (int time = 0; time < 24; time += 2)
-                tasks.Add(GetSchedule(districtCode, time, DoW));
+                tasks.Add(GetSchedule(districtCode, DoW, time));
             var results = await Task.WhenAll(tasks);
 
             // 合并获取结果
@@ -68,21 +112,24 @@ namespace iTV6.Services
         /// <summary>
         /// 获取指定区域、时间的节目单
         /// </summary>
-        public async Task<ScheduleList> GetSchedule(string districtCode, int hour, DayOfWeek? DoW = null)
+        public async Task<ScheduleList> GetSchedule(string districtCode, DayOfWeek? DoW = null, int? hour = null)
         {
-            int dowint, daynow = (int)DateTime.Now.DayOfWeek;
             if (DoW == null)
-            {
-                dowint = daynow;
-                if (dowint == 0)
-                {
-                    dowint = 7;
-                }
-            }
-            else
-                dowint = (int)DoW;
-            TimeSpan diff = TimeSpan.FromDays(daynow - dowint);
-            return await GetScheduleFromPage(GetUri(districtCode, hour, dowint), diff);
+                DoW = DateTime.Now.DayOfWeek;
+            if (hour == null)
+                hour = DateTime.Now.Hour;
+
+            var key = new Tuple<string, DayOfWeek, int>(districtCode, DoW.Value, hour.Value);
+            if (_scheduleCache.ContainsKey(key))
+                return _scheduleCache[key]; // 有缓存
+
+            int dowint = (int)DoW;
+            if (dowint == 0)
+                dowint = 7;
+            TimeSpan diff = TimeSpan.FromDays((int)DoW - dowint);
+            var result = await GetScheduleFromPage(GetUri(districtCode, hour.Value, dowint), diff);
+            _scheduleCache.Add(key, result);
+            return result;
         }
 
         /// <summary>
@@ -188,21 +235,23 @@ namespace iTV6.Services
         /// </summary>
         public async Task<Dictionary<string /*频道名*/, string /*频道编号*/>> GetDistrictCodeMap()
         {
+            if (this._districtCodeCache.Count > 0)
+                return this._districtCodeCache; // 有缓存
+
             HttpClient client = new HttpClient();
             var response = await client.GetByteArrayAsync("http://www.tvmao.com/program/duration/100000"); //用异常页面提高加载速度
             string result = SuperEncoding.UTF8.GetString(response);
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(result);
-
-            var codes = new Dictionary<string, string>();
+            
             HtmlNode rootNode = document.DocumentNode;
-            codes.Add("央视", "cctv");
-            codes.Add("卫视", "satellite");
-            codes.Add("数字付费", "digital");
-            codes.Add("香港", "honkong");
-            codes.Add("澳门", "macau");
-            codes.Add("台湾", "taiwan");
-            codes.Add("境外", "foreign");
+            _districtCodeCache.Add("央视", "cctv");
+            _districtCodeCache.Add("卫视", "satellite");
+            _districtCodeCache.Add("数字付费", "digital");
+            _districtCodeCache.Add("香港", "honkong");
+            _districtCodeCache.Add("澳门", "macau");
+            _districtCodeCache.Add("台湾", "taiwan");
+            _districtCodeCache.Add("境外", "foreign");
 
             HtmlNodeCollection NodeList = rootNode.SelectNodes("/body/div[@class='pgnav_wrap']/div[@class='lev2 clear']/form[@class='lt ml10']/select[@name='prov']");
             string disName = null;
@@ -219,10 +268,10 @@ namespace iTV6.Services
                 {
                     continue;
                 }
-                codes.Add(disName, disCode);
+                _districtCodeCache.Add(disName, disCode);
             }
 
-            return codes;
+            return _districtCodeCache;
         }
 
         /// <summary>

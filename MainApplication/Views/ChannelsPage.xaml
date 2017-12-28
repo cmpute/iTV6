@@ -138,7 +138,7 @@
                 </interactivity:Interaction.Behaviors>
             </Grid>
         </DataTemplate>
-
+        <converter:RelativeDatetimeConverter x:Key="TimeConverter"/>
     </Page.Resources>
 
     <Grid Loaded="{x:Bind ViewModel.RootGrid_Loaded}">
