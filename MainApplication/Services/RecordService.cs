@@ -31,6 +31,20 @@ namespace iTV6.Services
         }
         public async void Download(Uri RequestUri, StorageFolder storageFolder, DateTime startTime, DateTime endTime)
         {
+            //时间对应
+            DateTime currentTime = System.DateTime.Now;     
+            TimeSpan intervalTime = startTime - currentTime;
+            bool timeOK = (intervalTime.TotalMilliseconds < 5000);
+            //等到系统时间到达startTime，才开始录制工作
+            while (!timeOK)
+            {
+                await Task.Delay(5000);
+                currentTime = System.DateTime.Now;
+                intervalTime = startTime - currentTime;
+                timeOK = (intervalTime.TotalMilliseconds < 5000);   //认为差距时间在5s内，则已到达预定时间，开始录制
+            }
+
+
             //StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
             StorageFile sampleFile = null;// await storageFolder.CreateFileAsync("sample.txt", CreationCollisionOption.ReplaceExisting);
             //获取m3u8文件
