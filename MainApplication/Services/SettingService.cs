@@ -1,19 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
+using Windows.Foundation.Collections;
 using Windows.Storage;
 
 namespace iTV6.Services
 {
     class SettingService
     {
+        public readonly string[] ThemeList = { "浅色", "深色", "蓝色" };
 
-        public List<string> MediaSources { get; } = new List<string>();
-        public List<string> ThemeList = new List<string>();
-
-        private SettingService()
-        {
-            MediaSources.Add("清华"); MediaSources.Add("中国农大"); MediaSources.Add("东北大学"); MediaSources.Add("北邮人");
-            ThemeList.Add("浅色"); ThemeList.Add("深色"); ThemeList.Add("蓝色");
-        }
+        private SettingService() { }
         private static SettingService _instance;
         /// <summary>
         /// 获取设置服务实例，实例为单例
@@ -27,46 +24,64 @@ namespace iTV6.Services
                 return _instance;
             }
         }
-        static ApplicationDataContainer container = ApplicationData.Current.LocalSettings;
+
+        private IPropertySet localSettings = ApplicationData.Current.LocalSettings.Values;
+        private IPropertySet roamingSettings = ApplicationData.Current.RoamingSettings.Values;
+
+        private Dictionary<string, List<INotifyPropertyChanged>> registeredObject = new Dictionary<string, List<INotifyPropertyChanged>>();
+
+        private static void SetProperty(object obj, string propertyName, object value)
+            => obj.GetType().GetProperty(propertyName).SetValue(obj, value);
+        private static object GetProperty(object obj, string propertyName)
+            => obj.GetType().GetProperty(propertyName).GetValue(obj);
+
         /// <summary>
-        /// 获取指定键的值
+        /// 注册一个设置选项，并自动绑定属性。注意：属性名即为设置键值，相同设置项需要对应相同的属性名
         /// </summary>
-        /// <param name="key">键名称</param>
-        /// <returns></returns>
-        public static object GetValue(string key)
+        /// <param name="obj">绑定来源</param>
+        /// <param name="propertyName">绑定的属性名称，请使用<code>nameof</code>关键字</param>
+        /// <param name="defaultValue">设置的默认值</param>
+        /// <param name="roaming">是否设置为漫游同步属性</param>
+        public void RegisterSetting(INotifyPropertyChanged obj, string propertyName, object defaultValue = null, bool roaming = false)
         {
-            if (container.Values[key] != null)
-            {
-                return container.Values[key];
-            }
+            // 设置初始值
+            var settings = roaming ? roamingSettings : localSettings;
+            if (settings.ContainsKey(propertyName))
+                SetProperty(obj, propertyName, settings[propertyName]);
             else
             {
-                return null;
+                if (defaultValue != null)
+                {
+                    SetProperty(obj, propertyName, defaultValue);
+                    settings[propertyName] = defaultValue;
+                }
             }
-        }
-        /// <summary>
-        /// 设置指定键的值
-        /// </summary>
-        /// <param name="key">键名称</param>
-        /// <param name="value">值</param>
-        public static void SetValue(string key, object value)
-        {
-            container.Values[key] = value;
-        }
-        /// <summary>
-        /// 指示应用容器内是否存在某键
-        /// </summary>
-        /// <param name="key">键名称</param>
-        /// <returns></returns>
-        public static bool ContainsKey(string key)
-        {
-            if (container.Values[key] != null)
+            // 添加到注册对象表
+            if (!registeredObject.ContainsKey(propertyName))
+                registeredObject[propertyName] = new List<INotifyPropertyChanged>();
+            registeredObject[propertyName].Add(obj);
+
+            // 注册响应事件
+            obj.PropertyChanged += (sender, e) =>
             {
-                return true;
-            }
-            else
+                var newValue = GetProperty(sender, propertyName);
+                if (e.PropertyName == propertyName)
+                    settings[propertyName] = newValue;
+                foreach (var notifyobj in registeredObject[propertyName])
+                    if(!ReferenceEquals(notifyobj, sender))
+                        SetProperty(notifyobj, propertyName, newValue);
+            };
+        }
+
+        public object this[string key]
+        {
+            get
             {
-                return false;
+                if (localSettings.ContainsKey(key))
+                    return localSettings[key];
+                else if (roamingSettings.ContainsKey(key))
+                    return roamingSettings[key];
+                else return null;
             }
         }
     }

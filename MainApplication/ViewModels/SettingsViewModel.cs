@@ -13,96 +13,78 @@ namespace iTV6.ViewModels
 {
     class SettingsViewModel : ViewModelBase
     {
-        public delegate void SettingHandler(bool isOn);
-        public event SettingHandler ChangeToNightMode;//事件，用于立即显示夜间模式的效果
-        //默认视频源
-        public List<string> MediaSources { get; } = SettingService.Instance.MediaSources;//从service获得节目源列表
+        public SettingsViewModel()
+        {
+            SettingService.Instance.RegisterSetting(this, nameof(PriorSource), MediaSources.First());
+            SettingService.Instance.RegisterSetting(this, nameof(FilePath));
+            SettingService.Instance.RegisterSetting(this, nameof(Theme), ThemeList.First());
+            SettingService.Instance.RegisterSetting(this, nameof(NightMode));
+            SettingService.Instance.RegisterSetting(this, nameof(SendDesktopNotifications), false);
+            SettingService.Instance.RegisterSetting(this, nameof(UseSystemCalender), false);
+        }
+
+        public IEnumerable<string> MediaSources { get; } =
+            TelevisionService.Instance.TelevisionStations.Select((station) => station.IdentifierName);
+
         private string _poriorSource = null;
+        /// <summary>
+        /// 默认视频源
+        /// </summary>
         public string PriorSource
         {
             get { return _poriorSource; }
-            set
-            {
-                Set(ref _poriorSource, value);
-                SettingService.SetValue("PriorSource", _poriorSource);
-            }
+            set { Set(ref _poriorSource, value); }
         }
-        //录播文件存储地址
-        private string _filePath = null;//录播保存地址
+
+        private string _filePath = null;
+        /// <summary>
+        /// 录播文件存储地址
+        /// </summary>
         public string FilePath
         {
             get { return _filePath; }
-            set {
-                Set(ref _filePath, value);
-                SettingService.SetValue("FilePath", _filePath);
-            }
+            set { Set(ref _filePath, value); }
         }
-        //主题
-        public List<string> ThemeList { get; } = SettingService.Instance.ThemeList;//从service获得主题列表
+
+        public IEnumerable<string> ThemeList { get; } = SettingService.Instance.ThemeList;//从service获得主题列表
         private string _selectedTheme = null;
-        public string SelectedTheme {
-            get { return _selectedTheme;}
-            set {
-                Set(ref _selectedTheme,value);
-                SettingService.SetValue("Theme", _selectedTheme);
-            }
+        /// <summary>
+        /// 主题
+        /// </summary>
+        public string Theme
+        {
+            get { return _selectedTheme; }
+            set { Set(ref _selectedTheme, value); }
         }
-        //夜间模式
+
         private bool _nightMode = false;
+        /// <summary>
+        /// 夜间模式
+        /// </summary>
         public bool NightMode
         {
             get { return _nightMode; }
-            set
-            {
-                Set(ref _nightMode, value);
-                SettingService.SetValue("NightMode", _nightMode);
-                ChangeToNightMode?.Invoke(_nightMode);
-            }
+            set { Set(ref _nightMode, value); }
         }
-        //是否发送桌面通知
+
         private bool _sendDesktopNotifications = false;
+        /// <summary>
+        /// 是否发送桌面通知
+        /// </summary>
         public bool SendDesktopNotifications
         {
-            get { return _sendDesktopNotifications;}
-            set {
-                Set(ref _sendDesktopNotifications, value);
-                SettingService.SetValue("SendDesktopNotifications", _sendDesktopNotifications);
-            }
+            get { return _sendDesktopNotifications; }
+            set { Set(ref _sendDesktopNotifications, value); }
         }
-        //是否使用系统日历
+
         private bool _useSystemCalender = false;
+        /// <summary>
+        /// 是否使用系统日历
+        /// </summary>
         public bool UseSystemCalender
         {
             get { return _useSystemCalender; }
-            set
-            {
-                Set(ref _useSystemCalender, value);
-                SettingService.SetValue("UseSystemCalender", _useSystemCalender);
-            }
-        }
-        //构造函数
-        public SettingsViewModel()
-        {
-            if (SettingService.ContainsKey("PriorSource"))//读取设置：默认视频源
-                PriorSource = SettingService.GetValue("PriorSource").ToString();
-            else
-                PriorSource = MediaSources.First();
-            if (SettingService.ContainsKey("FilePath"))//读取设置：存储路径
-                FilePath = SettingService.GetValue("FilePath").ToString();
-            if (SettingService.ContainsKey("Theme"))//读取设置：主题
-                SelectedTheme = SettingService.GetValue("Theme").ToString();
-            else
-                SelectedTheme = ThemeList.First();
-            if (SettingService.ContainsKey("NightMode"))//读取设置：是否使用夜间模式
-                NightMode = (bool)SettingService.GetValue("NightMode");
-            if (SettingService.ContainsKey("SendDesktopNotifications"))//读取设置：是否发送桌面通知
-                SendDesktopNotifications = (bool)SettingService.GetValue("SendDesktopNotifications");
-            else
-                SendDesktopNotifications = false;
-            if (SettingService.ContainsKey("UseSystemCalender"))//读取设置：是否使用系统日历
-                UseSystemCalender = (bool)SettingService.GetValue("UseSystemCalender");
-            else
-                UseSystemCalender = false;
+            set { Set(ref _useSystemCalender, value); }
         }
 
         public async void BrowseButtonTapped()//点了“浏览”之后，选取文件夹
@@ -119,7 +101,7 @@ namespace iTV6.ViewModels
                 // Application now has read/write access to all contents in the picked folder
                 // (including other sub-folder contents)
                 Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
-                FilePath=folder.Path;
+                FilePath = folder.Path;
             }
             System.Diagnostics.Debug.WriteLine(FilePath);
         }

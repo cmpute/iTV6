@@ -99,7 +99,7 @@ namespace iTV6.Services
         public async static Task<StorageFolder> GetMyFolderAsync()
         {
             StorageFolder folder = null;
-            string path = SettingService.GetValue("FilePath").ToString();
+            string path = SettingService.Instance["FilePath"].ToString();
             StorageFolder defaultfolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("iTV6_Download", CreationCollisionOption.OpenIfExists);
             if (!string.IsNullOrEmpty(path))
             {

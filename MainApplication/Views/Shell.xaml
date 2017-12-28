@@ -11,7 +11,7 @@
     xmlns:converter="using:iTV6.Converters"
     xmlns:vm="using:iTV6.ViewModels"
     mc:Ignorable="d"
-    RequestedTheme="{x:Bind ViewModel.Theme,Mode=OneWay}">
+    RequestedTheme="{x:Bind ViewModel.NightMode, Converter={StaticResource NightModeConverter}, Mode=OneWay}">
     
     <Page.DataContext>
         <vm:ShellViewModel x:Name="ViewModel" Host="{x:Bind}">
@@ -47,6 +47,17 @@
             </converter:ValueWhenConverter.Value>
             <converter:ValueWhenConverter.Otherwise>
                 <x:Boolean>True</x:Boolean>
+            </converter:ValueWhenConverter.Otherwise>
+        </converter:ValueWhenConverter>
+        <converter:ValueWhenConverter x:Key="NightModeConverter">
+            <converter:ValueWhenConverter.When>
+                <x:Boolean>True</x:Boolean>
+            </converter:ValueWhenConverter.When>
+            <converter:ValueWhenConverter.Value>
+                <ElementTheme>Dark</ElementTheme>
+            </converter:ValueWhenConverter.Value>
+            <converter:ValueWhenConverter.Otherwise>
+                <ElementTheme>Light</ElementTheme>
             </converter:ValueWhenConverter.Otherwise>
         </converter:ValueWhenConverter>
     </Page.Resources>
