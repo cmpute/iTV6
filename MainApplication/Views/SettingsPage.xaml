@@ -3,11 +3,130 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:iTV6.Views"
+    xmlns:vm="using:iTV6.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    xmlns:converter="using:iTV6.Converters"
+    xmlns:m="using:iTV6.Models"
+    mc:Ignorable="d"
+    NavigationCacheMode="Required">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="Settings"/>
+    <Page.DataContext>
+        <vm:SettingsViewModel x:Name="ViewModel" Host="{x:Bind}">
+            <vm:SettingsViewModel.AvailableTime>
+                <vm:ReminderTimeAdapter DisplayText="一小时前" TimeAhead="01:00:00"/>
+                <vm:ReminderTimeAdapter DisplayText="半小时前" TimeAhead="00:30:00"/>
+                <vm:ReminderTimeAdapter DisplayText="10分钟前" TimeAhead="00:10:00"/>
+                <vm:ReminderTimeAdapter DisplayText="5分钟前" TimeAhead="00:05:00"/>
+            </vm:SettingsViewModel.AvailableTime>
+        </vm:SettingsViewModel>
+    </Page.DataContext>
+
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <EntranceNavigationTransitionInfo />
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
+    
+    <Page.Resources>
+        <converter:PassConverter x:Key="ObjectConverter"/>
+        <converter:ToStringConverter x:Key="SizeConverter" FormatString="0.00 KB"/>
+        <Style x:Key="SettingPanelStyle" TargetType="StackPanel">
+            <Setter Property="Margin" Value="20,0,0,0"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+        <Style x:Key="SettingDescriptionStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,10,0,10"/>
+        </Style>
+    </Page.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <RelativePanel>
+            <TextBlock Style="{StaticResource HeaderTextStyle}" Text="设置"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True"/>
+        </RelativePanel>
+
+        <Pivot Grid.Row="1">
+            <PivotItem>
+                <PivotItem.Header>
+                    <TextBlock Text="播放" FontSize="20"/>
+                </PivotItem.Header>
+                <StackPanel Style="{StaticResource SettingPanelStyle}">
+                    <TextBlock Text="默认视频源" Style="{StaticResource SettingDescriptionStyle}"/>
+                    <ComboBox ItemsSource="{x:Bind ViewModel.MediaSources, Mode=OneWay}"
+                              SelectedItem="{x:Bind ViewModel.PriorSource, Mode=TwoWay, Converter={StaticResource ObjectConverter}}">
+                    </ComboBox>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem>
+                <PivotItem.Header>
+                    <TextBlock Text="录播" FontSize="20"/>
+                </PivotItem.Header>
+                <StackPanel Style="{StaticResource SettingPanelStyle}">
+                    <TextBlock Text="存储位置" Style="{StaticResource SettingDescriptionStyle}"/>
+                    <RelativePanel>
+                        <TextBox Width="280" x:Name="SavePos" IsReadOnly="True"
+                                 Text="{x:Bind ViewModel.FilePath, Mode=OneWay}"/>
+                        <Button Margin="10,0" Tapped="{x:Bind ViewModel.BrowseButtonTapped, Mode=OneWay}"
+                                RelativePanel.RightOf="SavePos" RelativePanel.AlignTopWith="SavePos"
+                                RelativePanel.AlignBottomWith="SavePos" 
+                                Content="浏览..." />
+                    </RelativePanel>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem>
+                <PivotItem.Header>
+                    <TextBlock Text="主题" FontSize="20"/>
+                </PivotItem.Header>
+                <StackPanel Style="{StaticResource SettingPanelStyle}">
+                    <!-- 目前觉得比较难搞，先不放上去了-->
+                    <!--
+                    <TextBlock Text="界面风格" Margin="0,10,0,10"/>
+                    <ComboBox ItemsSource="{x:Bind ViewModel.ThemeList,Mode=OneWay}"
+                              SelectedItem="{x:Bind ViewModel.SelectedTheme,Mode=TwoWay,Converter={StaticResource ObjectConverter}}"/>
+                    -->
+                    <TextBlock Text="夜间模式" Style="{StaticResource SettingDescriptionStyle}"/>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.NightMode, Mode=TwoWay}"/>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem>
+                <PivotItem.Header>
+                    <TextBlock Text="消息" FontSize="20"/>
+                </PivotItem.Header>
+                <StackPanel Style="{StaticResource SettingPanelStyle}">
+                    <TextBlock Text="开启日历节目提醒" Style="{StaticResource SettingDescriptionStyle}"/>
+                    <ToggleSwitch IsOn="{x:Bind ViewModel.EnableCalendarNotification, Mode=TwoWay}"/>
+                    <TextBlock Text="节目提醒时间" Style="{StaticResource SettingDescriptionStyle}"/>
+                    <ComboBox ItemsSource="{x:Bind ViewModel.AvailableTime}" Margin="0,4"
+                              IsEnabled="{x:Bind ViewModel.EnableCalendarNotification, Mode=Oneway}"
+                              DisplayMemberPath="DisplayText" SelectedValuePath="TimeAhead"
+                              SelectedValue="{x:Bind ViewModel.ReminderSpanAhead, Mode=TwoWay, Converter={StaticResource ObjectConverter}}"
+                              ToolTipService.ToolTip="系统日历将在节目开始的指定时间之前发出提醒"/>
+                    <TextBlock Text="管理日历中的节目" Style="{StaticResource SettingDescriptionStyle}"/>
+                    <Button Content="清空日历中的节目项" Command="{x:Bind ViewModel.ClearCalendarItems}" Margin="0,4"/>
+                </StackPanel>
+            </PivotItem>
+            <PivotItem>
+                <PivotItem.Header>
+                    <TextBlock Text="缓存" FontSize="20"/>
+                </PivotItem.Header>
+                <StackPanel Style="{StaticResource SettingPanelStyle}">
+                    <TextBlock Style="{StaticResource SettingDescriptionStyle}">
+                        当前缓存文件总大小： <Run Text="{x:Bind ViewModel.CacheFileSize, Mode=OneWay, Converter={StaticResource SizeConverter}}"/>
+                    </TextBlock>
+                    <Button Content="清空缓存文件" Command="{x:Bind ViewModel.ClearCacheFiles}" Margin="0,4"/>
+                </StackPanel>
+            </PivotItem>
+        </Pivot>
     </Grid>
 </Page>

@@ -53,7 +53,7 @@ namespace iTV6
             Utils.Async.InvokeAndWait(async () => await Utils.Debug.DebugMethod());
 
             // 读取缓存
-            RestoreCache();
+            CacheService.RestoreCache();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -119,33 +119,9 @@ namespace iTV6
             var deferral = e.SuspendingOperation.GetDeferral();
 
             // 保存应用程序状态并停止任何后台活动
-            await SaveCache();
+            await CacheService.SaveCache();
 
             deferral.Complete();
-        }
-
-        /// <summary>
-        /// 读取各种缓存
-        /// </summary>
-        private async void RestoreCache()
-        {
-#if DEBUG && CLEAR_CACHE
-            await Channel.ClearChannelsStorage();
-            await ScheduleService.Instance.ClearCache();
-#else
-            await Channel.RestoreChannels();
-            await ScheduleService.Instance.RestoreCache();
-#endif
-
-        }
-
-        /// <summary>
-        /// 保存各种缓存
-        /// </summary>
-        private async Task SaveCache()
-        {
-            await Channel.StoreChannels();
-            await ScheduleService.Instance.SaveCache();
         }
     }
 }

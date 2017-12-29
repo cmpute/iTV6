@@ -8,8 +8,7 @@ using Windows.Storage;
 
 namespace iTV6.Services
 {
-    // TODO: 在设置界面添加清空提醒的按钮，以及提前多久进行提醒的选项
-    // TODO: 另外，提醒应该可以选择是单次提醒还是每周提醒
+    // TODO: 提醒应该可以选择是单次提醒还是每周提醒
     public class CalendarService
     {
         const string containerKey = "Appointments";
@@ -63,7 +62,8 @@ namespace iTV6.Services
                 AllowNewTimeProposal = false,
                 Details = $"第{program.Episode}集",
                 Location = program.Channel.Name,
-                Reminder = TimeSpan.FromMinutes(10)
+                Reminder = (bool)SettingService.Instance["EnableCalendarNotification"] ? 
+                    (TimeSpan)SettingService.Instance["ReminderSpanAhead"] as TimeSpan? : null
             };
             await _calendar.SaveAppointmentAsync(appointment);
             _container.Values.Add(program.UniqueId, appointment.LocalId);
@@ -90,7 +90,6 @@ namespace iTV6.Services
             Sucess,
             NotInitialized, // 日历对象尚未初始化
             AlreadyExists // 节目提醒已存在
-            
         }
     }
 }

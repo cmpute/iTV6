@@ -115,10 +115,13 @@
     <Compile Include="Mvvm\DelegateCommand.cs" />
     <Compile Include="Mvvm\DependencyBindableBase.cs" />
     <Compile Include="Mvvm\ViewModelBase.cs" />
+    <Compile Include="Services\CacheService.cs" />
     <Compile Include="Services\CalendarService.cs" />
     <Compile Include="Services\ScheduleService.cs" />
     <Compile Include="Services\CollectionService.cs" />
     <Compile Include="Services\NavigationService.cs" />
+    <Compile Include="Services\RecordService.cs" />
+    <Compile Include="Services\SettingService.cs" />
     <Compile Include="Services\SerializationService.cs" />
     <Compile Include="Services\TelevisionService.cs" />
     <Compile Include="Services\TileService.cs" />
@@ -131,7 +134,9 @@
     <Compile Include="ViewModels\CollectionViewModel.cs" />
     <Compile Include="ViewModels\ConnectionStatusViewModel.cs" />
     <Compile Include="ViewModels\PlayerViewModel.cs" />
+    <Compile Include="ViewModels\RecordingsViewModel.cs" />
     <Compile Include="ViewModels\ScheduleViewModel.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\StaticViewModel.cs" />
     <Compile Include="Views\AboutPage.xaml.cs">
@@ -151,6 +156,9 @@
     </Compile>
     <Compile Include="Views\PlayerPage.xaml.cs">
       <DependentUpon>PlayerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RecordDialog.xaml.cs">
+      <DependentUpon>RecordDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RecordingsPage.xaml.cs">
       <DependentUpon>RecordingsPage.xaml</DependentUpon>
@@ -215,6 +223,10 @@
     <Page Include="Views\PlayerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RecordDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RecordingsPage.xaml">
       <SubType>Designer</SubType>

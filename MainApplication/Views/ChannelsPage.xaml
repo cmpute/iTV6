@@ -215,9 +215,8 @@
                                   Width="24" Height="24"/>
                     </Button.Content>
                 </Button>
-                <Button Style="{StaticResource HeaderButtonStyle}"
-                        ToolTipService.ToolTip="添加频道录播计划">
-                    <!-- TODO: 绑定对应事件 -->
+                <Button x:Name="RecordChannel" Style="{StaticResource HeaderButtonStyle}"
+                        ToolTipService.ToolTip="添加频道录播计划" Command="{x:Bind ViewModel.AddChannelRecordTask}">
                     <Button.Content>
                         <SymbolIcon Width="24" Height="24" Symbol="VideoChat"/>
                     </Button.Content>

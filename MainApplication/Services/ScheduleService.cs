@@ -53,15 +53,6 @@ namespace iTV6.Services
             await _scheduleCache.Save(time);
         }
 
-        /// <summary>
-        /// 清除节目单缓存
-        /// </summary>
-        public async Task ClearCache()
-        {
-            await _districtCodeCache.ClearCache();
-            await _scheduleCache.ClearCache();
-        }
-
         #endregion
 
         /// <summary>

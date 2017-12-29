@@ -6,8 +6,41 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <EntranceNavigationTransitionInfo />
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Text="About"/>
+    <Grid MinWidth="500" MinHeight="400">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <RelativePanel>
+            <TextBlock Style="{StaticResource HeaderTextStyle}" Text="关于"
+                       RelativePanel.AlignVerticalCenterWithPanel="True"
+                       RelativePanel.AlignLeftWithPanel="True"/>
+        </RelativePanel>
+        <StackPanel Grid.Row="1" Margin="16">
+            <TextBlock>
+                <Span FontSize="64"><Bold>iTV6 - IPTV for IPV6</Bold></Span>
+                <LineBreak/>
+                <Run FontSize="24">Work By 夕阳红小组</Run><LineBreak/>
+                <LineBreak/>
+                <Span><Run FontFamily="Segoe MDL2 Assets" Text="&#xEBC3;  "/>
+                    <Hyperlink NavigateUri="https://github.com/cmpute/iTV6">代码托管：Github</Hyperlink>
+                </Span><LineBreak/>
+                <Span><Run FontFamily="Segoe MDL2 Assets" Text="&#xEC26;  "/>鸣谢视频来源：清华IPTV，安徽农大IPTV，东北大学IPTV</Span>
+            </TextBlock>
+        </StackPanel>
     </Grid>
+    
+
+    
 </Page>

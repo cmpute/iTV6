@@ -8,6 +8,7 @@ using iTV6.Mvvm;
 using iTV6.Services;
 using iTV6.Views;
 using iTV6.Utils;
+using Windows.UI.Xaml.Media;
 
 namespace iTV6.ViewModels
 {
@@ -15,8 +16,9 @@ namespace iTV6.ViewModels
     {
         public ShellViewModel()
         {
+            SettingService.Instance.RegisterSetting(this, nameof(NightMode));
         }
-
+        
         public void FrameLoaded(object sender, RoutedEventArgs e)
         {
             // 如果没有预定转到的界面则默认转到频道界面
@@ -33,8 +35,18 @@ namespace iTV6.ViewModels
             NavigationService.ShellNavigation = new NavigationService((Host as Shell).NavigationFrame);
             NavigationService.ShellNavigation.Navigated += (csender, ce) =>
             {
-                if (ce.NavigatedPageType == typeof(ChannelsPage))
-                    SelectedMenuIndex = 0;
+                  if (ce.NavigatedPageType == typeof(ChannelsPage))
+                      SelectedMenuIndex = 0;
+                  if (ce.NavigatedPageType == typeof(CollectionPage))
+                      SelectedMenuIndex = 1;
+                  if (ce.NavigatedPageType == typeof(SchedulePage))
+                      SelectedMenuIndex = 2;
+                  if (ce.NavigatedPageType == typeof(RecordingsPage))
+                      SelectedMenuIndex = 3;
+                  if (ce.NavigatedPageType == typeof(AboutPage))
+                      SelectedMenuIndex = 4;
+                  if (ce.NavigatedPageType == typeof(SettingsPage))
+                      SelectedMenuIndex = 5;
             };
         }
 
@@ -72,6 +84,16 @@ namespace iTV6.ViewModels
             get { return _SelectedMenuIndex; }
             set { Set(ref _SelectedMenuIndex, value); }
         }
+
+        /// <summary>
+        /// 设置夜间模式用
+        /// </summary>
+        public bool NightMode
+        {
+            get { return _theme; }
+            set { Set(ref _theme, value); }
+        }
+        private bool _theme = false;
     }
 
     /// <summary>
