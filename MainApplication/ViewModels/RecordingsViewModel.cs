@@ -13,21 +13,17 @@ namespace iTV6.ViewModels
 {
     public class RecordingsViewModel : ViewModelBase
     {
-        Uri URI = null;
-        string Channel = null;
-        string Source = null;
-
-        public override void OnNavigatedTo(object parameter)
+        public override async void OnNavigatedTo(object parameter)
         {
-            if (parameter is Tuple<MultisourceProgram, SourceRecord, Uri>)  // 选择的节目、选择的源和地址
+            if (parameter is Tuple<Channel, SourceRecord>)  // 选择的节目、选择的源
             {
-                var tpar = parameter as Tuple<MultisourceProgram, SourceRecord, Uri>;
-                Channel = tpar.Item1.ProgramInfo.Channel.Name;
-                Source = tpar.Item2.StationName.ToString();
-                URI = tpar.Item3 as Uri;
-                new RecordDialog(Channel, Source, URI).ShowAsync();
+                var tpar = parameter as Tuple<Channel, SourceRecord>;
+                var channel = tpar.Item1;
+                var source = tpar.Item2;
+                await new RecordDialog(channel.Name, source.StationName, source.Source).ShowAsync();
             }
         }
+
         public DelegateCommand CustomRecord => new DelegateCommand(async () =>
         {
             await new MessageDialog("请到频道页面选取节目和视频源，然后点击右上角的的“添加录播”按钮。", "提示").ShowAsync();

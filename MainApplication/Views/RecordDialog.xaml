@@ -18,7 +18,7 @@
             <TextBlock Text="录播频道：" Margin="4" VerticalAlignment="Center"/>
             <TextBlock x:Name="Text_Channel" Margin="4" VerticalAlignment="Center"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="视频源：" Margin="4" VerticalAlignment="Center"/>
             <TextBlock x:Name="Text_Source" Margin="4" VerticalAlignment="Center"/>
         </StackPanel>

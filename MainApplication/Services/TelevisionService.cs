@@ -22,7 +22,7 @@ namespace iTV6.Services
         /// </summary>
         public static TelevisionService Instance { get; } = new TelevisionService();
         
-        private IEnumerable<ITelevisionStation> GetTelevisionStations()
+        private static IEnumerable<ITelevisionStation> GetTelevisionStations()
         {
             // 硬编码列表
             yield return new THU();

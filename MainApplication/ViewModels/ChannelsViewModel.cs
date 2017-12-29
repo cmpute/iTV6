@@ -47,10 +47,12 @@ namespace iTV6.ViewModels
             Programs.Source = channelAdapters;
             Programs.IsSourceGrouped = true;
 
-            AddRecordTask = new DelegateCommand(() =>
+            AddChannelRecordTask = new DelegateCommand(() =>
             {
-                NavigationService.ShellNavigation.Navigate<Views.RecordingsPage>(new Tuple<MultisourceProgram,SourceRecord,Uri>(SelectedProgram,SelectedSource,SelectedSource.Source));
-            }, () => (SelectedProgram != null && SelectedSource != null));
+                NavigationService.ShellNavigation.Navigate<Views.RecordingsPage>(
+                    new Tuple<Channel, SourceRecord>(SelectedProgram.ProgramInfo.Channel, SelectedSource));
+            }); // 应该不存在无法执行的情况，就不执行检查了
+
             // 监听收藏的变动
             CollectionService.Instance.ChannelListChanged += (sender, e) =>
             {
@@ -128,9 +130,11 @@ namespace iTV6.ViewModels
             //更新收藏状况
             IsCurrentChannelFavourite = CollectionService.Instance.CheckChannel(channel);
             IsCurrentProgramFavourite = CollectionService.Instance.CheckProgram(SelectedProgram.ProgramInfo);
-            AddRecordTask.RaiseCanExecuteChanged();
+
             //选择默认来源
-            SelectedSource = SelectedProgram.MediaSources.First();
+            var defaultStation = SettingService.Instance["PriorSource"] as string;
+            var defaultSource = SelectedProgram.MediaSources.First(source => source.StationName.StartsWith(defaultStation));
+            SelectedSource = defaultSource ?? SelectedProgram.MediaSources.First();
 
             //展开侧面面板
             ToggleSidePanel.RaiseCanExecuteChanged();
@@ -164,7 +168,10 @@ namespace iTV6.ViewModels
             set { Set(ref _IsCurrentChannelFavourite, value); }
         }
 
-        public DelegateCommand AddRecordTask { get; }
+        /// <summary>
+        /// 添加录播任务，由于频道列表中的电视台没有指定播放源，就不给他们录播按钮了
+        /// </summary>
+        public DelegateCommand AddChannelRecordTask { get; }
 
         private bool _IsCurrentProgramFavourite;
         /// <summary>
