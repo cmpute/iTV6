@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using Windows.Foundation.Collections;
@@ -6,7 +7,7 @@ using Windows.Storage;
 
 namespace iTV6.Services
 {
-    class SettingService
+    public class SettingService
     {
         public readonly string[] ThemeList = { "浅色", "深色", "蓝色" };
 
@@ -28,7 +29,8 @@ namespace iTV6.Services
         private IPropertySet localSettings = ApplicationData.Current.LocalSettings.Values;
         private IPropertySet roamingSettings = ApplicationData.Current.RoamingSettings.Values;
 
-        private Dictionary<string, List<INotifyPropertyChanged>> registeredObject = new Dictionary<string, List<INotifyPropertyChanged>>();
+        // TODO: 这里一直保持引用可能会导致内存泄漏，考虑改成WeakReference，并增加DisposeSettingAttributes方法
+        private Dictionary<string, List<object>> registeredObject = new Dictionary<string, List<object>>();
 
         private static void SetProperty(object obj, string propertyName, object value)
             => obj.GetType().GetProperty(propertyName).SetValue(obj, value);
@@ -40,39 +42,48 @@ namespace iTV6.Services
         /// </summary>
         /// <param name="obj">绑定来源</param>
         /// <param name="propertyName">绑定的属性名称，请使用<code>nameof</code>关键字</param>
+        /// <param name="settingKey">绑定属性对应的键值，若为空则与propertyName相同</param>
         /// <param name="defaultValue">设置的默认值</param>
         /// <param name="roaming">是否设置为漫游同步属性</param>
-        public void RegisterSetting(INotifyPropertyChanged obj, string propertyName, object defaultValue = null, bool roaming = false)
+        public void RegisterSetting(object obj, string propertyName,
+            string settingKey = null, object defaultValue = null, bool roaming = false)
         {
+            if (settingKey == null)
+                settingKey = propertyName;
             // 设置初始值
             var settings = roaming ? roamingSettings : localSettings;
-            if (settings.ContainsKey(propertyName))
-                SetProperty(obj, propertyName, settings[propertyName]);
+            if (settings.ContainsKey(settingKey))
+                SetProperty(obj, propertyName, settings[settingKey]);
             else
             {
                 if (defaultValue != null)
                 {
                     SetProperty(obj, propertyName, defaultValue);
-                    settings[propertyName] = defaultValue;
+                    settings[settingKey] = defaultValue;
                 }
             }
             // 添加到注册对象表
             if (!registeredObject.ContainsKey(propertyName))
-                registeredObject[propertyName] = new List<INotifyPropertyChanged>();
+                registeredObject[propertyName] = new List<object>();
             registeredObject[propertyName].Add(obj);
 
             // 注册响应事件
-            obj.PropertyChanged += (sender, e) =>
-            {
-                var newValue = GetProperty(sender, propertyName);
-                if (e.PropertyName == propertyName)
-                    settings[propertyName] = newValue;
-                foreach (var notifyobj in registeredObject[propertyName])
-                    if(!ReferenceEquals(notifyobj, sender))
-                        SetProperty(notifyobj, propertyName, newValue);
-            };
+            if (obj is INotifyPropertyChanged)
+                (obj as INotifyPropertyChanged).PropertyChanged += (sender, e) =>
+                {
+                    var newValue = GetProperty(sender, propertyName);
+                    if (e.PropertyName == propertyName)
+                        settings[settingKey] = newValue;
+                    foreach (var notifyobj in registeredObject[propertyName])
+                        if (!ReferenceEquals(notifyobj, sender))
+                            SetProperty(notifyobj, propertyName, newValue);
+                };
         }
 
+        /// <summary>
+        /// 读取设置值。设置的更改请通过属性的绑定来完成。
+        /// </summary>
+        /// <param name="key">设置对应键值</param>
         public object this[string key]
         {
             get
@@ -84,5 +95,31 @@ namespace iTV6.Services
                 else return null;
             }
         }
+
+        /// <summary>
+        /// 将类型中标注过<see cref="SettingPropertyAttribute"/>的设置属性进行绑定
+        /// </summary>
+        /// <param name="target"></param>
+        public void ApplySettingAttributes(object instance)
+        {
+            foreach (var member in instance.GetType().GetMembers())
+            {
+                var attr = member.GetCustomAttribute<SettingPropertyAttribute>();
+                if (attr != null)
+                    RegisterSetting(instance, member.Name, attr.SettingKey, attr.DefaultValue, attr.Roaming);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 为属性注册提供便利的接口
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
+    public class SettingPropertyAttribute : Attribute
+    {
+        public String SettingKey { get; set; } = null;
+        public object DefaultValue { get; set; } = null;
+        public bool Roaming { get; set; } = false;
+        public SettingPropertyAttribute() { }
     }
 }

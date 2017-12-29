@@ -15,12 +15,10 @@ namespace iTV6.ViewModels
     {
         public SettingsViewModel()
         {
-            SettingService.Instance.RegisterSetting(this, nameof(PriorSource), MediaSources.First());
-            SettingService.Instance.RegisterSetting(this, nameof(FilePath));
-            SettingService.Instance.RegisterSetting(this, nameof(Theme), ThemeList.First());
-            SettingService.Instance.RegisterSetting(this, nameof(NightMode));
-            SettingService.Instance.RegisterSetting(this, nameof(SendDesktopNotifications), false);
-            SettingService.Instance.RegisterSetting(this, nameof(UseSystemCalender), false);
+            // 由于默认值不是常量，因此需要动态注册
+            SettingService.Instance.RegisterSetting(this, nameof(PriorSource), null, MediaSources.First());
+            SettingService.Instance.RegisterSetting(this, nameof(Theme), null, ThemeList.First());
+            SettingService.Instance.ApplySettingAttributes(this);
         }
 
         public IEnumerable<string> MediaSources { get; } =
@@ -40,6 +38,7 @@ namespace iTV6.ViewModels
         /// <summary>
         /// 录播文件存储地址
         /// </summary>
+        [SettingProperty]
         public string FilePath
         {
             get { return _filePath; }
@@ -61,6 +60,7 @@ namespace iTV6.ViewModels
         /// <summary>
         /// 夜间模式
         /// </summary>
+        [SettingProperty]
         public bool NightMode
         {
             get { return _nightMode; }
@@ -71,6 +71,7 @@ namespace iTV6.ViewModels
         /// <summary>
         /// 是否发送桌面通知
         /// </summary>
+        [SettingProperty(DefaultValue = false)]
         public bool SendDesktopNotifications
         {
             get { return _sendDesktopNotifications; }
@@ -81,6 +82,7 @@ namespace iTV6.ViewModels
         /// <summary>
         /// 是否使用系统日历
         /// </summary>
+        [SettingProperty(DefaultValue = false)]
         public bool UseSystemCalender
         {
             get { return _useSystemCalender; }

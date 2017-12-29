@@ -34,7 +34,7 @@ namespace iTV6.ViewModels
             // 注册外层菜单的导航服务
             NavigationService.ShellNavigation = new NavigationService((Host as Shell).NavigationFrame);
             NavigationService.ShellNavigation.Navigated += (csender, ce) =>
-              {
+            {
                   if (ce.NavigatedPageType == typeof(ChannelsPage))
                       SelectedMenuIndex = 0;
                   if (ce.NavigatedPageType == typeof(CollectionPage))
@@ -47,9 +47,7 @@ namespace iTV6.ViewModels
                       SelectedMenuIndex = 4;
                   if (ce.NavigatedPageType == typeof(SettingsPage))
                       SelectedMenuIndex = 5;
-              };
-            // 打开默认界面
-            NavigateChannels.Execute();
+            };
         }
 
         private static async Task<bool> CheckConnection()
