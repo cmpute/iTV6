@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using iTV6.Services;
 using iTV6.Models;
+using Windows.UI.Popups;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“内容对话框”项模板
 
@@ -24,6 +25,7 @@ namespace iTV6.Views
         string Channel = null;
         string Source = null;
         Uri URI = null;
+        public bool Completed = false;
         public RecordDialog()
         {
             this.InitializeComponent();
@@ -39,13 +41,22 @@ namespace iTV6.Views
         {
             var startTime = StartDatePicker.Date.Value.Date.Add(StartTimePicker.Time);
             var endTime = EndDatePicker.Date.Value.Date.Add(EndTimePicker.Time);
-            var folder = await RecordService.GetMyFolderAsync();
-            RecordService.Instance.Download(URI, folder, startTime, endTime);
-            this.Hide();
+            if (startTime < endTime)
+            {
+                var folder = await RecordService.GetMyFolderAsync();
+                RecordService.Instance.Download(Channel, Source, URI, folder, startTime, endTime);
+                Completed = true;
+                this.Hide();
+            }
+            else
+            {
+                MessageBlock.Text = "请重新选择开始时间和结束时间";
+            }
         }
 
         private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            Completed = true;
             this.Hide();
         }
 

@@ -29,7 +29,7 @@ namespace iTV6.Services
                 return _instance;
             }
         }
-        public async void Download(Uri RequestUri, StorageFolder storageFolder, DateTime startTime, DateTime endTime)
+        public async void Download(string channel, string source, Uri RequestUri, StorageFolder storageFolder, DateTime startTime, DateTime endTime)
         {
             //StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
             StorageFile sampleFile = null;// await storageFolder.CreateFileAsync("sample.txt", CreationCollisionOption.ReplaceExisting);

@@ -20,7 +20,9 @@ namespace iTV6.ViewModels
                 var tpar = parameter as Tuple<Channel, SourceRecord>;
                 var channel = tpar.Item1;
                 var source = tpar.Item2;
-                await new RecordDialog(channel.Name, source.StationName, source.Source).ShowAsync();
+                var recordDialog = new RecordDialog(channel.Name, source.StationName, source.Source);
+                while (!recordDialog.Completed)
+                { await recordDialog.ShowAsync(); }
             }
         }
 
