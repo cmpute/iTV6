@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
@@ -15,8 +16,11 @@ namespace iTV6.Converters
         {
             if (targetType != typeof(String))
                 throw new NotSupportedException();
-            if(value is DateTime)
+            // 由于目前情况比较少，就暂时不用反射来实现了
+            if (value is DateTime)
                 return ((DateTime)value).ToString(FormatString);
+            else if (value is float)
+                return ((float)value).ToString(FormatString);
             return value.ToString();
         }
 

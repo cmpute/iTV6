@@ -115,6 +115,7 @@
     <Compile Include="Mvvm\DelegateCommand.cs" />
     <Compile Include="Mvvm\DependencyBindableBase.cs" />
     <Compile Include="Mvvm\ViewModelBase.cs" />
+    <Compile Include="Services\CacheService.cs" />
     <Compile Include="Services\CalendarService.cs" />
     <Compile Include="Services\ScheduleService.cs" />
     <Compile Include="Services\CollectionService.cs" />

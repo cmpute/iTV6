@@ -25,14 +25,16 @@ namespace iTV6.ViewModels
         public override async void OnNavigatedTo(object paramter)
         {
             ShowChannelLoading = true;
+            ChannelLoadingProgress = 0;
             // 加载区域列表
             var districts = await ScheduleService.Instance.GetDistrictCodeMap();
             var channelCollection = new ObservableCollection<ChannelDistrictAdapter>();
             ScheduleChannelList.Source = channelCollection;
             ScheduleChannelList.IsSourceGrouped = true;
+            ChannelLoadingMaximum = districts.Count + 1;
+            ChannelLoadingProgress = 1;
 
             // 加载每个区域的频道
-            ChannelLoadingMaximum = districts.Count;
             // 用下面的方法的话并发数太高，不少网页都会超时
             // await Task.WhenAll(districts.Select((item) => FetchDistrict(item.Key, item.Value)));
             foreach (var item in districts)

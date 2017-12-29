@@ -92,7 +92,12 @@ namespace iTV6.Services
                     return localSettings[key];
                 else if (roamingSettings.ContainsKey(key))
                     return roamingSettings[key];
-                else return null;
+                else
+#if DEBUG
+                    throw new KeyNotFoundException("未找到对应设置，请检查设置键值是否有修改");
+#else
+                    return null;
+#endif
             }
         }
 
@@ -108,6 +113,17 @@ namespace iTV6.Services
                 if (attr != null)
                     RegisterSetting(instance, member.Name, attr.SettingKey, attr.DefaultValue, attr.Roaming);
             }
+        }
+
+        /// <summary>
+        /// 重置应用设置
+        /// </summary>
+        public void ResetSettings()
+        {
+            localSettings.Values.Clear();
+            roamingSettings.Values.Clear();
+            throw new NotImplementedException();
+            // TODO: 更新registeredObject中的各对象
         }
     }
 

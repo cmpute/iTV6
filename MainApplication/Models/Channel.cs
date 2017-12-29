@@ -105,6 +105,7 @@ namespace iTV6.Models
         static Channel()
         {
             channelContext.Serializers.RegisterOverride(new ChannelSerializer(channelContext));
+            CacheService.RegisterCacheFile(storageFile);
         }
 
         /// <summary>
@@ -129,16 +130,6 @@ namespace iTV6.Models
                 using (var stream = await storage.OpenStreamForReadAsync())
                     MessagePackSerializer.Get<IEnumerable<Channel>>(channelContext).Unpack(stream);
             }
-        }
-
-        /// <summary>
-        /// 清除频道列表的缓存
-        /// </summary>
-        public static async Task ClearChannelsStorage()
-        {
-            var storage = await ApplicationData.Current.LocalFolder.TryGetItemAsync(storageFile) as StorageFile;
-            if (storage != null)
-                await storage.DeleteAsync();
         }
 
         public class ChannelSerializer : MessagePackSerializer<Channel>

@@ -79,7 +79,7 @@
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                         <FontIcon FontSize="20" Glyph="&#xE700;" Margin="6,0" Height="36" Width="36"/>
-                        <TextBlock Margin="16,0" Text="iTV6" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock Margin="16,0" Text="iTV6" FontWeight="Bold" VerticalAlignment="Center" FontSize="24"/>
                     </StackPanel>
                     <ListBox x:Name="MenuItems" Grid.Row="1"
                              Background="Transparent" Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
