@@ -10,12 +10,16 @@ using Windows.Storage.Streams;
 using Windows.Storage;
 using System.Collections;
 using System.Net;
+using System.Collections.ObjectModel;
 
 namespace iTV6.Services
 {
-    class RecordService
+    public class RecordService
     {
-        public RecordService() { }
+        public RecordService()
+        {
+             TaskList = new ObservableCollection<DownloadTask>();
+        }
         private static RecordService _instance;
         /// <summary>
         /// 获取录播服务实例，实例为单例
@@ -29,11 +33,17 @@ namespace iTV6.Services
                 return _instance;
             }
         }
-        public List<DownloadTask> Tasks=new List<DownloadTask>();
+        /// <summary>
+        /// 下载任务列表
+        /// </summary>
+        public ObservableCollection<DownloadTask> TaskList { get; }
+        /// <summary>
+        /// 创建下载任务
+        /// </summary>
         public async Task<bool> CreateDownload(string channel, string source, Uri requestUri, DateTime startTime, DateTime endTime)
         {
             var folder = await GetMyFolderAsync();
-            Tasks.Add(new DownloadTask(channel, source, requestUri, folder, startTime, endTime));
+            TaskList.Add(new DownloadTask(channel, source, requestUri, folder, startTime, endTime));
 
             return true;
         }

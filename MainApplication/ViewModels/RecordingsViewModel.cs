@@ -8,11 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using iTV6.Services;
 using Windows.UI.Popups;
+using System.Collections.ObjectModel;
 
 namespace iTV6.ViewModels
 {
     public class RecordingsViewModel : ViewModelBase
     {
+        public RecordingsViewModel() { }
+
+        public ObservableCollection<DownloadTask> TaskList => RecordService.Instance.TaskList;
+
         public override async void OnNavigatedTo(object parameter)
         {
             if (parameter is Tuple<Channel, SourceRecord>)  // 选择的节目、选择的源

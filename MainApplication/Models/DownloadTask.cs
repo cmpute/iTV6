@@ -6,29 +6,39 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using iTV6.Mvvm;
 
 namespace iTV6.Models
 {
-
-    enum DownloadState
+    public enum DownloadState
     {
         Pending,
         Downloading,
         Completed,
         Falied
     }
-    class DownloadTask
+    public class DownloadTask : BindableBase
     {
-        public string Channel;
-        public string Source;
-        public DateTime StartTime;
-        public DateTime EndTime;
-        public Uri RequestUri;
-        public string FileName;
-        public StorageFolder Folder;
+        public string Channel { get; set; }
+        public string Source { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public Uri RequestUri { get; set; }
+        public string FileName { get; set; }
+        public StorageFolder Folder { get; set; }
 
-        public int Progress = 0;
-        public DownloadState State=DownloadState.Pending;
+        private int _progress = 0;
+        public int Progress
+        {
+            get { return _progress; }
+            set { Set(ref _progress, value); }
+        }
+        private DownloadState _state = DownloadState.Pending;
+        public DownloadState State
+        {
+            get { return _state; }
+            set { Set(ref _state, value); }
+        }
 
         private bool stopped = true;
         public DownloadTask(string channel, string source, Uri requestUri, StorageFolder storageFolder, DateTime startTime, DateTime endTime)
@@ -58,6 +68,7 @@ namespace iTV6.Models
                 intervalTime = StartTime - currentTime;
                 startTimeOK = (intervalTime.TotalMilliseconds < 5000);   //认为差距时间在5s内，则已到达预定时间，开始录制
             }
+            State = DownloadState.Downloading;
             //录制时间的长度
             TimeSpan durationTime = EndTime - StartTime;
             //需要改进
@@ -123,7 +134,7 @@ namespace iTV6.Models
 
             }
             stream.Dispose();//关闭文件流
-
+            State = DownloadState.Completed;
         }
 
         public ArrayList TSposition(string text)
