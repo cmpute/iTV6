@@ -51,7 +51,8 @@ namespace iTV6.Services
             int recordNum = (int)(durationTime.TotalMinutes) / m3u8Time;
             //创建目录，创建文件流
             StorageFile sampleFile = null;
-            sampleFile = await storageFolder.CreateFileAsync("sample.ts", CreationCollisionOption.OpenIfExists);
+            String storageName = startTime.Year.ToString() + "_" + startTime.Month.ToString() + "_" + startTime.Day.ToString() + "_" + startTime.Hour.ToString() + "_" + startTime.Minute.ToString();  //文件名
+            sampleFile = await storageFolder.CreateFileAsync(storageName + ".ts", CreationCollisionOption.OpenIfExists);
             var stream = await sampleFile.OpenAsync(FileAccessMode.ReadWrite);//得到文件流
             //每m3u8Time个时间，获取一次url，得到的ts文件写入文件流中
             for (int j=0;j<recordNum;j++)
