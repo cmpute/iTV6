@@ -44,7 +44,7 @@ namespace iTV6.Views
             if (startTime < endTime)
             {
                 var folder = await RecordService.GetMyFolderAsync();
-                RecordService.Instance.Download(Channel, Source, URI, folder, startTime, endTime);
+                await RecordService.Instance.CreateDownload(Channel, Source, URI, startTime, endTime);
                 Completed = true;
                 this.Hide();
             }

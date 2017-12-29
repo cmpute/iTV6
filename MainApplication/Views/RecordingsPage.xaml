@@ -27,7 +27,7 @@
             <RowDefinition Height="48"/>
             <RowDefinition Height="48"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="48"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -53,10 +53,17 @@
                 </StackPanel>
             </Button>
         </RelativePanel>
+        <CommandBar Grid.Row="3">
+            <AppBarButton x:Name="del" Label="删除" Icon="Delete"/>
+        </CommandBar>
         <RelativePanel Grid.Row="1" Grid.Column="1">
             <TextBlock  Text="已完成任务" RelativePanel.AlignVerticalCenterWithPanel="True"
                        RelativePanel.AlignLeftWithPanel="True" FontSize="20" Margin="12,0"/>
        
         </RelativePanel>
+        <CommandBar Grid.Row="3" Grid.Column="1">
+            <AppBarButton x:Name="play" Label="播放" Icon="Play"/>
+            <AppBarButton x:Name="del2" Label="删除" Icon="Delete"/>
+        </CommandBar>
     </Grid>
 </Page>
