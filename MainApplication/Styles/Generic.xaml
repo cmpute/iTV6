@@ -11,6 +11,25 @@
 
     <Style x:Key="HeaderButtonStyle" TargetType="Button">
         <Setter Property="Margin" Value="4,0"/>
+        <Setter Property="Background" Value="Transparent"/>
     </Style>
     
+    <Style x:Key="ListButtonStyle" TargetType="Button">
+        <Setter Property="Margin" Value="4,0"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style x:Key="FilledListItemStyle" TargetType="ListViewItem">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="SingleLineListText" TargetType="TextBlock">
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Padding" Value="0, 10"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
 </ResourceDictionary>

@@ -14,21 +14,27 @@ namespace iTV6.ViewModels
 {
     public sealed class ShellViewModel : ViewModelBase
     {
-        bool ChangeToNightModeNotRegistered = true;
         public ShellViewModel()
         {
-            if (SettingService.ContainsKey("NightMode"))//读取设置：是不是夜间模式
-            {
-                Theme = ((bool)SettingService.GetValue("NightMode")) ? ElementTheme.Dark : ElementTheme.Light;
-            }
+            SettingService.Instance.RegisterSetting(this, nameof(NightMode));
         }
         
         public void FrameLoaded(object sender, RoutedEventArgs e)
         {
+            // 如果没有预定转到的界面则默认转到频道界面
+            if (NavigationService.DeferedShellAction.Action == null)
+                NavigationService.DeferedShellAction.Action = async (service) =>
+                {
+                    if (await CheckConnection())
+                        service.Navigate<ChannelsPage>();
+                    else
+                        service.Navigate<ConnectionStatusPage>("请检查IPv6的连接");
+                };
+
             // 注册外层菜单的导航服务
             NavigationService.ShellNavigation = new NavigationService((Host as Shell).NavigationFrame);
             NavigationService.ShellNavigation.Navigated += (csender, ce) =>
-              {
+            {
                   if (ce.NavigatedPageType == typeof(ChannelsPage))
                       SelectedMenuIndex = 0;
                   if (ce.NavigatedPageType == typeof(CollectionPage))
@@ -40,16 +46,8 @@ namespace iTV6.ViewModels
                   if (ce.NavigatedPageType == typeof(AboutPage))
                       SelectedMenuIndex = 4;
                   if (ce.NavigatedPageType == typeof(SettingsPage))
-                  {
                       SelectedMenuIndex = 5;
-                      if (ChangeToNightModeNotRegistered)
-                      {
-                          ((NavigationService.ShellNavigation._root.Content as SettingsPage).DataContext as SettingsViewModel).ChangeToNightMode += ChangeToNightMode;//为SettingsViewModel中的事件绑定方法
-                          ChangeToNightModeNotRegistered = false;
-                      }
-                  }
-              };
-            NavigateChannels.Execute();
+            };
         }
 
         private static async Task<bool> CheckConnection()
@@ -87,28 +85,15 @@ namespace iTV6.ViewModels
             set { Set(ref _SelectedMenuIndex, value); }
         }
 
-        public ElementTheme Theme//设置夜间模式用
+        /// <summary>
+        /// 设置夜间模式用
+        /// </summary>
+        public bool NightMode
         {
-            get
-            {
-                return _theme;
-            }
-            set
-            {
-                Set(ref _theme, value);
-
-            }
+            get { return _theme; }
+            set { Set(ref _theme, value); }
         }
-
-        private ElementTheme _theme = ElementTheme.Light;
-
-        void ChangeToNightMode(bool isOn)//切换到夜间模式
-        {
-            if (isOn)
-                Theme = ElementTheme.Dark;
-            else
-                Theme = ElementTheme.Light;
-        }
+        private bool _theme = false;
     }
 
     /// <summary>

@@ -29,7 +29,7 @@ namespace iTV6.Services
                 return _instance;
             }
         }
-        public async void Download(Uri RequestUri, StorageFolder storageFolder, DateTime startTime, DateTime endTime)
+        public async void Download(string channel, string source, Uri RequestUri, StorageFolder storageFolder, DateTime startTime, DateTime endTime)
         {
             //当前时间
             DateTime currentTime = System.DateTime.Now;
@@ -131,7 +131,7 @@ namespace iTV6.Services
         public async static Task<StorageFolder> GetMyFolderAsync()
         {
             StorageFolder folder = null;
-            string path = SettingService.GetValue("FilePath").ToString();
+            string path = SettingService.Instance["FilePath"].ToString();
             StorageFolder defaultfolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("iTV6_Download", CreationCollisionOption.OpenIfExists);
             if (!string.IsNullOrEmpty(path))
             {

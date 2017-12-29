@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
-using Windows.UI.Xaml.Navigation;
+﻿using iTV6.Utils;
+using System.Threading.Tasks;
+using Windows.UI.Xaml.Controls;
 
 namespace iTV6.Mvvm
 {
@@ -8,7 +9,17 @@ namespace iTV6.Mvvm
     /// </summary>
     public class ViewModelBase : BindableBase
     {
-        public Windows.UI.Xaml.Controls.Page Host { get; set; }
+        private Page _host;
+        public Page Host
+        {
+            get { return _host; }
+            set
+            {
+                _host = value;
+                HostLoaded.Invoke(value);
+            }
+        }
+        public DeferedAction<Page> HostLoaded { get; } = new DeferedAction<Page>();
 
         public virtual async void OnNavigatedTo(object paramter) { await Task.CompletedTask; }
         public virtual async void OnNavigatedFrom(object paramter) { await Task.CompletedTask; }

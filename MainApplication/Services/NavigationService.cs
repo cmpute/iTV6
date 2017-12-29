@@ -1,4 +1,5 @@
 ﻿using iTV6.Mvvm;
+using iTV6.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +24,18 @@ namespace iTV6.Services
         {
             _root = frame;
         }
-        
-        public static NavigationService ShellNavigation { get; set; }
+
+        private static NavigationService _shell = null;
+        public static NavigationService ShellNavigation
+        {
+            get { return _shell; }
+            set
+            {
+                _shell = value;
+                DeferedShellAction.Invoke(value);
+            }
+        }
+        public static DeferedAction<NavigationService> DeferedShellAction { get; } = new DeferedAction<NavigationService>();
 
         public event EventHandler<NavigatedEventArgs> Navigated;
 
@@ -34,7 +45,7 @@ namespace iTV6.Services
             ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedFrom(null);
             _root.Navigate(targetType);
             ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedTo(null);
-            Navigated.Invoke(this, new NavigatedEventArgs() { NavigatedPageType = targetType });
+            Navigated?.Invoke(this, new NavigatedEventArgs() { NavigatedPageType = targetType });
             
         }
 
@@ -44,7 +55,7 @@ namespace iTV6.Services
             ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedFrom(paramter);
             _root.Navigate(targetType);
             ((_root.Content as Page)?.DataContext as ViewModelBase)?.OnNavigatedTo(paramter);
-            Navigated.Invoke(this, new NavigatedEventArgs() { NavigatedPageType = targetType });
+            Navigated?.Invoke(this, new NavigatedEventArgs() { NavigatedPageType = targetType });
         }
     }
 

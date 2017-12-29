@@ -41,6 +41,8 @@ namespace iTV6.Models
         /// </summary>
         public Channel Channel { get; set; }
 
+        public override string ToString() => $"{Name}[{StartTime}]"; // 调试用
+
         /// <summary>
         /// 合并两个节目信息，并返回信息量更充足的信息
         /// </summary>
@@ -52,5 +54,18 @@ namespace iTV6.Models
                 return p1;
             return p1;
         }
+
+        public class TimeComparerImplement : IComparer<Program>, IEqualityComparer<Program>
+        {
+            public int Compare(Program x, Program y) => DateTime.Compare(x.StartTime, y.StartTime);
+
+            public bool Equals(Program x, Program y) => Compare(x, y) == 0;
+
+            public int GetHashCode(Program obj) => obj.StartTime.GetHashCode();
+        }
+        /// <summary>
+        /// 用来对节目进行按时间排序
+        /// </summary>
+        public static TimeComparerImplement TimeComparer => new TimeComparerImplement();
     }
 }

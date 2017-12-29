@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
+using iTV6.Models;
 using iTV6.Services;
 
 

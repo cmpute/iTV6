@@ -11,7 +11,7 @@
     xmlns:converter="using:iTV6.Converters"
     xmlns:vm="using:iTV6.ViewModels"
     mc:Ignorable="d"
-    RequestedTheme="{x:Bind ViewModel.Theme,Mode=OneWay}">
+    RequestedTheme="{x:Bind ViewModel.NightMode, Converter={StaticResource NightModeConverter}, Mode=OneWay}">
     
     <Page.DataContext>
         <vm:ShellViewModel x:Name="ViewModel" Host="{x:Bind}">
@@ -49,6 +49,17 @@
                 <x:Boolean>True</x:Boolean>
             </converter:ValueWhenConverter.Otherwise>
         </converter:ValueWhenConverter>
+        <converter:ValueWhenConverter x:Key="NightModeConverter">
+            <converter:ValueWhenConverter.When>
+                <x:Boolean>True</x:Boolean>
+            </converter:ValueWhenConverter.When>
+            <converter:ValueWhenConverter.Value>
+                <ElementTheme>Dark</ElementTheme>
+            </converter:ValueWhenConverter.Value>
+            <converter:ValueWhenConverter.Otherwise>
+                <ElementTheme>Light</ElementTheme>
+            </converter:ValueWhenConverter.Otherwise>
+        </converter:ValueWhenConverter>
     </Page.Resources>
     
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -68,7 +79,7 @@
                             </core:EventTriggerBehavior>
                         </interactivity:Interaction.Behaviors>
                         <FontIcon FontSize="20" Glyph="&#xE700;" Margin="6,0" Height="36" Width="36"/>
-                        <TextBlock Margin="16,0" Text="iTV6" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock Margin="16,0" Text="iTV6" FontWeight="Bold" VerticalAlignment="Center" FontSize="24"/>
                     </StackPanel>
                     <ListBox x:Name="MenuItems" Grid.Row="1"
                              Background="Transparent" Foreground="{ThemeResource ApplicationForegroundThemeBrush}"

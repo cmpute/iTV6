@@ -2,6 +2,8 @@
     x:Class="iTV6.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:iTV6.ViewModels"
+    xmlns:converter="using:iTV6.Converters"
     RequestedTheme="Light">
 
     <Application.Resources>
@@ -9,6 +11,32 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            
+            <vm:StaticViewModel x:Key="StaticVM"/>
+
+            <converter:PassConverter x:Key="ObjectConverter"/>
+            <converter:ValueWhenConverter x:Key="LoveConverter">
+                <converter:ValueWhenConverter.When>
+                    <x:Boolean>True</x:Boolean>
+                </converter:ValueWhenConverter.When>
+                <converter:ValueWhenConverter.Value>
+                    <x:String>&#xE00B;</x:String>
+                </converter:ValueWhenConverter.Value>
+                <converter:ValueWhenConverter.Otherwise>
+                    <x:String>&#xE006;</x:String>
+                </converter:ValueWhenConverter.Otherwise>
+            </converter:ValueWhenConverter>
+            <converter:ValueWhenConverter x:Key="VisibilityConverter">
+                <converter:ValueWhenConverter.When>
+                    <x:Boolean>True</x:Boolean>
+                </converter:ValueWhenConverter.When>
+                <converter:ValueWhenConverter.Value>
+                    <Visibility>Visible</Visibility>
+                </converter:ValueWhenConverter.Value>
+                <converter:ValueWhenConverter.Otherwise>
+                    <Visibility>Collapsed</Visibility>
+                </converter:ValueWhenConverter.Otherwise>
+            </converter:ValueWhenConverter>
         </ResourceDictionary>
     </Application.Resources>
     

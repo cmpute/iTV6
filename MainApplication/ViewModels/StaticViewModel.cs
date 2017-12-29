@@ -1,0 +1,70 @@
+﻿using iTV6.Models;
+using iTV6.Mvvm;
+using iTV6.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.UI.Popups;
+
+namespace iTV6.ViewModels
+{
+    /// <summary>
+    /// 为非实例化的XAML对象提供ViewModel（如各种Template）
+    /// </summary>
+    public class StaticViewModel : ViewModelBase
+    {
+        /// <summary>
+        /// 将节目添加到日历提醒
+        /// </summary>
+        public DelegateCommand<Models.Program> AddToCalendar { get; } = new DelegateCommand<Models.Program>(async (program) =>
+        {
+            switch (await CalendarService.Instance.CreateAppoint(program))
+            {
+                case CalendarService.Messages.Sucess:
+                    await new MessageDialog($"成功为节目 {program} 添加日历提醒", "添加提醒成功").ShowAsync();
+                    break;
+                case CalendarService.Messages.NotInitialized:
+                    await new MessageDialog("添加日历失败，请稍后重试", "提醒").ShowAsync();
+                    break;
+                case CalendarService.Messages.AlreadyExists:
+                    await new MessageDialog("节目提醒已存在", "添加日历提醒失败").ShowAsync();
+                    break;
+            };
+        });
+
+        /// <summary>
+        /// 切换频道的收藏状态
+        /// </summary>
+        public DelegateCommand<Channel> ToggleFavouriteChannel { get; } = new DelegateCommand<Channel>((channel) =>
+        {
+            if (CollectionService.Instance.CheckChannel(channel))
+                CollectionService.Instance.RemoveChannel(channel);
+            else
+                CollectionService.Instance.AddChannel(channel);
+        });
+
+        /// <summary>
+        /// 切换节目的收藏状态
+        /// </summary>
+        public DelegateCommand<Models.Program> ToggleFavouriteProgram { get; } = new DelegateCommand<Models.Program>((program) =>
+        {
+            if (CollectionService.Instance.CheckProgram(program))
+                CollectionService.Instance.RemoveProgram(program);
+            else
+                CollectionService.Instance.AddProgram(program);
+        });
+
+        /// <summary>
+        /// 将节目固定为磁贴
+        /// </summary>
+        public DelegateCommand<Channel> PinChannelToStart { get; } = new DelegateCommand<Channel>(async (channel) =>
+        {
+            if(await TileService.Instance.PinChannel(channel))
+                await new MessageDialog($"已将 {channel.Name} 固定到开始菜单", "添加磁贴成功").ShowAsync();
+            else
+                await new MessageDialog($"固定磁贴失败，请检查权限设置", "添加磁贴失败").ShowAsync();
+        });
+    }
+}

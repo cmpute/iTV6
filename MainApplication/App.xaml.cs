@@ -1,8 +1,12 @@
-﻿using System;
+﻿using iTV6.Models;
+using iTV6.Services;
+using iTV6.Views;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -30,6 +34,12 @@ namespace iTV6
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            this.UnhandledException += HandledException;
+        }
+
+        private async void HandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            await new Windows.UI.Popups.MessageDialog(e.Message, e.Exception.ToString()).ShowAsync();
         }
 
         /// <summary>
@@ -41,6 +51,9 @@ namespace iTV6
         {
             // 调试用
             Utils.Async.InvokeAndWait(async () => await Utils.Debug.DebugMethod());
+
+            // 读取缓存
+            CacheService.RestoreCache();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -71,6 +84,14 @@ namespace iTV6
                     // 参数
                     rootFrame.Navigate(typeof(Shell), e.Arguments);
                 }
+
+                // 如果是从磁贴引导过来的
+                if (!string.IsNullOrWhiteSpace(e.Arguments))
+                    if (NavigationService.ShellNavigation == null)
+                        NavigationService.DeferedShellAction.Action = (service) => service.Navigate<ChannelsPage>(Channel.GetChannel(e.Arguments));
+                    else
+                        NavigationService.ShellNavigation.Navigate<ChannelsPage>(Channel.GetChannel(e.Arguments));
+
                 // 确保当前窗口处于活动状态
                 Window.Current.Activate();
             }
@@ -93,10 +114,13 @@ namespace iTV6
         /// </summary>
         /// <param name="sender">挂起的请求的源。</param>
         /// <param name="e">有关挂起请求的详细信息。</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: 保存应用程序状态并停止任何后台活动
+
+            // 保存应用程序状态并停止任何后台活动
+            await CacheService.SaveCache();
+
             deferral.Complete();
         }
     }
