@@ -47,11 +47,21 @@ namespace iTV6.Services
             //录制时间的长度
             TimeSpan durationTime = endTime - startTime;
             //需要改进
-            int m3u8Time = 1;   //源是清华的话，每个m3u8文件记录的长度为1分钟，单位：min
+            int m3u8Time;  
+            //源是清华的话，每个m3u8文件记录的长度为1分钟，单位：min
+            if(source == "清华")
+            {
+                m3u8Time = 1;
+            }
+            else//其他源需要协商
+            {
+                m3u8Time = 1;
+            }
             int recordNum = (int)(durationTime.TotalMinutes) / m3u8Time;
             //创建目录，创建文件流
             StorageFile sampleFile = null;
-            String storageName = startTime.Year.ToString() + "_" + startTime.Month.ToString() + "_" + startTime.Day.ToString() + "_" + startTime.Hour.ToString() + "_" + startTime.Minute.ToString();  //文件名
+            String storageName = channel + "_" + source + "_" + 
+                              startTime.Year.ToString() + "_" + startTime.Month.ToString() + "_" + startTime.Day.ToString() + "_" + startTime.Hour.ToString() + "_" + startTime.Minute.ToString();  //文件名
             sampleFile = await storageFolder.CreateFileAsync(storageName + ".ts", CreationCollisionOption.OpenIfExists);
             var stream = await sampleFile.OpenAsync(FileAccessMode.ReadWrite);//得到文件流
             //每m3u8Time个时间，获取一次url，得到的ts文件写入文件流中
