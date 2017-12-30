@@ -37,5 +37,45 @@ namespace iTV6.ViewModels
             await new MessageDialog("请到频道页面选取节目和视频源，然后点击右上角的的“添加录播”按钮。", "提示").ShowAsync();
             NavigationService.ShellNavigation.Navigate<ChannelsPage>();
         });
+
+        private DownloadTask _selectedTask;
+        public DownloadTask SelectedTask
+        {
+            get { return _selectedTask;}
+            set { Set(ref _selectedTask, value);}
+        }
+
+        private DownloadTask _selectedCompletedTask;
+        public DownloadTask SelectedCompletedTask
+        {
+            get { return _selectedCompletedTask; }
+            set { Set(ref _selectedCompletedTask, value); }
+        }
+
+        public async void DeleteTask()
+        {
+            if (SelectedTask != null)
+            {
+                SelectedTask.StopDownload();
+                await SelectedTask.DeleteFile();
+                TaskList.Remove(SelectedTask);
+                SelectedTask = null;
+            }
+        }
+
+        public async void DeleteCompletedTask()
+        {
+            if (SelectedCompletedTask != null)
+            {
+                await SelectedCompletedTask.DeleteFile();
+                CompletedTaskList.Remove(SelectedCompletedTask);
+                SelectedCompletedTask = null;
+            }
+        }
+
+        public void PlayCompletedTask()
+        {
+
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace iTV6.Models
         Pending,
         Downloading,
         Completed,
-        Falied
+        Failed
     }
     public class DownloadTask : BindableBase
     {
@@ -53,6 +53,12 @@ namespace iTV6.Models
             StartTime = startTime;
             EndTime = endTime;
             stopped = false;
+            FileName= Channel + "_" + Source + "_" +
+                              StartTime.Year.ToString() + "_" + 
+                              StartTime.Month.ToString() + "_" + 
+                              StartTime.Day.ToString() + "_" + 
+                              StartTime.Hour.ToString() + "_" + 
+                              StartTime.Minute.ToString();  //文件名
             Download();
         }
 
@@ -66,6 +72,8 @@ namespace iTV6.Models
             //等到系统时间到达startTime，才开始录制工作
             while (!startTimeOK)
             {
+                if (stopped)
+                    break;
                 await Task.Delay(5000);
                 currentTime = System.DateTime.Now;
                 intervalTime = StartTime - currentTime;
@@ -88,13 +96,14 @@ namespace iTV6.Models
             int recordNum = (int)(durationTime.TotalMinutes) / m3u8Time;
             //创建目录，创建文件流
             StorageFile sampleFile = null;
-            String storageName = Channel + "_" + Source + "_" +
-                              StartTime.Year.ToString() + "_" + StartTime.Month.ToString() + "_" + StartTime.Day.ToString() + "_" + StartTime.Hour.ToString() + "_" + StartTime.Minute.ToString();  //文件名
+            String storageName = FileName;
             sampleFile = await Folder.CreateFileAsync(storageName + ".ts", CreationCollisionOption.OpenIfExists);
             var stream = await sampleFile.OpenAsync(FileAccessMode.ReadWrite);//得到文件流
             //每m3u8Time个时间，获取一次url，得到的ts文件写入文件流中
             for (int j = 0; j < recordNum; j++)
             {
+                if (stopped)
+                    break;
                 //StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
                 // await storageFolder.CreateFileAsync("sample.txt", CreationCollisionOption.ReplaceExisting);
                 //获取m3u8文件
@@ -137,8 +146,13 @@ namespace iTV6.Models
 
             }
             stream.Dispose();//关闭文件流
-            State = DownloadState.Completed;
-            DownloadCompleted?.Invoke(this);
+            if (stopped)
+                State = DownloadState.Failed;
+            else
+            {
+                State = DownloadState.Completed;
+                DownloadCompleted?.Invoke(this);
+            }
         }
 
         public ArrayList TSposition(string text)
@@ -157,6 +171,20 @@ namespace iTV6.Models
                 i = tempPos + 3;
             }
             return newlist;
+        }
+
+        public void StopDownload()
+        {
+            stopped = true;
+        }
+        public async Task<bool> DeleteFile()
+        {
+            var file = await Folder.TryGetItemAsync(FileName + ".ts") as StorageFile;
+            if (file != null)
+            {
+                await file.DeleteAsync();
+            }
+            return true;
         }
     }
 }

@@ -5,6 +5,7 @@
     xmlns:local="using:iTV6.Views"
     xmlns:vm="using:iTV6.ViewModels"
     xmlns:m="using:iTV6.Models"
+    xmlns:converter="using:iTV6.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -70,24 +71,28 @@
                 </StackPanel>
             </Button>
         </RelativePanel>
-        <ListView Grid.Row="2" ItemContainerStyle="{StaticResource FilledListItemStyle}"
-            ItemsSource="{x:Bind ViewModel.TaskList}"
-                  ItemTemplate="{StaticResource DownloadTaskViewTemplate}">
+        <ListView Grid.Row="2" 
+                  ItemContainerStyle="{StaticResource FilledListItemStyle}"
+                  ItemsSource="{x:Bind ViewModel.TaskList}"
+                  ItemTemplate="{StaticResource DownloadTaskViewTemplate}"
+                  SelectedItem="{x:Bind ViewModel.SelectedTask,Mode=TwoWay,Converter={StaticResource ObjectConverter}}">
         </ListView>
         <CommandBar Grid.Row="3">
-            <AppBarButton x:Name="del" Label="删除" Icon="Delete"/>
+            <AppBarButton x:Name="del" Label="删除" Icon="Delete" Click="{x:Bind ViewModel.DeleteTask}"/>
         </CommandBar>
         <RelativePanel Grid.Row="1" Grid.Column="1">
             <TextBlock  Text="已完成任务" RelativePanel.AlignVerticalCenterWithPanel="True"
                        RelativePanel.AlignLeftWithPanel="True" FontSize="20" Margin="12,0"/>
         </RelativePanel>
-        <ListView Grid.Row="2" Grid.Column="1" ItemContainerStyle="{StaticResource FilledListItemStyle}"
-            ItemsSource="{x:Bind ViewModel.CompletedTaskList}"
-                  ItemTemplate="{StaticResource DownloadTaskViewTemplate}">
+        <ListView Grid.Row="2" Grid.Column="1" 
+                  ItemContainerStyle="{StaticResource FilledListItemStyle}"
+                  ItemsSource="{x:Bind ViewModel.CompletedTaskList}"
+                  ItemTemplate="{StaticResource DownloadTaskViewTemplate}"
+                  SelectedItem="{x:Bind ViewModel.SelectedCompletedTask,Mode=TwoWay,Converter={StaticResource ObjectConverter}}">
         </ListView>
         <CommandBar Grid.Row="3" Grid.Column="1">
-            <AppBarButton x:Name="play" Label="播放" Icon="Play"/>
-            <AppBarButton x:Name="del2" Label="删除" Icon="Delete"/>
+            <AppBarButton x:Name="play" Label="播放" Icon="Play" Click="{x:Bind ViewModel.PlayCompletedTask}"/>
+            <AppBarButton x:Name="del2" Label="删除" Icon="Delete" Click="{x:Bind ViewModel.DeleteCompletedTask}"/>
         </CommandBar>
     </Grid>
 </Page>
