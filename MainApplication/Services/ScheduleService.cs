@@ -289,6 +289,107 @@ namespace iTV6.Services
             for (int i = 1; i < programs.Count; i++)
                 programs[i - 1].Duration = programs[i].StartTime - programs[i - 1].StartTime;
         }
+
+        /// <summary>
+        /// 输入频道在节目单中的id（即为uniquekey），返回东北大学的id
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public string ScheduletoNEU(string s)
+        {
+            string result = "";
+            switch (s)
+            {
+                case "cctv1": result = "cctv1hd"; break;
+                case "cctv2": result = "cctv2hd"; break;
+                case "cctv3": result = "cctv3hd"; break;
+                case "cctv4": result = "cctv4hd"; break;
+                case "cctv5": result = "cctv5hd"; break;
+                case "cctv6": result = "cctv6hd"; break;
+                case "cctv7": result = "cctv7hd"; break;
+                case "cctv8": result = "cctv8hd"; break;
+                case "cctv9": result = "cctv9hd"; break;
+                case "cctv10": result = "cctv10hd"; break;
+                case "cctv11": result = "cctv11"; break;
+                case "cctv12": result = "cctv12hd"; break;
+                case "cctv13": result = "cctv13"; break;
+                case "cctv14": result = "cctv14hd"; break;
+                case "cctv15": result = "cctv15"; break;
+                case "cctv16": result = "cctv16"; break;
+                case "cctv5-plus": result = "cctv5hd"; break;
+                case "ahtv1": result = "ahhd"; break;
+                case "btv1": result = "bjhd"; break;
+                case "btv12": result = "bjjshd"; break;
+                case "bingtuan": result = "bttv"; break;
+                case "btv10": result = "btv10"; break;
+                case "btv2": result = "btv2hd"; break;
+                case "btv3": result = "btv3"; break;
+                case "btv4": result = "btv4hd"; break;
+                case "btv5": result = "btv5"; break;
+                case "btv6": result = "btv6hd"; break;
+                case "btv7": result = "btv7"; break;
+                case "btv8": result = "btv8"; break;
+                case "btv9": result = "btv9hd"; break;
+                case "cetv1": result = "cetv1hd"; break;
+                case "cetv3": result = "cetv3"; break;
+                case "cetv4": result = "cetv4"; break;
+                case "cctv19": result = "cgtnhd"; break;
+                case "chc1": result = "chcatv"; break;
+                case "chc3": result = "chchd"; break;
+                case "chc2": result = "chctv"; break;
+                case "ccqtv1": result = "cqhd"; break;
+                case "dongfang1": result = "dfhd"; break;
+                case "discovery": result = "discovery"; break;
+                case "fjtv2": result = "dnhd"; break;
+                case "cctvpayfee3": result = "dyjctv"; break;
+                case "phoenix5": result = "fhdy"; break;
+                case "phoenix1": result = "fhzw"; break;
+                case "phoenix-infonews": result = "fhzx"; break;
+                case "cctvpayfee4": result = "fyjctv"; break;
+                case "cctvpayfee2": result = "fyyytv"; break;
+                case "cctvpayfee1": result = "fyzqtv"; break;
+                case "gdtv1": result = "gdhd"; break;
+                case "cctvpayfee8": result = "gfjstv"; break;
+                case "gstv1": result = "gstv"; break;
+                case "guanxi1": result = "gxtv"; break;
+                case "guizoutv1": result = "gztv"; break;
+                case "hubei1": result = "hbhd"; break;
+                case "hebei1": result = "hebhd"; break;
+                case "cctvpayfee7": result = "hjjctv"; break;
+                case "hljtv1": result = "hljhd"; break;
+                case "hunantv1": result = "hnhd"; break;
+                case "hntv1": result = "hnhd"; break;
+                case "jilin1": result = "jltv"; break;
+                case "jstv1": result = "jshd"; break;
+                case "jxtv1": result = "jxhd"; break;
+                case "hunantv2": result = "jykttv"; break;
+                case "lntv1": result = "lnhd"; break;
+                case "lntv5": result = "lnjyqs"; break;
+                case "lntv6": result = "lnsh"; break;
+                case "lntv-sport": result = "lnty"; break;
+                case "lntv2": result = "lnysj"; break;
+                case "tctc1": result = "lytv"; break;
+                case "ngc-cn": result = "natlgeo"; break;
+                case "nmgtv1": result = "nmtv"; break;
+                case "nxtv2": result = "nxtv"; break;
+                case "qhtv1": result = "qhtv"; break;
+                case "sctv1": result = "schd"; break;
+                case "sdtv1": result = "sdhd"; break;
+                case "cctvpayfee5": result = "sjdltv"; break;
+                case "xingkong1": result = "startv"; break;
+                case "sxtv1": result = "sxrtv"; break;
+                case "shxitv1": result = "sxtv"; break;
+                case "sztv1": result = "szhd"; break;
+                case "tjtv1": result = "tjhd"; break;
+                case "toonmax1": result = "xdkttv"; break;
+                case "xjtv1": result = "xjtv"; break;
+                case "xmtv5": result = "xmtv"; break;
+                case "xizangtv2": result = "xztv"; break;
+                case "yntv1": result = "yntv"; break;
+                case "zjtv1": result = "zjhd"; break;
+            }
+            return result;
+        }
     }
 }
     
