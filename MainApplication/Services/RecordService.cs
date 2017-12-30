@@ -18,7 +18,8 @@ namespace iTV6.Services
     {
         public RecordService()
         {
-             TaskList = new ObservableCollection<DownloadTask>();
+            TaskList = new ObservableCollection<DownloadTask>();
+            CompletedTaskList = new ObservableCollection<DownloadTask>();
         }
         private static RecordService _instance;
         /// <summary>
@@ -37,15 +38,26 @@ namespace iTV6.Services
         /// 下载任务列表
         /// </summary>
         public ObservableCollection<DownloadTask> TaskList { get; }
+        public ObservableCollection<DownloadTask> CompletedTaskList { get; }
         /// <summary>
         /// 创建下载任务
         /// </summary>
         public async Task<bool> CreateDownload(string channel, string source, Uri requestUri, DateTime startTime, DateTime endTime)
         {
             var folder = await GetMyFolderAsync();
-            TaskList.Add(new DownloadTask(channel, source, requestUri, folder, startTime, endTime));
-
+            var task = new DownloadTask(channel, source, requestUri, folder, startTime, endTime);
+            TaskList.Add(task);
+            task.DownloadCompleted += OnTaskCompleted;
             return true;
+        }
+
+        public void OnTaskCompleted(DownloadTask task)
+        {
+            if (task.State == DownloadState.Completed)
+            {
+                TaskList.Remove(task);
+                CompletedTaskList.Add(task);
+            }
         }
         /// <summary>
         /// 获取存储文件夹

@@ -17,6 +17,7 @@ namespace iTV6.ViewModels
         public RecordingsViewModel() { }
 
         public ObservableCollection<DownloadTask> TaskList => RecordService.Instance.TaskList;
+        public ObservableCollection<DownloadTask> CompletedTaskList => RecordService.Instance.CompletedTaskList;
 
         public override async void OnNavigatedTo(object parameter)
         {

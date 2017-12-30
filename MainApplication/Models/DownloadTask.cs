@@ -19,6 +19,9 @@ namespace iTV6.Models
     }
     public class DownloadTask : BindableBase
     {
+        public delegate void DownloadStateChanged(DownloadTask task);
+        public event DownloadStateChanged DownloadCompleted;
+
         public string Channel { get; set; }
         public string Source { get; set; }
         public DateTime StartTime { get; set; }
@@ -135,6 +138,7 @@ namespace iTV6.Models
             }
             stream.Dispose();//关闭文件流
             State = DownloadState.Completed;
+            DownloadCompleted?.Invoke(this);
         }
 
         public ArrayList TSposition(string text)
