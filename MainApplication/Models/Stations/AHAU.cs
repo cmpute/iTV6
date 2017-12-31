@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using iTV6.Services;
 
 namespace iTV6.Models.Stations
 {
@@ -96,7 +97,7 @@ namespace iTV6.Models.Stations
                                     source = $"http://itv3.ahau.edu.cn/{channelCode}/app/live.m3u8";
                                     continue; // 链接能打开但是只有黑屏
                                 default:
-                                    System.Diagnostics.Debug.WriteLine($"不识别的安徽农大视频源: {link}");
+                                    LoggingService.Debug("Television", $"不识别的安徽农大视频源: {link}");
                                     continue;
                             }
                         }
@@ -132,7 +133,7 @@ namespace iTV6.Models.Stations
                                                 chSpell = chSpell.Substring(0, 5) + "hd";
                                         }
                                     }
-                                    // System.Diagnostics.Debug.WriteLine($"[{channelCode}] -> [{chSpell:10}]");
+                                    // LoggingService.Debug("Television", $"[{channelCode}] -> [{chSpell:10}]");
                                 }
                             }
                             else
@@ -258,7 +259,7 @@ namespace iTV6.Models.Stations
                                         source = $"{serverPrefix}/{channelCode}/sd/live.m3u8";
                                         break;
                                     default:
-                                        System.Diagnostics.Debug.WriteLine($"不识别的安徽农大视频源: {link}");
+                                        LoggingService.Debug("Television", $"不识别的安徽农大视频源: {link}");
                                         continue;
                                 }
                             }
@@ -281,7 +282,7 @@ namespace iTV6.Models.Stations
                                 Channel = channel
                             }
                         });
-                        System.Diagnostics.Debug.WriteLine($"[AHAU|{group}]{chName:10} : {chSpell:10}");
+                        LoggingService.Debug("Television", $"[AHAU|{group}]{chName:10} : {chSpell:10}");
                     }
                     else
                         group = cNode.InnerText;
@@ -289,7 +290,7 @@ namespace iTV6.Models.Stations
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message, "Error");
+                LoggingService.Debug("Television", e.Message, Windows.Foundation.Diagnostics.LoggingLevel.Error);
                 System.Diagnostics.Debugger.Break();
             }
             return result;

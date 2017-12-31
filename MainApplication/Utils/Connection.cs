@@ -1,4 +1,5 @@
-﻿using System;
+﻿using iTV6.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,8 +29,7 @@ namespace iTV6.Utils
             }
             catch(Exception e)
             {
-                System.Diagnostics.Debug.WriteLine("在测试连接性中发生异常");
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                LoggingService.Debug("Service", "在测试连接性中发生异常：" + e.Message);
                 return false;
             }
         }

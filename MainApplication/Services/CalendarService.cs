@@ -20,7 +20,7 @@ namespace iTV6.Services
         {
             var store = await AppointmentManager.RequestStoreAsync(AppointmentStoreAccessType.AppCalendarsReadWrite);
             _calendar = await store.CreateAppointmentCalendarAsync("节目提醒");
-            System.Diagnostics.Debug.WriteLine($"成功获得日历对象");
+            LoggingService.Debug("Service", $"成功获得日历对象");
 #if DEBUG
             // 在调试状态下每次都清空节目提醒
             await DeleteAllAppointments();
@@ -67,7 +67,7 @@ namespace iTV6.Services
             };
             await _calendar.SaveAppointmentAsync(appointment);
             _container.Values.Add(program.UniqueId, appointment.LocalId);
-            System.Diagnostics.Debug.WriteLine($"为节目{program}添加日历提醒成功，ID为{appointment.LocalId}");
+            LoggingService.Debug("Service", $"为节目{program}添加日历提醒成功，ID为{appointment.LocalId}");
             return Messages.Sucess;
         }
 

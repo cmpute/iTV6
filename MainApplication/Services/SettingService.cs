@@ -78,6 +78,8 @@ namespace iTV6.Services
                         if (!ReferenceEquals(notifyobj, sender))
                             SetProperty(notifyobj, propertyName, newValue);
                 };
+
+            // TODO: 考虑利用为ApplicationData.Current.LocalSettings.Values.MapChanged事件也添加更新
         }
 
         /// <summary>

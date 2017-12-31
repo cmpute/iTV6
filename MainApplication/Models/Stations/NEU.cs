@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using iTV6.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,12 +65,12 @@ namespace iTV6.Models.Stations
                             Channel = channel
                         }
                     });
-                    System.Diagnostics.Debug.WriteLine($"[NEU]{chName:10} : {chCodeUnified:10}");
+                    LoggingService.Debug("Television", $"[NEU]{chName:10} : {chCodeUnified:10}");
                 }
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message, "Error");
+                LoggingService.Debug("Television", e.Message, Windows.Foundation.Diagnostics.LoggingLevel.Error);
                 System.Diagnostics.Debugger.Break();
             }
             return result;
@@ -87,7 +88,7 @@ namespace iTV6.Models.Stations
             string startTick = start.ToUnixTimeSeconds().ToString();
             string endTick = end.ToUnixTimeSeconds().ToString();
             string link = $"http://media2.neu6.edu.cn/review/program-{startTick}-{endTick}-{channel.UniqueId}.m3u8";
-            System.Diagnostics.Debug.WriteLine("回看地址：" + link);
+            LoggingService.Debug("Television", "回看地址：" + link);
             return new Uri(link);
         }
 

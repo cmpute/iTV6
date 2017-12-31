@@ -128,13 +128,15 @@ namespace iTV6.Services
                     catch (UnpackException ue)
                     {
                         // 在缓存格式发生变化时（如版本升级）可能会发生
-                        System.Diagnostics.Debug.WriteLine("反序列化错误：" + ue.Message);
+                        LoggingService.Debug("Service", "反序列化错误：" + ue.Message,
+                            Windows.Foundation.Diagnostics.LoggingLevel.Error);
                         expire = DateTime.MinValue; // 让缓存文件失效
                     }
                     catch(Exception e)
                     {
                         // 其他异常
-                        System.Diagnostics.Debug.WriteLine($"反序列化过程中发生{e.GetType().Name}：{e.Message}");
+                        LoggingService.Debug("Service", $"反序列化过程中发生{e.GetType().Name}：{e.Message}",
+                            Windows.Foundation.Diagnostics.LoggingLevel.Error);
                         expire = DateTime.MinValue; // 让缓存文件失效
                     }
                 }

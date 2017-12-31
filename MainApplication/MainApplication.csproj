@@ -117,6 +117,7 @@
     <Compile Include="Mvvm\ViewModelBase.cs" />
     <Compile Include="Services\CacheService.cs" />
     <Compile Include="Services\CalendarService.cs" />
+    <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\ScheduleService.cs" />
     <Compile Include="Services\CollectionService.cs" />
     <Compile Include="Services\NavigationService.cs" />
@@ -245,7 +246,12 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\BackgroundTask\BackgroundTask.csproj">
+      <Project>{01476440-7538-4dce-b5a5-48b120502c61}</Project>
+      <Name>BackgroundTask</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

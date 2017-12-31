@@ -55,7 +55,7 @@ namespace iTV6.Models.Stations
                         else
                             ch = Channel.GetChannel(vid, name);
                         _vidList.Add(new Tuple<Channel, string>(ch, vid));
-                        System.Diagnostics.Debug.WriteLine($"[THU|{category}]{name:10} : {vid:10}");
+                        LoggingService.Debug("Television", $"[THU|{category}]{name:10} : {vid:10}");
                     }
                 }
                 
@@ -121,7 +121,7 @@ namespace iTV6.Models.Stations
             }
             catch(Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message, "Error");
+                LoggingService.Debug("Television", e.Message, Windows.Foundation.Diagnostics.LoggingLevel.Error);
                 System.Diagnostics.Debugger.Break();
             }
             return result;
