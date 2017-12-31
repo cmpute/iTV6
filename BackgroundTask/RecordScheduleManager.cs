@@ -1,0 +1,91 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.Storage;
+
+namespace iTV6.Background
+{
+    /// <summary>
+    /// 用来管理录播计划，前台与后台交互将主要通过这个类来实现
+    /// </summary>
+    public static class RecordScheduleManager
+    {
+        /// <summary>
+        /// 保存录播计划的设置位置
+        /// </summary>
+        const string containerKey = "Schedule";
+        public static ApplicationDataContainer Container => 
+            ApplicationData.Current.LocalSettings.CreateContainer(
+                containerKey, ApplicationDataCreateDisposition.Always);
+
+        /// <summary>
+        /// 获取目前所有的录播计划
+        /// </summary>
+        public static IEnumerable<RecordSchedule> GetSchedules()
+            =>Container.Containers.Values.Select((container) => new RecordSchedule(container.Name));
+
+        /// <summary>
+        /// 创建新的录播计划
+        /// </summary>
+        /// <param name="identifier">标识名</param>
+        /// <param name="playlistUri">直播文件的地址</param>
+        /// <param name="startTime">开始录播的时间</param>
+        /// <param name="recordSpan">录播时长</param>
+        public static RecordSchedule CreateSchedule(
+            string identifier, string playlistUri, DateTimeOffset startTime, TimeSpan recordSpan)
+        {
+            var key = EncodeIndentifier(identifier);
+            var schedule = new RecordSchedule(key)
+            {
+                PlaylistUri = playlistUri,
+                StartTime = startTime,
+                ScheduleSpan = recordSpan,
+                Status = ScheduleStatus.Scheduled
+            };
+            return schedule;
+        }
+
+        /// <summary>
+        /// 将标识符重新编码一方面便于压缩表示，另一方面避免非法字符
+        /// </summary>
+        /// <param name="identifier">标识符</param>
+        /// <returns>压缩后的ID，长度为6位</returns>
+        private static string EncodeIndentifier(string identifier)
+            => Convert.ToBase64String(BitConverter.GetBytes(identifier.GetHashCode())).Remove(6);
+
+        /// <summary>
+        /// 立即开始录播任务
+        /// </summary>
+        /// <param name="Identifier">录播任务的标识符</param>
+        public static async void LaunchSchedule(string identifier)
+        {
+            // 获取计划对象
+            var key = EncodeIndentifier(identifier);
+            var schedule = new RecordSchedule(key);
+
+            // 获取视频片段长度
+            HttpClient client = new HttpClient();
+            var m3u = await client.GetStringAsync(schedule.PlaylistUri);
+            client.Dispose();
+            const string tag = "#EXT-X-TARGETDURATION";
+            var tag_index = m3u.IndexOf(tag) + tag.Length + 1;
+            string interval = m3u.Substring(tag_index, m3u.IndexOf('\n', tag_index) - tag_index);
+            schedule.SegmentLength = TimeSpan.FromSeconds(double.Parse(interval));
+
+            // 创建下载任务
+            await schedule.GenerateDownloadTask();
+            schedule.Status = ScheduleStatus.Downloading;
+        }
+
+        /// <summary>
+        /// 终止下载计划
+        /// </summary>
+        public static async void TerminateSchedule()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

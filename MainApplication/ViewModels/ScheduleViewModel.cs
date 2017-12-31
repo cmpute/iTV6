@@ -15,9 +15,9 @@ namespace iTV6.ViewModels
 {
     public class ScheduleViewModel : ViewModelBase
     {
-        public DelegateCommand CustomPlayback => new DelegateCommand(() =>
+        public DelegateCommand CustomPlayback => new DelegateCommand(async () =>
         {
-            new PlaybackDialog().ShowAsync();
+            await new PlaybackDialog().ShowAsync();
         });
 
         public CollectionViewSource ScheduleChannelList { get; set; } = new CollectionViewSource();
