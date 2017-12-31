@@ -42,7 +42,6 @@ namespace iTV6.Background
             {
                 schedule.Status = ScheduleStatus.Decoding;
                 await schedule.ConcatenateSegments();
-                schedule.Status = ScheduleStatus.Completed;
                 // TODO: 生成下载成功的消息提醒
             }
             _defer.Complete();

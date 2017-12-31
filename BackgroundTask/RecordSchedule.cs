@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace iTV6.Background
 {
@@ -68,6 +70,15 @@ namespace iTV6.Background
         }
 
         /// <summary>
+        /// 保存最终文件的路径
+        /// </summary>
+        public string SavePath
+        {
+            get { return _container.Values[nameof(SavePath)] as string; }
+            set { _container.Values[nameof(SavePath)] = value; }
+        }
+
+        /// <summary>
         /// 开始下载下一个需要下载的文件
         /// </summary>
         /// <returns>后台下载任务</returns>
@@ -118,8 +129,18 @@ namespace iTV6.Background
         internal async Task ConcatenateSegments()
         {
             System.Diagnostics.Debug.WriteLine("开始连接缓存");
+            var folder = await ApplicationData.Current.LocalCacheFolder.GetFolderAsync(_key);
+            var files = await folder.GetFilesAsync();
+            // TODO: 选择指定文件写入
+            var target = await ApplicationData.Current.LocalFolder.CreateFileAsync("result.ts", CreationCollisionOption.ReplaceExisting);
+            using (var ws = await target.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                foreach (var file in files.OrderBy(file => file.Name))
+                    await ws.WriteAsync(await FileIO.ReadBufferAsync(file));
+                await ws.FlushAsync();
+            }
+
             Status = ScheduleStatus.Completed;
-            await Task.CompletedTask;
         }
     }
 
