@@ -81,7 +81,7 @@
                 </interactivity:Interaction.Behaviors>
             </Grid>
         </DataTemplate>
-        <c:ToStringConverter x:Key="SimpleTimeConverter" FormatString="HH:MM"/>
+        <c:ToStringConverter x:Key="SimpleTimeConverter" FormatString="HH:mm"/>
     </Page.Resources>
 
     <Grid>
