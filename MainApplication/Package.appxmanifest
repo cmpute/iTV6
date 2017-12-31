@@ -21,6 +21,11 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
+        <Extension Category="windows.backgroundTasks" EntryPoint="iTV6.Background.ScheduleTask">
+          <BackgroundTasks>
+            <Task Type="timer" />
+          </BackgroundTasks>
+        </Extension>
         <Extension Category="windows.backgroundTasks" EntryPoint="iTV6.Background.DownloadTask">
           <BackgroundTasks>
             <Task Type="systemEvent" />

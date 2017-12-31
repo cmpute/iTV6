@@ -88,7 +88,7 @@ namespace iTV6.Background
                 if (!line.StartsWith("#") && !string.IsNullOrWhiteSpace(line))
                 {
                     var path = _key + "\\" + line;
-                    var file = await ApplicationData.Current.LocalFolder.TryGetItemAsync(path);
+                    var file = await ApplicationData.Current.LocalCacheFolder.TryGetItemAsync(path);
                     if (file == null)
                     {
                         Guid taskId;

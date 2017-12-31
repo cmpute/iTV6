@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Background;
 using Windows.Storage;
 
 namespace iTV6.Background
@@ -25,7 +26,7 @@ namespace iTV6.Background
         /// 获取目前所有的录播计划
         /// </summary>
         public static IEnumerable<RecordSchedule> GetSchedules()
-            =>Container.Containers.Values.Select((container) => new RecordSchedule(container.Name));
+            => Container.Containers.Values.Select((container) => new RecordSchedule(container.Name));
 
         /// <summary>
         /// 创建新的录播计划
@@ -54,13 +55,22 @@ namespace iTV6.Background
         /// <param name="identifier">标识符</param>
         /// <returns>压缩后的ID，长度为6位</returns>
         private static string EncodeIndentifier(string identifier)
-            => Convert.ToBase64String(BitConverter.GetBytes(identifier.GetHashCode())).Remove(6);
+        {
+            // 某个hash算法
+            UInt64 hash = 3074457345618258791ul;
+            foreach (var ch in identifier)
+            {
+                hash += ch;
+                hash *= 3074457345618258799ul;
+            }
+            return Convert.ToBase64String(BitConverter.GetBytes(hash)).TrimEnd('=');
+        }
 
         /// <summary>
         /// 立即开始录播任务
         /// </summary>
         /// <param name="Identifier">录播任务的标识符</param>
-        public static async void LaunchSchedule(string identifier)
+        public static async void LaunchRecording(string identifier)
         {
             // 获取计划对象
             var key = EncodeIndentifier(identifier);
@@ -78,6 +88,30 @@ namespace iTV6.Background
             // 创建下载任务
             await schedule.GenerateDownloadTask();
             schedule.Status = ScheduleStatus.Downloading;
+        }
+
+        /// <summary>
+        /// 开始录播计划任务，定时开始下载
+        /// </summary>
+        /// <param name="identifier"></param>
+        public static async void LaunchSchedule(string identifier)
+        {
+            // 获取后台运行权限，这个感觉不是必要的？
+            var status = await BackgroundExecutionManager.RequestAccessAsync();
+            if (status == BackgroundAccessStatus.Unspecified || status == BackgroundAccessStatus.Denied)
+            {
+                // TODO: 权限被拒绝，需要提示用户
+                return;
+            }
+
+            // 获取计划对象
+            var key = EncodeIndentifier(identifier);
+            var schedule = new RecordSchedule(key);
+
+            Guid taskId;
+            var builder = ScheduleTask.CreateBackgroundTaskBuilder(
+                out taskId, schedule.StartTime.Subtract(DateTimeOffset.Now));
+            Container.Values[key] = taskId;
         }
 
         /// <summary>
