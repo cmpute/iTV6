@@ -142,7 +142,7 @@ namespace iTV6.ViewModels
                 StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
                 FilePath = folder.Path;
             }
-            System.Diagnostics.Debug.WriteLine("选取文件夹：" + FilePath);
+            LoggingService.Debug("Xaml", "选取文件夹：" + FilePath);
         }
 
         public DelegateCommand ClearCalendarItems { get; } = new DelegateCommand(async () =>

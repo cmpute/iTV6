@@ -47,7 +47,7 @@ namespace iTV6.Models
                 return _instances[uniqueKey];
             else
             {
-                System.Diagnostics.Debug.WriteLine("访问了未知的频道：" + uniqueKey);
+                LoggingService.Debug("Model", "访问了未知的频道：" + uniqueKey);
                 return null;
             }
         }

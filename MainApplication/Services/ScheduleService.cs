@@ -65,7 +65,7 @@ namespace iTV6.Services
         private static Uri GetUri(string code, int time, int DoW)
         {
             Uri UriTemp = new Uri($"http://www.tvmao.com/program/duration/{code}/w{DoW}-h{time}.html");
-            System.Diagnostics.Debug.WriteLine("获取节目单: " + UriTemp.AbsoluteUri);
+            LoggingService.Debug("Service", "获取节目单: " + UriTemp.AbsoluteUri);
             return UriTemp; 
         }
 

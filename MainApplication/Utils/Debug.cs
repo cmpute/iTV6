@@ -19,7 +19,9 @@ namespace iTV6.Utils
         {
 #if DEBUG
             // 在这里写或者调用你需要调试的代码
-            // TestFunction();
+            var schedule = Background.RecordScheduleManager.CreateSchedule(
+                "测试下载", "https://iptv.tsinghua.edu.cn/hls/cctv1hd.m3u8", DateTimeOffset.Now, TimeSpan.FromMinutes(3));
+            Background.RecordScheduleManager.LaunchSchedule("测试下载");
             // Debugger.Break(); //手动打断点
             await Task.CompletedTask;
 #else // 以下代码不要改动

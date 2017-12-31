@@ -76,9 +76,6 @@ namespace iTV6.Background
             // 如果超出录播时长则取消下载
             if (DateTimeOffset.Now.Subtract(StartTime) > ScheduleSpan)
             {
-                System.Diagnostics.Debug.WriteLine(DateTimeOffset.Now);
-                System.Diagnostics.Debug.WriteLine(StartTime);
-                System.Diagnostics.Debug.WriteLine(ScheduleSpan);
                 System.Diagnostics.Debug.WriteLine("计划时间到，录播停止");
                 return null;
             }
