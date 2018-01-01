@@ -29,6 +29,11 @@ namespace iTV6.Background
                 System.Diagnostics.Debug.WriteLine("未找到对应的下载计划", "Error");
                 return;
             }
+            if (schedule.Status == ScheduleStatus.Terminated)
+            {
+                System.Diagnostics.Debug.WriteLine("下载计划被终止");
+                return;
+            }
 
             var _defer = taskInstance.GetDeferral();
             // 生成下一个下载，若下载完毕则直接处理文件

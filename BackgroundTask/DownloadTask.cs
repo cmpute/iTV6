@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using Windows.Data.Xml.Dom;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
+using Windows.UI.Notifications;
 
 namespace iTV6.Background
 {
@@ -22,8 +24,7 @@ namespace iTV6.Background
                 System.Diagnostics.Debug.WriteLine("下载任务非下载完成后触发", "Error");
                 return;
             }
-            
-            var _defer = taskInstance.GetDeferral();
+
             // 寻找对应的下载计划
             RecordSchedule schedule = null;
             foreach (var item in RecordScheduleManager.Container.Values)
@@ -36,13 +37,30 @@ namespace iTV6.Background
                 return;
             }
 
+            var _defer = taskInstance.GetDeferral();
+            if (schedule.Status == ScheduleStatus.Terminated)
+            {
+                System.Diagnostics.Debug.WriteLine("下载计划被终止");
+                // 将已下载的缓存合并成文件保存下来
+                schedule.Status = ScheduleStatus.Decoding;
+                await schedule.ConcatenateSegments();
+                schedule.Status = ScheduleStatus.Terminated;
+                return;
+            }
+
             // 生成下一个下载，若下载完毕则直接处理文件
             var operation = await schedule.GenerateDownloadTask();
             if(operation == null)
             {
                 schedule.Status = ScheduleStatus.Decoding;
                 await schedule.ConcatenateSegments();
-                // TODO: 生成下载成功的消息提醒
+
+                // 生成下载成功的消息提醒
+                XmlDocument successToastXml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
+                successToastXml.GetElementsByTagName("text").Item(0).InnerText =
+                    "一项录播任务已经成功结束";
+                ToastNotification successToast = new ToastNotification(successToastXml);
+                ToastNotificationManager.CreateToastNotifier().Show(successToast);
             }
             _defer.Complete();
         }

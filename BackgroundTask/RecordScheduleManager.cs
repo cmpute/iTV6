@@ -29,6 +29,26 @@ namespace iTV6.Background
             => Container.Containers.Values.Select((container) => new RecordSchedule(container.Name));
 
         /// <summary>
+        /// 删除录播计划记录
+        /// </summary>
+        /// <param name="identifiers">删除的录播计划的标识符</param>
+        public static void ClearSchedules(params string[] identifiers)
+        {
+            foreach(var id in identifiers)
+            {
+                var key = EncodeIndentifier(id);
+                Container.DeleteContainer(key);
+                Container.Values.Remove(key);
+            }
+        }
+
+        /// <summary>
+        /// 删除所有的录播记下
+        /// </summary>
+        public static void ClearSchedules()
+            => ClearSchedules(Container.Values.Keys.ToArray());
+
+        /// <summary>
         /// 创建新的录播计划
         /// </summary>
         /// <param name="identifier">标识名</param>
@@ -117,9 +137,12 @@ namespace iTV6.Background
         /// <summary>
         /// 终止下载计划
         /// </summary>
-        public static async void TerminateSchedule()
+        public static void TerminateSchedule(string identifier)
         {
-            throw new NotImplementedException();
+            // 获取计划对象
+            var key = EncodeIndentifier(identifier);
+            var schedule = new RecordSchedule(key);
+            schedule.Status = ScheduleStatus.Terminated;
         }
     }
 }
