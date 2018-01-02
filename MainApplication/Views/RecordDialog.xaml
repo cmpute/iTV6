@@ -32,5 +32,6 @@
             <CalendarDatePicker x:Name="EndDatePicker" Margin="4"/>
             <TimePicker x:Name="EndTimePicker" Margin="4"/>
         </StackPanel>
+        <TextBlock x:Name="MessageBlock" Margin="4"/>
     </StackPanel>
 </ContentDialog>
