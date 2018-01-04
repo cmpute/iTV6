@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using iTV6.Services;
 using Windows.UI.Popups;
 using System.Collections.ObjectModel;
+using Windows.Storage;
 
 namespace iTV6.ViewModels
 {
@@ -73,9 +74,15 @@ namespace iTV6.ViewModels
             }
         }
 
-        public void PlayCompletedTask()
+        public async void PlayCompletedTask()
         {
-
+            if(SelectedCompletedTask != null)
+            {
+                StorageFile file = null;
+                file = await SelectedCompletedTask.Folder.CreateFileAsync(SelectedCompletedTask.FileName + ".ts", CreationCollisionOption.OpenIfExists);
+            
+            var success = await Windows.System.Launcher.LaunchFileAsync(file);
+            }
         }
     }
 }
