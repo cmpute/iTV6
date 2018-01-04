@@ -99,8 +99,10 @@ namespace iTV6.Models
             String storageName = FileName;
             sampleFile = await Folder.CreateFileAsync(storageName + ".ts", CreationCollisionOption.OpenIfExists);
             var stream = await sampleFile.OpenAsync(FileAccessMode.ReadWrite);//得到文件流
+            //增加每个m3u8文件末尾的ts文件进行判断
+            string tailTS = null;
             //每m3u8Time个时间，获取一次url，得到的ts文件写入文件流中
-            for (int j = 0; j < recordNum; j++)
+            while (currentTime < EndTime)
             {
                 if (stopped)
                     break;
@@ -113,7 +115,7 @@ namespace iTV6.Models
                 DataReader TempData = Windows.Storage.Streams.DataReader.FromBuffer(buffer);
                 string text = TempData.ReadString(buffer.Length);
                 //存储所有当前.ts文件的名字
-                ArrayList tsContent = TSposition(text);
+                ArrayList tsContent = TSposition(text,ref tailTS);
                 string tempTs;
                 string uri = RequestUri.ToString();
                 int hlsPos = uri.IndexOf("hls");
@@ -141,9 +143,9 @@ namespace iTV6.Models
                         }
                     }
                 }
-
-                await Task.Delay(m3u8Time * 60 * 1000);
-
+                //以0.6的频率获取m3u8文件
+                await Task.Delay((int)(m3u8Time * 60 * 1000 * 0.6));
+                currentTime = System.DateTime.Now;
             }
             stream.Dispose();//关闭文件流
             if (stopped)
@@ -155,20 +157,57 @@ namespace iTV6.Models
             }
         }
 
-        public ArrayList TSposition(string text)
+        public ArrayList TSposition(string text, ref string tailTS)
         {
             ArrayList newlist = new ArrayList();
             int i = 0;
             int tempPos = 0;
-            while (i < text.Length)
+            string tempText;
+            if (tailTS != null)
             {
-                int ts_length = 0;
-                tempPos = text.IndexOf(".ts", i);
-                if (tempPos == -1)
-                    break;
-                ts_length = tempPos - text.LastIndexOf("\n", tempPos) - 1 + 3;//从当前.ts的位置向前找“\n”，从而得到.ts文件名的长度
-                newlist.Add(text.Substring(tempPos - ts_length + 3, ts_length));
-                i = tempPos + 3;
+                //先找到新添加的第一个ts文件
+                while (i < text.Length)
+                {
+                    int ts_length = 0;
+                    tempPos = text.IndexOf(".ts", i);
+                    if (tempPos == -1)
+                        break;
+                    ts_length = tempPos - text.LastIndexOf("\n", tempPos) - 1 + 3;//从当前.ts的位置向前找“\n”，从而得到.ts文件名的长度
+                    tempText = text.Substring(tempPos - ts_length + 3, ts_length);
+                    if (tailTS == tempText)
+                    {
+                        i = tempPos + 3;
+                        break;
+                    }
+                    i = tempPos + 3;
+                }
+                while (i < text.Length)
+                {
+                    int ts_length = 0;
+                    tempPos = text.IndexOf(".ts", i);
+                    if (tempPos == -1)
+                        break;
+                    ts_length = tempPos - text.LastIndexOf("\n", tempPos) - 1 + 3;//从当前.ts的位置向前找“\n”，从而得到.ts文件名的长度
+                    tempText = text.Substring(tempPos - ts_length + 3, ts_length);
+                    newlist.Add(tempText);
+                    i = tempPos + 3;
+                    tailTS = tempText;
+                }
+            }
+            else//第一次循环
+            {
+                while (i < text.Length)
+                {
+                    int ts_length = 0;
+                    tempPos = text.IndexOf(".ts", i);
+                    if (tempPos == -1)
+                        break;
+                    ts_length = tempPos - text.LastIndexOf("\n", tempPos) - 1 + 3;//从当前.ts的位置向前找“\n”，从而得到.ts文件名的长度
+                    tempText = text.Substring(tempPos - ts_length + 3, ts_length);
+                    newlist.Add(tempText);
+                    i = tempPos + 3;
+                    tailTS = tempText;
+                }
             }
             return newlist;
         }
