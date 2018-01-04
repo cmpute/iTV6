@@ -1,6 +1,7 @@
 ﻿using iTV6.Models;
 using iTV6.Mvvm;
 using iTV6.Services;
+using iTV6.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,5 +67,11 @@ namespace iTV6.ViewModels
             else
                 await new MessageDialog($"固定磁贴失败，请检查权限设置", "添加磁贴失败").ShowAsync();
         });
+
+        public DelegateCommand SchedulePlayback => new DelegateCommand(() =>
+        {
+            new PlaybackDialog().ShowAsync();
+        });
+
     }
 }

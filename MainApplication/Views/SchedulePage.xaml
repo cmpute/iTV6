@@ -61,6 +61,13 @@
                             <SymbolIcon Width="24" Height="24" Symbol="GoToToday"/>
                         </Button.Content>
                     </Button>
+                    <Button Style="{StaticResource ListButtonStyle}" Command="{Binding Source={StaticResource StaticVM}, Path=SchedulePlayback}"
+                            ToolTipService.ToolTip="回看当前节目">
+                        <!-- TODO: 绑定对应事件 -->
+                        <Button.Content>
+                            <FontIcon Glyph="&#xE1DB;"/>
+                        </Button.Content>
+                    </Button>
                     <Button Style="{StaticResource ListButtonStyle}"
                             ToolTipService.ToolTip="添加节目到录播计划">
                         <!-- TODO: 绑定对应事件 -->
@@ -81,7 +88,7 @@
                 </interactivity:Interaction.Behaviors>
             </Grid>
         </DataTemplate>
-        <c:ToStringConverter x:Key="SimpleTimeConverter" FormatString="HH:MM"/>
+        <c:ToStringConverter x:Key="SimpleTimeConverter" FormatString="HH:mm"/>
     </Page.Resources>
 
     <Grid>
