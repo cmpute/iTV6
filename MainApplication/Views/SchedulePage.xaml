@@ -44,11 +44,11 @@
                             HorizontalAlignment="Right"
                             Orientation="Horizontal" Visibility="Collapsed"
                             RelativePanel.AlignRightWithPanel="True">
-                    <Button Style="{StaticResource ListButtonStyle}" ToolTipService.ToolTip="收藏节目"
+                    <!--<Button Style="{StaticResource ListButtonStyle}" ToolTipService.ToolTip="收藏节目"
                             Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteProgram}"
                             CommandParameter="{x:Bind}">
-                        <!-- TODO: 绑定动态图标和对应事件 -->
-                        <Button.Content>
+                        --><!-- TODO: 绑定动态图标和对应事件 -->
+                        <!--<Button.Content>
                             <FontIcon Glyph="&#xE006;"
                                       Width="24" Height="24"/>
                         </Button.Content>
@@ -62,19 +62,19 @@
                         </Button.Content>
                     </Button>
                     <Button Style="{StaticResource ListButtonStyle}" Command="{Binding Source={StaticResource StaticVM}, Path=SchedulePlayback}"
-                            ToolTipService.ToolTip="回看当前节目">
-                        <!-- TODO: 绑定对应事件 -->
+                            ToolTipService.ToolTip="回看当前节目">-->
+                        <!-- TODO: 绑定对应事件 --><!--
                         <Button.Content>
                             <FontIcon Glyph="&#xE1DB;"/>
                         </Button.Content>
                     </Button>
                     <Button Style="{StaticResource ListButtonStyle}"
                             ToolTipService.ToolTip="添加节目到录播计划">
-                        <!-- TODO: 绑定对应事件 -->
+                        --><!-- TODO: 绑定对应事件 --><!--
                         <Button.Content>
                             <SymbolIcon Width="24" Height="24" Symbol="Video"/>
                         </Button.Content>
-                    </Button>
+                    </Button>-->
                 </StackPanel>
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="PointerEntered">

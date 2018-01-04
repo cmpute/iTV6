@@ -79,9 +79,8 @@ namespace iTV6.ViewModels
             if(SelectedCompletedTask != null)
             {
                 StorageFile file = null;
-                file = await SelectedCompletedTask.Folder.CreateFileAsync(SelectedCompletedTask.FileName + ".ts", CreationCollisionOption.OpenIfExists);
-            
-            var success = await Windows.System.Launcher.LaunchFileAsync(file);
+                file = await SelectedCompletedTask.Folder.GetFileAsync(SelectedCompletedTask.FileName + ".ts");
+                await Windows.System.Launcher.LaunchFileAsync(file);
             }
         }
     }
