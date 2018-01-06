@@ -25,6 +25,7 @@ namespace iTV6.Services
 #else
             await Channel.RestoreChannels();
             await ScheduleService.Instance.RestoreCache();
+            await RecordService._TaskList.Restore();
 #endif
         }
 
@@ -35,6 +36,7 @@ namespace iTV6.Services
         {
             await Channel.StoreChannels();
             await ScheduleService.Instance.SaveCache();
+            await RecordService._TaskList.Save(DateTime.MaxValue);
         }
 
         /// <summary>

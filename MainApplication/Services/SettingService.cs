@@ -1,4 +1,5 @@
-﻿using System;
+﻿using iTV6.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
@@ -83,24 +84,18 @@ namespace iTV6.Services
         }
 
         /// <summary>
-        /// 读取设置值。设置的更改请通过属性的绑定来完成。
+        /// 获取设置值
         /// </summary>
-        /// <param name="key">设置对应键值</param>
-        public object this[string key]
+        /// <param name="key">设置键值</param>
+        /// <param name="otherwise">当设置未初始化时的值</param>
+        public object Get(string key, object otherwise)
         {
-            get
-            {
-                if (localSettings.ContainsKey(key))
-                    return localSettings[key];
-                else if (roamingSettings.ContainsKey(key))
-                    return roamingSettings[key];
-                else
-#if DEBUG
-                    throw new KeyNotFoundException("未找到对应设置，请检查设置键值是否有修改");
-#else
-                    return null;
-#endif
-            }
+            if (localSettings.ContainsKey(key))
+                return localSettings[key];
+            else if (roamingSettings.ContainsKey(key))
+                return roamingSettings[key];
+            else
+                return otherwise;
         }
 
         /// <summary>

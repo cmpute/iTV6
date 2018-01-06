@@ -132,7 +132,8 @@ namespace iTV6.ViewModels
             IsCurrentProgramFavourite = CollectionService.Instance.CheckProgram(SelectedProgram.ProgramInfo);
 
             //选择默认来源
-            var defaultStation = SettingService.Instance["PriorSource"] as string;
+            var defaultStation = SettingService.Instance.Get("PriorSource",
+                TelevisionService.Instance.TelevisionStations.First().IdentifierName) as string;
             var defaultSource = SelectedProgram.MediaSources.First(source => source.StationName.StartsWith(defaultStation));
             SelectedSource = defaultSource ?? SelectedProgram.MediaSources.First();
 

@@ -16,8 +16,7 @@ namespace iTV6.ViewModels
     {
         public RecordingsViewModel() { }
 
-        public ObservableCollection<DownloadTask> TaskList => RecordService.Instance.TaskList;
-        public ObservableCollection<DownloadTask> CompletedTaskList => RecordService.Instance.CompletedTaskList;
+        public IEnumerable<DownloadToken> TaskList => RecordService.Instance.TaskList;
 
         public override async void OnNavigatedTo(object parameter)
         {
@@ -26,9 +25,7 @@ namespace iTV6.ViewModels
                 var tpar = parameter as Tuple<Channel, SourceRecord>;
                 var channel = tpar.Item1;
                 var source = tpar.Item2;
-                var recordDialog = new RecordDialog(channel.Name, source.StationName, source.Source);
-                while (!recordDialog.Completed)
-                { await recordDialog.ShowAsync(); }
+                await new RecordDialog(channel, source).ShowAsync();
             }
         }
 
@@ -38,44 +35,16 @@ namespace iTV6.ViewModels
             NavigationService.ShellNavigation.Navigate<ChannelsPage>();
         });
 
-        private DownloadTask _selectedTask;
-        public DownloadTask SelectedTask
+        private DownloadToken _selectedTask;
+        public DownloadToken SelectedTask
         {
             get { return _selectedTask;}
             set { Set(ref _selectedTask, value);}
         }
 
-        private DownloadTask _selectedCompletedTask;
-        public DownloadTask SelectedCompletedTask
+        public void DeleteTask()
         {
-            get { return _selectedCompletedTask; }
-            set { Set(ref _selectedCompletedTask, value); }
-        }
-
-        public async void DeleteTask()
-        {
-            if (SelectedTask != null)
-            {
-                SelectedTask.StopDownload();
-                await SelectedTask.DeleteFile();
-                TaskList.Remove(SelectedTask);
-                SelectedTask = null;
-            }
-        }
-
-        public async void DeleteCompletedTask()
-        {
-            if (SelectedCompletedTask != null)
-            {
-                await SelectedCompletedTask.DeleteFile();
-                CompletedTaskList.Remove(SelectedCompletedTask);
-                SelectedCompletedTask = null;
-            }
-        }
-
-        public void PlayCompletedTask()
-        {
-
+            throw new NotImplementedException();
         }
     }
 }

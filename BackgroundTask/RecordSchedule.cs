@@ -79,6 +79,11 @@ namespace iTV6.Background
         }
 
         /// <summary>
+        /// 生成的唯一标识符
+        /// </summary>
+        public string Key => _key;
+
+        /// <summary>
         /// 开始下载下一个需要下载的文件
         /// </summary>
         /// <returns>后台下载任务</returns>

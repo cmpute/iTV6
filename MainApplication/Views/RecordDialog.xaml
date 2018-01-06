@@ -14,7 +14,7 @@
     Opened="ContentDialog_Opened">
 
     <StackPanel Margin="0,8,0,0" Padding="4">
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0,4">
             <TextBlock Text="录播频道：" Margin="4" VerticalAlignment="Center"/>
             <TextBlock x:Name="Text_Channel" Margin="4" VerticalAlignment="Center"/>
         </StackPanel>
@@ -32,6 +32,6 @@
             <CalendarDatePicker x:Name="EndDatePicker" Margin="4"/>
             <TimePicker x:Name="EndTimePicker" Margin="4"/>
         </StackPanel>
-        <TextBlock x:Name="MessageBlock" Margin="4"/>
+        <TextBlock x:Name="MessageBlock" Margin="4" Visibility="Collapsed" Foreground="DarkRed"/>
     </StackPanel>
 </ContentDialog>

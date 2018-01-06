@@ -103,7 +103,7 @@
     <Compile Include="Converters\RelativeDatetimeConverter.cs" />
     <Compile Include="Converters\ValueWhenConverter.cs" />
     <Compile Include="Models\Channel.cs" />
-    <Compile Include="Models\DownloadTask.cs" />
+    <Compile Include="Models\DownloadToken.cs" />
     <Compile Include="Models\ITelevisionStation.cs" />
     <Compile Include="Models\MultisourceProgram.cs" />
     <Compile Include="Models\ProgramSource.cs" />
