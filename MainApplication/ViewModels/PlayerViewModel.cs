@@ -57,8 +57,7 @@ namespace iTV6.ViewModels
             }
         }
 
-        // XXX:
-        // 如果直接在声明时便赋值貌似会导致CanExecute不会被调用
+        // XXX: 如果直接在声明时便赋值貌似会导致CanExecute不会被调用
         // 而如果在构造函数里面声明便不会。。。有点迷
         public DelegateCommand PlayCustomSource { get; } 
     }

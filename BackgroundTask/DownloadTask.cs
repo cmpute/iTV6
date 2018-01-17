@@ -36,6 +36,18 @@ namespace iTV6.Background
                 System.Diagnostics.Debug.WriteLine("未找到对应的下载计划", "Error");
                 return;
             }
+            if (details.Downloads.Any(op => IsFailed(op)))
+            {
+                // 下载失败
+                schedule.Status = ScheduleStatus.Failed;
+
+                // 生成下载失败的消息提醒
+                XmlDocument failedToastXml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
+                failedToastXml.GetElementsByTagName("text").Item(0).InnerText = "一项录播任务失败";
+                ToastNotification failedToast = new ToastNotification(failedToastXml);
+                ToastNotificationManager.CreateToastNotifier().Show(failedToast);
+                return;
+            }
 
             var _defer = taskInstance.GetDeferral();
             if (schedule.Status == ScheduleStatus.Terminated)
@@ -43,7 +55,7 @@ namespace iTV6.Background
                 System.Diagnostics.Debug.WriteLine("下载计划被终止");
                 // 将已下载的缓存合并成文件保存下来
                 schedule.Status = ScheduleStatus.Decoding;
-                await schedule.ConcatenateSegments();
+                var continuous = await schedule.ConcatenateSegments();
                 schedule.Status = ScheduleStatus.Terminated;
                 return;
             }
@@ -53,12 +65,12 @@ namespace iTV6.Background
             if(operation == null)
             {
                 schedule.Status = ScheduleStatus.Decoding;
-                await schedule.ConcatenateSegments();
+                var continuous = await schedule.ConcatenateSegments();
 
                 // 生成下载成功的消息提醒
                 XmlDocument successToastXml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
                 successToastXml.GetElementsByTagName("text").Item(0).InnerText =
-                    "一项录播任务已经成功结束";
+                    "一项录播任务已经成功结束" + (continuous ? string.Empty : "，但可能录播不完整。");
                 ToastNotification successToast = new ToastNotification(successToastXml);
                 ToastNotificationManager.CreateToastNotifier().Show(successToast);
             }

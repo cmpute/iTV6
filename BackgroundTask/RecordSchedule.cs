@@ -104,7 +104,7 @@ namespace iTV6.Background
                 if (!line.StartsWith("#") && !string.IsNullOrWhiteSpace(line))
                 {
                     var path = _key + "\\" + line;
-                    var file = await ApplicationData.Current.LocalCacheFolder.TryGetItemAsync(path);
+                    var file = await ApplicationData. Current.LocalCacheFolder.TryGetItemAsync(path);
                     if (file == null)
                     {
                         Guid taskId;
@@ -131,21 +131,33 @@ namespace iTV6.Background
         /// <summary>
         /// 拼接下载的视频片段
         /// </summary>
-        internal async Task ConcatenateSegments()
+        /// <returns>该异步任务返回文件是否连续</returns>
+        internal async Task<bool> ConcatenateSegments()
         {
             System.Diagnostics.Debug.WriteLine("开始连接缓存");
+            var continuous = true;
             var folder = await ApplicationData.Current.LocalCacheFolder.GetFolderAsync(_key);
             var files = await folder.GetFilesAsync();
             // TODO: 选择指定文件写入
             var target = await ApplicationData.Current.LocalFolder.CreateFileAsync("result.ts", CreationCollisionOption.ReplaceExisting);
             using (var ws = await target.OpenAsync(FileAccessMode.ReadWrite))
             {
+                int code = -1;
                 foreach (var file in files.OrderBy(file => file.Name))
+                {
+                    var currentcode = int.Parse(string.Concat(file.Name.Where(ch => Char.IsDigit(ch))));
+                    if (code >= 0 && currentcode - code != 1)
+                        continuous = false;
+                    code = currentcode;
+                        
                     await ws.WriteAsync(await FileIO.ReadBufferAsync(file));
+                    await file.DeleteAsync();
+                }
                 await ws.FlushAsync();
             }
 
             Status = ScheduleStatus.Completed;
+            return continuous;
         }
     }
 

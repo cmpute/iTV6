@@ -47,7 +47,7 @@
             <RowDefinition Height="48"/>
             <RowDefinition Height="48"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/> <!-- 给CommandBar预留 -->
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -79,9 +79,6 @@
                   ItemTemplate="{StaticResource DownloadTaskViewTemplate}"
                   SelectedItem="{x:Bind ViewModel.SelectedTask,Mode=TwoWay,Converter={StaticResource ObjectConverter}}">
         </ListView>
-        <CommandBar Grid.Row="3">
-            <AppBarButton x:Name="del" Label="删除" Icon="Delete" Click="{x:Bind ViewModel.DeleteTask}"/>
-        </CommandBar>
         <RelativePanel Grid.Row="1" Grid.Column="1">
             <TextBlock  Text="已下载视频" RelativePanel.AlignVerticalCenterWithPanel="True"
                        RelativePanel.AlignLeftWithPanel="True" FontSize="20" Margin="12,0"/>

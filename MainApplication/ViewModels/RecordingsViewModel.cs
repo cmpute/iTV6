@@ -18,17 +18,6 @@ namespace iTV6.ViewModels
 
         public IEnumerable<DownloadToken> TaskList => RecordService.Instance.TaskList;
 
-        public override async void OnNavigatedTo(object parameter)
-        {
-            if (parameter is Tuple<Channel, SourceRecord>)  // 选择的节目、选择的源
-            {
-                var tpar = parameter as Tuple<Channel, SourceRecord>;
-                var channel = tpar.Item1;
-                var source = tpar.Item2;
-                await new RecordDialog(channel, source).ShowAsync();
-            }
-        }
-
         public DelegateCommand CustomRecord => new DelegateCommand(async () =>
         {
             await new MessageDialog("请到频道页面选取节目和视频源，然后点击右上角的的“添加录播”按钮。", "提示").ShowAsync();

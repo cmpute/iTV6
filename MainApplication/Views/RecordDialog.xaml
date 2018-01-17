@@ -24,9 +24,12 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <TextBlock VerticalAlignment="Center" Text="开始时间：" Margin="4"/>
-            <CalendarDatePicker x:Name="StartDatePicker" Margin="4"/>
-            <TimePicker x:Name="StartTimePicker" Margin="4"/>
+            <CalendarDatePicker x:Name="StartDatePicker" Margin="4"
+                                IsEnabled="{x:Bind UseNow.IsChecked, Converter={StaticResource ReverseBoolConverter}, Mode=OneWay}"/>
+            <TimePicker x:Name="StartTimePicker" Margin="4"
+                        IsEnabled="{x:Bind UseNow.IsChecked, Converter={StaticResource ReverseBoolConverter}, Mode=OneWay}"/>
         </StackPanel>
+        <CheckBox x:Name="UseNow" Margin="88,0,0,0" Content="立即开始" IsChecked="True"/>
         <StackPanel Orientation="Horizontal">
             <TextBlock VerticalAlignment="Center" Text="结束时间：" Margin="4"/>
             <CalendarDatePicker x:Name="EndDatePicker" Margin="4"/>

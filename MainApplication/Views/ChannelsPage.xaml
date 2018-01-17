@@ -60,8 +60,9 @@
                         </Button.Content>
                     </Button>
                     <Button x:Name="RecordChannel" Style="{StaticResource HeaderButtonStyle}"
-                        ToolTipService.ToolTip="添加频道录播计划">
-                        <!-- TODO: 绑定对应事件 -->
+                            ToolTipService.ToolTip="添加频道录播计划"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=TriggerChannelRecording}"
+                            CommandParameter="{x:Bind ProgramInfo.Channel}">
                         <Button.Content>
                             <FontIcon Glyph="&#xE13B;" Width="24" Height="24"/>
                         </Button.Content>
@@ -119,8 +120,9 @@
                         </Button.Content>
                     </Button>
                     <Button Style="{StaticResource ListButtonStyle}"
-                            ToolTipService.ToolTip="添加节目到录播计划">
-                        <!-- TODO: 绑定对应事件 -->
+                            ToolTipService.ToolTip="添加节目到录播计划"
+                            Command="{Binding Source={StaticResource StaticVM}, Path=TriggerProgramRecording}"
+                            CommandParameter="{x:Bind}">
                         <Button.Content>
                             <SymbolIcon Width="24" Height="24" Symbol="Video"/>
                         </Button.Content>

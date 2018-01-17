@@ -7,6 +7,9 @@ using System.Collections.Generic;
 
 namespace iTV6.Services
 {
+    /// <summary>
+    /// 录播任务的前台管理服务
+    /// </summary>
     public class RecordService
     {
         private RecordService()
@@ -87,13 +90,18 @@ namespace iTV6.Services
             if (diff > TimeSpan.FromMinutes(15))
             {
                 RecordScheduleManager.LaunchSchedule(schedule);
-                new MessageDialog("由于系统原因，后台定时任务的精度为15分钟，为保证录下您指定的时间段，将提前15分钟开始录制，请预留足够的硬盘空间", "提示");
+                new MessageDialog("由于系统原因，后台定时任务的精度为15分钟，为保证录下您指定的时间段，将提前15分钟开始录制，请预留足够的硬盘空间", "提示").ShowAsync();
             }
             else
             {
-                // TODO: 由于ThreadPoolTimer会受到程序进入后台的影响，因此可以考虑在这里改用后台任务强行等待
-                new MessageDialog("由于系统不支持15分钟内的后台定时任务，请您在录制开始前将本程序保持开启并避免最小化！开始后即可关闭程序");
-                ThreadPoolTimer.CreateTimer((timer) => RecordScheduleManager.LaunchSchedule(schedule), diff);
+                if (diff <= TimeSpan.Zero)
+                    RecordScheduleManager.LaunchRecording(schedule);
+                else
+                {
+                    // TODO: 由于ThreadPoolTimer会受到程序进入后台的影响，因此可以考虑在这里改用后台任务强行等待
+                    new MessageDialog("由于系统不支持15分钟内的后台定时任务，请您在录制开始前将本程序保持开启并避免最小化！开始后即可关闭程序", "提示").ShowAsync();
+                    ThreadPoolTimer.CreateTimer((timer) => RecordScheduleManager.LaunchRecording(schedule), diff);
+                }
             }
 
             return token;

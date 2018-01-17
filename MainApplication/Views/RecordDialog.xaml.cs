@@ -25,12 +25,14 @@ namespace iTV6.Views
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            var startTime = StartDatePicker.Date.Value.Date.Add(StartTimePicker.Time);
+            var immediate = UseNow.IsChecked ?? false;
+            var startTime = immediate ? DateTime.Now : StartDatePicker.Date.Value.Date.Add(StartTimePicker.Time);
             var endTime = EndDatePicker.Date.Value.Date.Add(EndTimePicker.Time);
             var span = endTime.Subtract(startTime);
-            if (startTime < endTime)
+            if (startTime < endTime && (immediate || startTime > DateTime.Now))
             {
                 RecordService.Instance.StartRecording(_channel, _source, startTime, span);
+                NavigationService.ShellNavigation.Navigate<RecordingsPage>();
                 this.Hide();
             }
             else

@@ -10,13 +10,18 @@ using iTV6.Mvvm;
 using iTV6.Services;
 using iTV6.Utils;
 using Windows.UI.Xaml;
+using iTV6.Views;
 
 namespace iTV6.ViewModels
 {
     public class ChannelsViewModel : ViewModelBase
     {
+        public static ChannelsViewModel Instance { get; private set; }
         public ChannelsViewModel()
         {
+            // 提供最新实例的访问
+            Instance = this;
+
             // 将节目列表进行分组
             Programs = new CollectionViewSource();
             var currentPrograms = TelevisionService.Instance.AvaliablePrograms;
@@ -47,10 +52,9 @@ namespace iTV6.ViewModels
             Programs.Source = channelAdapters;
             Programs.IsSourceGrouped = true;
 
-            AddChannelRecordTask = new DelegateCommand(() =>
+            AddChannelRecordTask = new DelegateCommand(async () =>
             {
-                NavigationService.ShellNavigation.Navigate<Views.RecordingsPage>(
-                    new Tuple<Channel, SourceRecord>(SelectedProgram.ProgramInfo.Channel, SelectedSource));
+                await new RecordDialog(SelectedProgram.ProgramInfo.Channel, SelectedSource).ShowAsync();
             }); // 应该不存在无法执行的情况，就不执行检查了
 
             // 监听收藏的变动
@@ -170,7 +174,7 @@ namespace iTV6.ViewModels
         }
 
         /// <summary>
-        /// 添加录播任务，由于频道列表中的电视台没有指定播放源，就不给他们录播按钮了
+        /// 添加录播任务
         /// </summary>
         public DelegateCommand AddChannelRecordTask { get; }
 
