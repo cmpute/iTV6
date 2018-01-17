@@ -46,7 +46,7 @@ namespace iTV6.Services
         {
             foreach(var file in _cacheFiles)
             {
-                var storage = await ApplicationData.Current.SharedLocalFolder.TryGetItemAsync(file) as StorageFile;
+                var storage = await ApplicationData.Current.LocalFolder.TryGetItemAsync(file) as StorageFile;
                 if (storage != null) await storage.DeleteAsync();
             }
         }
@@ -61,7 +61,7 @@ namespace iTV6.Services
             ulong totalSize = 0;
             foreach (var file in _cacheFiles)
             {
-                var storage = await ApplicationData.Current.SharedLocalFolder.TryGetItemAsync(file) as StorageFile;
+                var storage = await ApplicationData.Current.LocalFolder.TryGetItemAsync(file) as StorageFile;
                 if (storage == null) continue;
                 var prop = await storage.GetBasicPropertiesAsync();
                 totalSize += prop.Size;
@@ -100,7 +100,7 @@ namespace iTV6.Services
         /// <param name="expire">缓存到期日期</param>
         public async Task Save(DateTime expire)
         {
-            var storage = await ApplicationData.Current.SharedLocalFolder.CreateFileAsync(CacheFile, CreationCollisionOption.ReplaceExisting);
+            var storage = await ApplicationData.Current.LocalFolder.CreateFileAsync(CacheFile, CreationCollisionOption.ReplaceExisting);
             var serializer = SerializationService.Instance.Get<IDictionary<TKey, TValue>>();
             using (var stream = await storage.OpenStreamForWriteAsync())
             {
@@ -114,7 +114,7 @@ namespace iTV6.Services
         /// </summary>
         public async Task Restore()
         {
-            var storage = await ApplicationData.Current.SharedLocalFolder.TryGetItemAsync(CacheFile) as StorageFile;
+            var storage = await ApplicationData.Current.LocalFolder.TryGetItemAsync(CacheFile) as StorageFile;
             if (storage != null)
             {
                 IDictionary<TKey, TValue> store = null;
@@ -157,7 +157,7 @@ namespace iTV6.Services
         /// </summary>
         public async Task ClearCache()
         {
-            var storage = await ApplicationData.Current.SharedLocalFolder.TryGetItemAsync(CacheFile) as StorageFile;
+            var storage = await ApplicationData.Current.LocalFolder.TryGetItemAsync(CacheFile) as StorageFile;
             if (storage != null) await storage.DeleteAsync();
         }
     }
