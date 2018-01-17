@@ -9,10 +9,6 @@
     xmlns:m="using:iTV6.Models"
     mc:Ignorable="d">
 
-    <Page.DataContext>
-        <vm:CollectionViewModel x:Name="ViewModel"/>
-    </Page.DataContext>
-
     <Page.Transitions>
         <TransitionCollection>
             <NavigationThemeTransition>
@@ -24,6 +20,8 @@
     </Page.Transitions>
 
     <Page.Resources>
+        <vm:CollectionViewModel x:Name="ViewModel" x:Key="ViewModel"/>
+        
         <DataTemplate x:Key="BriefWideChannelTemplate" x:DataType="m:Channel">
             <RelativePanel>
                 <TextBlock Text="{x:Bind Name}" FontSize="16" FontWeight="Bold"
@@ -31,6 +29,10 @@
             </RelativePanel>
         </DataTemplate>
     </Page.Resources>
+    
+    <Page.DataContext>
+        <StaticResource ResourceKey="ViewModel"/>
+    </Page.DataContext>
     
     <Grid>
         <Grid.RowDefinitions>

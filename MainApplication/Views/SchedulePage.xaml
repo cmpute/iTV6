@@ -12,10 +12,6 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
-
-    <Page.DataContext>
-        <vm:ScheduleViewModel x:Name="ViewModel"/>
-    </Page.DataContext>
     
     <Page.Transitions>
         <TransitionCollection>
@@ -28,6 +24,8 @@
     </Page.Transitions>
 
     <Page.Resources>
+        <vm:ScheduleViewModel x:Name="ViewModel" x:Key="ViewModel"/>
+        
         <DataTemplate x:Key="ChannelTemplate" x:DataType="m:Channel">
             <TextBlock Text="{x:Bind Name}" FontSize="16" FontWeight="Bold"/>
         </DataTemplate>
@@ -83,6 +81,10 @@
         </DataTemplate>
         <c:ToStringConverter x:Key="SimpleTimeConverter" FormatString="HH:mm"/>
     </Page.Resources>
+
+    <Page.DataContext>
+        <StaticResource ResourceKey="ViewModel"/>
+    </Page.DataContext>
 
     <Grid>
         <Grid.RowDefinitions>

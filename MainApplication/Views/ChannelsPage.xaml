@@ -14,10 +14,6 @@
     mc:Ignorable="d"
     NavigationCacheMode="Required">
 
-    <Page.DataContext>
-        <vm:ChannelsViewModel x:Name="ViewModel" Host="{x:Bind}"/>
-    </Page.DataContext>
-
     <Page.Transitions>
         <TransitionCollection>
             <NavigationThemeTransition>
@@ -29,6 +25,8 @@
     </Page.Transitions>
 
     <Page.Resources>
+        <vm:ChannelsViewModel x:Name="ViewModel" x:Key="ViewModel" Host="{x:Bind}"/>
+
         <DataTemplate x:Key="BriefNarrowChannelTemplate" x:DataType="m:MultisourceProgram">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -143,6 +141,10 @@
         <converter:RelativeDatetimeConverter x:Key="TimeConverter"/>
     </Page.Resources>
 
+    <Page.DataContext>
+        <StaticResource ResourceKey="ViewModel"/>
+    </Page.DataContext>
+    
     <Grid Loaded="{x:Bind ViewModel.RootGrid_Loaded}">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="SideViewStates">
