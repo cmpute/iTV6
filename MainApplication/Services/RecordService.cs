@@ -62,10 +62,11 @@ namespace iTV6.Services
         /// <remarks>
         /// 由于需要先一步读取缓存，因此设为静态变量，在其他时候访问请通过实例属性
         /// </remarks>
-        internal static CachedDictionary<string, DownloadToken> _TaskList { get; } = new CachedDictionary<string, DownloadToken>("tokens.dat");
+        internal static CachedDictionary<string, DownloadToken> _TaskList { get; } =
+            new CachedDictionary<string, DownloadToken>("tokens.dat");
 
         /// <summary>
-        /// 下载任务列表
+        /// 录播任务列表
         /// </summary>
         public IEnumerable<DownloadToken> TaskList => _TaskList.Values;
 
@@ -112,6 +113,17 @@ namespace iTV6.Services
         /// </summary>
         public void TerminateRecording(DownloadToken token) =>
             RecordScheduleManager.TerminateSchedule(token.LinkedSchedule);
+
+        /// <summary>
+        /// 删除录播任务
+        /// </summary>
+        /// <param name="token"></param>
+        public void DeleteRecording(DownloadToken token)
+        {
+            var key = token.LinkedSchedule.Key;
+            RecordScheduleManager.DeleteSchedule(token.LinkedSchedule);
+            _TaskList.Remove(key);
+        }
 
         /// <summary>
         /// 获取存储文件夹

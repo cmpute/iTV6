@@ -8,6 +8,9 @@
     xmlns:converter="using:iTV6.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:behaviors="using:iTV6.Behaviors"
     mc:Ignorable="d">
 
     <Page.Transitions>
@@ -36,6 +39,22 @@
                 <TextBlock Text="{x:Bind LinkedSchedule.Status}"
                            RelativePanel.AlignRightWithPanel="True"
                            RelativePanel.AlignVerticalCenterWithPanel="True"/>
+
+                <FlyoutBase.AttachedFlyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem Text="删除计划"
+                                        Command="{Binding Source={StaticResource StaticVM}, Path=DeleteRecording}"
+                                        CommandParameter="{x:Bind}"/>
+                    </MenuFlyout>
+                </FlyoutBase.AttachedFlyout>
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="RightTapped">
+                        <behaviors:OpenAttachedFlyoutAction />
+                    </core:EventTriggerBehavior>
+                    <core:EventTriggerBehavior EventName="Holding">
+                        <behaviors:OpenAttachedFlyoutAction />
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
             </RelativePanel>
         </DataTemplate>
     </Page.Resources>

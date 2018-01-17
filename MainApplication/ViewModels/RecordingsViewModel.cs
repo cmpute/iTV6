@@ -16,6 +16,7 @@ namespace iTV6.ViewModels
     {
         public RecordingsViewModel() { }
 
+        // TODO: 增加任务列表及任务内容变动的监听
         public IEnumerable<DownloadToken> TaskList => RecordService.Instance.TaskList;
 
         public DelegateCommand CustomRecord => new DelegateCommand(async () =>
