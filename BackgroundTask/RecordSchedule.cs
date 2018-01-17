@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace iTV6.Background
 {
@@ -68,6 +70,20 @@ namespace iTV6.Background
         }
 
         /// <summary>
+        /// 保存最终文件的路径
+        /// </summary>
+        public string SavePath
+        {
+            get { return _container.Values[nameof(SavePath)] as string; }
+            set { _container.Values[nameof(SavePath)] = value; }
+        }
+
+        /// <summary>
+        /// 生成的唯一标识符
+        /// </summary>
+        public string Key => _key;
+
+        /// <summary>
         /// 开始下载下一个需要下载的文件
         /// </summary>
         /// <returns>后台下载任务</returns>
@@ -88,7 +104,7 @@ namespace iTV6.Background
                 if (!line.StartsWith("#") && !string.IsNullOrWhiteSpace(line))
                 {
                     var path = _key + "\\" + line;
-                    var file = await ApplicationData.Current.LocalCacheFolder.TryGetItemAsync(path);
+                    var file = await ApplicationData. Current.LocalCacheFolder.TryGetItemAsync(path);
                     if (file == null)
                     {
                         Guid taskId;
@@ -115,11 +131,33 @@ namespace iTV6.Background
         /// <summary>
         /// 拼接下载的视频片段
         /// </summary>
-        internal async Task ConcatenateSegments()
+        /// <returns>该异步任务返回文件是否连续</returns>
+        internal async Task<bool> ConcatenateSegments()
         {
             System.Diagnostics.Debug.WriteLine("开始连接缓存");
+            var continuous = true;
+            var folder = await ApplicationData.Current.LocalCacheFolder.GetFolderAsync(_key);
+            var files = await folder.GetFilesAsync();
+            // TODO: 选择指定文件写入
+            var target = await ApplicationData.Current.LocalFolder.CreateFileAsync("result.ts", CreationCollisionOption.ReplaceExisting);
+            using (var ws = await target.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                int code = -1;
+                foreach (var file in files.OrderBy(file => file.Name))
+                {
+                    var currentcode = int.Parse(string.Concat(file.Name.Where(ch => Char.IsDigit(ch))));
+                    if (code >= 0 && currentcode - code != 1)
+                        continuous = false;
+                    code = currentcode;
+                        
+                    await ws.WriteAsync(await FileIO.ReadBufferAsync(file));
+                    await file.DeleteAsync();
+                }
+                await ws.FlushAsync();
+            }
+
             Status = ScheduleStatus.Completed;
-            await Task.CompletedTask;
+            return continuous;
         }
     }
 

@@ -1,18 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using iTV6.Services;
+using iTV6.Background;
 using iTV6.Models;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“内容对话框”项模板
@@ -21,27 +10,33 @@ namespace iTV6.Views
 {
     public sealed partial class RecordDialog : ContentDialog
     {
-        string Channel = null;
-        string Source = null;
-        Uri URI = null;
+        Channel _channel = null;
+        SourceRecord _source = null;
+
         public RecordDialog()
         {
             this.InitializeComponent();
         }
-        public RecordDialog(string channel, string source, Uri uri)
+        public RecordDialog(Channel channel, SourceRecord source) : this()
         {
-            Channel = channel;
-            Source = source;
-            URI = uri;
-            this.InitializeComponent();
+            _channel = channel;
+            _source = source;
         }
-        private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+
+        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            var startTime = StartDatePicker.Date.Value.Date.Add(StartTimePicker.Time);
+            var immediate = UseNow.IsChecked ?? false;
+            var startTime = immediate ? DateTime.Now : StartDatePicker.Date.Value.Date.Add(StartTimePicker.Time);
             var endTime = EndDatePicker.Date.Value.Date.Add(EndTimePicker.Time);
-            var folder = await RecordService.GetMyFolderAsync();
-            RecordService.Instance.Download(URI, folder, startTime, endTime);
-            this.Hide();
+            var span = endTime.Subtract(startTime);
+            if (startTime < endTime && (immediate || startTime > DateTime.Now))
+            {
+                RecordService.Instance.StartRecording(_channel, _source, startTime, span);
+                NavigationService.ShellNavigation.Navigate<RecordingsPage>();
+                this.Hide();
+            }
+            else
+                MessageBlock.Text = "时间选择不当，请重新选择开始时间和结束时间";
         }
 
         private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
@@ -51,9 +46,10 @@ namespace iTV6.Views
 
         private void ContentDialog_Opened(ContentDialog sender, ContentDialogOpenedEventArgs args)
         {
-            Text_Channel.Text = Channel;
-            Text_Source.Text = Source;
-            StartDatePicker.Date = EndDatePicker.Date = DateTimeOffset.Now;
+            Text_Channel.Text = _channel.Name;
+            Text_Source.Text = _source.StationName;
+            StartDatePicker.Date = DateTimeOffset.Now;
+            EndDatePicker.Date = DateTimeOffset.Now.Add(TimeSpan.FromMinutes(5));
         }
     }
 }

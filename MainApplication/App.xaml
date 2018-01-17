@@ -37,6 +37,17 @@
                     <Visibility>Collapsed</Visibility>
                 </converter:ValueWhenConverter.Otherwise>
             </converter:ValueWhenConverter>
+            <converter:ValueWhenConverter x:Key="ReverseBoolConverter">
+                <converter:ValueWhenConverter.When>
+                    <x:Boolean>True</x:Boolean>
+                </converter:ValueWhenConverter.When>
+                <converter:ValueWhenConverter.Value>
+                    <x:Boolean>False</x:Boolean>
+                </converter:ValueWhenConverter.Value>
+                <converter:ValueWhenConverter.Otherwise>
+                    <x:Boolean>True</x:Boolean>
+                </converter:ValueWhenConverter.Otherwise>
+            </converter:ValueWhenConverter>
         </ResourceDictionary>
     </Application.Resources>
     

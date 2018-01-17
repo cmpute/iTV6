@@ -29,9 +29,29 @@ namespace iTV6.Background
             => Container.Containers.Values.Select((container) => new RecordSchedule(container.Name));
 
         /// <summary>
+        /// 删除录播计划记录
+        /// </summary>
+        /// <param name="identifiers">删除的录播计划的标识符</param>
+        public static void ClearSchedules(params string[] identifiers)
+        {
+            foreach(var id in identifiers)
+            {
+                var key = EncodeIndentifier(id);
+                Container.DeleteContainer(key);
+                Container.Values.Remove(key);
+            }
+        }
+
+        /// <summary>
+        /// 删除所有的录播记下
+        /// </summary>
+        public static void ClearSchedules()
+            => ClearSchedules(Container.Values.Keys.ToArray());
+
+        /// <summary>
         /// 创建新的录播计划
         /// </summary>
-        /// <param name="identifier">标识名</param>
+        /// <param name="identifier">标识名，每一个下载任务不应相同</param>
         /// <param name="playlistUri">直播文件的地址</param>
         /// <param name="startTime">开始录播的时间</param>
         /// <param name="recordSpan">录播时长</param>
@@ -69,13 +89,8 @@ namespace iTV6.Background
         /// <summary>
         /// 立即开始录播任务
         /// </summary>
-        /// <param name="Identifier">录播任务的标识符</param>
-        public static async void LaunchRecording(string identifier)
+        public static async void LaunchRecording(RecordSchedule schedule)
         {
-            // 获取计划对象
-            var key = EncodeIndentifier(identifier);
-            var schedule = new RecordSchedule(key);
-
             // 获取视频片段长度
             HttpClient client = new HttpClient();
             var m3u = await client.GetStringAsync(schedule.PlaylistUri);
@@ -93,8 +108,8 @@ namespace iTV6.Background
         /// <summary>
         /// 开始录播计划任务，定时开始下载
         /// </summary>
-        /// <param name="identifier"></param>
-        public static async void LaunchSchedule(string identifier)
+        /// <param name="schedule">任务对象</param>
+        public static async void LaunchSchedule(RecordSchedule schedule)
         {
             // 获取后台运行权限，这个感觉不是必要的？
             var status = await BackgroundExecutionManager.RequestAccessAsync();
@@ -104,22 +119,55 @@ namespace iTV6.Background
                 return;
             }
 
-            // 获取计划对象
-            var key = EncodeIndentifier(identifier);
-            var schedule = new RecordSchedule(key);
+            var key = schedule.Key;
 
             Guid taskId;
             var builder = ScheduleTask.CreateBackgroundTaskBuilder(
                 out taskId, schedule.StartTime.Subtract(DateTimeOffset.Now));
             Container.Values[key] = taskId;
         }
+       
+        /// <summary>
+        /// 终止下载计划
+        /// </summary>
+        public static void TerminateSchedule(RecordSchedule schedule)
+            => schedule.Status = ScheduleStatus.Terminated;
+
+        /*
+        /// <summary>
+        /// 立即开始录播任务
+        /// </summary>
+        /// <param name="Identifier">录播任务的标识符</param>
+        public static void LaunchRecording(string identifier)
+        {
+            // 获取计划对象
+            var key = EncodeIndentifier(identifier);
+            var schedule = new RecordSchedule(key);
+            LaunchRecording(schedule);
+        }
+
+        /// <summary>
+        /// 开始录播计划任务，定时开始下载
+        /// </summary>
+        /// <param name="identifier">任务标识串</param>
+        public static void LaunchSchedule(string identifier)
+        {
+            // 获取计划对象
+            var key = EncodeIndentifier(identifier);
+            var schedule = new RecordSchedule(key);
+            LaunchSchedule(schedule);
+        }
 
         /// <summary>
         /// 终止下载计划
         /// </summary>
-        public static async void TerminateSchedule()
+        public static void TerminateSchedule(string identifier)
         {
-            throw new NotImplementedException();
+            // 获取计划对象
+            var key = EncodeIndentifier(identifier);
+            var schedule = new RecordSchedule(key);
+            TerminateSchedule(schedule);
         }
+        */
     }
 }

@@ -235,7 +235,7 @@ namespace iTV6.Models.Stations
                                         if (serverCode == string.Empty) break;
                                         if (channelCode == "wjpd") break;
                                         if (channelCode == "gjpd") break;
-                                        // XXX: 继续测试看看哪些频道可用。。。
+                                        // TODO: 继续测试看看哪些频道可用。。。
                                         continue; // 大部分都无法播放， 能播放的也是巨小的台
                                     case "livexd":
                                         source = $"{serverPrefix}/live/{channelCode}/{channelCode}.m3u8";

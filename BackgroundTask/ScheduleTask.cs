@@ -11,11 +11,9 @@ namespace iTV6.Background
     /// <summary>
     /// 定时录播任务的定时触发器
     /// </summary>
-    /// <remarks>
-    /// TODO: 后台定时器有15分钟的误差，因此需要想办法处理一下如何提前开始录制
-    /// </remarks>
     public sealed class ScheduleTask : IBackgroundTask
     {
+        // TODO: 后台定时器有15分钟的误差，因此若需准确开始需要提前15分钟
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
             // 寻找对应的下载计划
@@ -27,6 +25,11 @@ namespace iTV6.Background
             if (schedule == null)
             {
                 System.Diagnostics.Debug.WriteLine("未找到对应的下载计划", "Error");
+                return;
+            }
+            if (schedule.Status == ScheduleStatus.Terminated)
+            {
+                System.Diagnostics.Debug.WriteLine("下载计划被终止");
                 return;
             }
 

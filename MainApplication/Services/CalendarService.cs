@@ -62,8 +62,8 @@ namespace iTV6.Services
                 AllowNewTimeProposal = false,
                 Details = $"第{program.Episode}集",
                 Location = program.Channel.Name,
-                Reminder = (bool)SettingService.Instance["EnableCalendarNotification"] ? 
-                    (TimeSpan)SettingService.Instance["ReminderSpanAhead"] as TimeSpan? : null
+                Reminder = (bool)SettingService.Instance.Get("EnableCalendarNotification", true) ? 
+                    (TimeSpan)SettingService.Instance.Get("ReminderSpanAhead", TimeSpan.FromMinutes(5)) as TimeSpan? : null
             };
             await _calendar.SaveAppointmentAsync(appointment);
             _container.Values.Add(program.UniqueId, appointment.LocalId);

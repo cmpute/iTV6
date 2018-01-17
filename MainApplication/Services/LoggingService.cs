@@ -23,7 +23,7 @@ namespace iTV6.Services
 
         private static void MuteGroups()
         {
-            // XXX: 在这里注释掉不需要输出Debug消息的内容，如果有新增的分组也在这里添加
+            // Note: 在这里注释掉不需要输出Debug消息的内容，如果有新增的分组也在这里添加
             _groups = new string[]{
                 //"Television",
                 "Models",
