@@ -9,10 +9,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    
-    <Page.DataContext>
-        <vm:RecordingsViewModel x:Name="ViewModel"/>
-    </Page.DataContext>
 
     <Page.Transitions>
         <TransitionCollection>
@@ -25,6 +21,8 @@
     </Page.Transitions>
 
     <Page.Resources>
+        <vm:RecordingsViewModel x:Name="ViewModel" x:Key="ViewModel"/>
+        
         <DataTemplate x:Key="DownloadTaskViewTemplate" x:DataType="m:DownloadToken">
             <RelativePanel HorizontalAlignment="Stretch">
                 <StackPanel RelativePanel.AlignLeftWithPanel="True">
@@ -42,6 +40,10 @@
         </DataTemplate>
     </Page.Resources>
 
+    <Page.DataContext>
+        <StaticResource ResourceKey="ViewModel"/>
+    </Page.DataContext>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="48"/>

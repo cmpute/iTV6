@@ -11,17 +11,6 @@
     mc:Ignorable="d"
     NavigationCacheMode="Required">
 
-    <Page.DataContext>
-        <vm:SettingsViewModel x:Name="ViewModel" Host="{x:Bind}">
-            <vm:SettingsViewModel.AvailableTime>
-                <vm:ReminderTimeAdapter DisplayText="一小时前" TimeAhead="01:00:00"/>
-                <vm:ReminderTimeAdapter DisplayText="半小时前" TimeAhead="00:30:00"/>
-                <vm:ReminderTimeAdapter DisplayText="10分钟前" TimeAhead="00:10:00"/>
-                <vm:ReminderTimeAdapter DisplayText="5分钟前" TimeAhead="00:05:00"/>
-            </vm:SettingsViewModel.AvailableTime>
-        </vm:SettingsViewModel>
-    </Page.DataContext>
-
     <Page.Transitions>
         <TransitionCollection>
             <NavigationThemeTransition>
@@ -31,8 +20,17 @@
             </NavigationThemeTransition>
         </TransitionCollection>
     </Page.Transitions>
-    
+
     <Page.Resources>
+        <vm:SettingsViewModel x:Name="ViewModel" x:Key="ViewModel" Host="{x:Bind}">
+            <vm:SettingsViewModel.AvailableTime>
+                <vm:ReminderTimeAdapter DisplayText="一小时前" TimeAhead="01:00:00"/>
+                <vm:ReminderTimeAdapter DisplayText="半小时前" TimeAhead="00:30:00"/>
+                <vm:ReminderTimeAdapter DisplayText="10分钟前" TimeAhead="00:10:00"/>
+                <vm:ReminderTimeAdapter DisplayText="5分钟前" TimeAhead="00:05:00"/>
+            </vm:SettingsViewModel.AvailableTime>
+        </vm:SettingsViewModel>
+        
         <converter:PassConverter x:Key="ObjectConverter"/>
         <converter:ToStringConverter x:Key="SizeConverter" FormatString="0.00 KB"/>
         <Style x:Key="SettingPanelStyle" TargetType="StackPanel">
@@ -43,6 +41,10 @@
             <Setter Property="Margin" Value="0,10,0,10"/>
         </Style>
     </Page.Resources>
+
+    <Page.DataContext>
+        <StaticResource ResourceKey="ViewModel"/>
+    </Page.DataContext>
     
     <Grid>
         <Grid.RowDefinitions>
