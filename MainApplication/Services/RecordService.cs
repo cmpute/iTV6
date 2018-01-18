@@ -1,9 +1,11 @@
 ﻿using iTV6.Models;
 using iTV6.Background;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Windows.UI.Popups;
 using Windows.System.Threading;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace iTV6.Services
 {
@@ -35,11 +37,14 @@ namespace iTV6.Services
                     _TaskList.Add(schedule.Key, token);
                 }
             }
-            foreach(var item in _TaskList)
+            foreach(var item in _TaskList.ToList()) // 利用ToList方法创建副本
             {
                 if (item.Value.LinkedSchedule == null)
                     _TaskList.Remove(item.Key);
             }
+
+            // 初始化前台列表并添加事件监听
+            TaskList = new ObservableCollection<DownloadToken>(_TaskList.Values);
         }
 
         private static RecordService _instance;
@@ -68,7 +73,7 @@ namespace iTV6.Services
         /// <summary>
         /// 录播任务列表
         /// </summary>
-        public IEnumerable<DownloadToken> TaskList => _TaskList.Values;
+        public ObservableCollection<DownloadToken> TaskList;
 
         /// <summary>
         /// 在前台创建录播任务
@@ -85,6 +90,7 @@ namespace iTV6.Services
                 LinkedSchedule = schedule
             };
             _TaskList.Add(schedule.Key, token);
+            TaskList.Add(token);
 
             // 开始任务
             var diff = startTime.Subtract(DateTimeOffset.Now);
@@ -117,12 +123,12 @@ namespace iTV6.Services
         /// <summary>
         /// 删除录播任务
         /// </summary>
-        /// <param name="token"></param>
         public void DeleteRecording(DownloadToken token)
         {
             var key = token.LinkedSchedule.Key;
             RecordScheduleManager.DeleteSchedule(token.LinkedSchedule);
             _TaskList.Remove(key);
+            TaskList.Remove(token);
         }
 
         /// <summary>

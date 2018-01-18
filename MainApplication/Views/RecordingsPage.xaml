@@ -31,12 +31,14 @@
                 <StackPanel RelativePanel.AlignLeftWithPanel="True">
                     <TextBlock Text="{x:Bind Channel.Name}" FontSize="16" FontWeight="Bold"/>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{x:Bind LinkedSchedule.StartTime}" FontSize="14"/>
-                        <TextBlock Text=" 至 " FontSize="14"/>
-                        <TextBlock Text="{x:Bind EndTime}" FontSize="14"/>
+                        <TextBlock FontSize="14">
+                            <Run Text="{x:Bind LinkedSchedule.StartTime}"/>
+                            <Run Text=" 至 "/>
+                            <Run Text="{x:Bind EndTime}"/>
+                        </TextBlock>
                     </StackPanel>
                 </StackPanel>
-                <TextBlock Text="{x:Bind LinkedSchedule.Status}"
+                <TextBlock Text="{x:Bind Status, Mode=OneWay}"
                            RelativePanel.AlignRightWithPanel="True"
                            RelativePanel.AlignVerticalCenterWithPanel="True"/>
 
@@ -80,7 +82,7 @@
                        RelativePanel.AlignLeftWithPanel="True"/>
         </RelativePanel>
         <RelativePanel Grid.Row="1">
-            <TextBlock  Text="未完成任务" RelativePanel.AlignVerticalCenterWithPanel="True"
+            <TextBlock  Text="任务列表" RelativePanel.AlignVerticalCenterWithPanel="True"
                        RelativePanel.AlignLeftWithPanel="True" FontSize="20" Margin="12,0"/>
 
             <Button RelativePanel.AlignVerticalCenterWithPanel="True"

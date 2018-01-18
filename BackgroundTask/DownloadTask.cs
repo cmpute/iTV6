@@ -49,6 +49,7 @@ namespace iTV6.Background
                 return;
             }
 
+            RecordScheduleMessager.Instance.Trigger(schedule.Key, RecordScheduleMessageType.DownloadedOne);
             var _defer = taskInstance.GetDeferral();
             if (schedule.Status == ScheduleStatus.Terminated)
             {
@@ -82,7 +83,6 @@ namespace iTV6.Background
         /// 判断下载任务是否失败
         /// </summary>
         /// <param name="download">下载任务</param>
-        // TODO: 如果任务失败的话考虑重新开始或者直接将计划任务设置成失败
         private bool IsFailed(DownloadOperation download)
         {
             BackgroundTransferStatus status = download.Progress.Status;

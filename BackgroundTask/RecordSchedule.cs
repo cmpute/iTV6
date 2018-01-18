@@ -57,7 +57,11 @@ namespace iTV6.Background
         public ScheduleStatus Status
         {
             get { return (ScheduleStatus)Enum.ToObject(typeof(ScheduleStatus), _container.Values[nameof(Status)]); }
-            set { _container.Values[nameof(Status)] = (byte)value; }
+            set
+            {
+                _container.Values[nameof(Status)] = (byte)value;
+                RecordScheduleMessager.Instance.Trigger(Key, RecordScheduleMessageType.StatusChanged);
+            }
         }
 
         /// <summary>

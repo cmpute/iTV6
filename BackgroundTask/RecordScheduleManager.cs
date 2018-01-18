@@ -66,6 +66,7 @@ namespace iTV6.Background
                 ScheduleSpan = recordSpan,
                 Status = ScheduleStatus.Scheduled
             };
+            RecordScheduleMessager.Instance.Trigger(key, RecordScheduleMessageType.Created);
             return schedule;
         }
 
@@ -141,6 +142,7 @@ namespace iTV6.Background
         {
             Container.DeleteContainer(schedule.Key);
             Container.Values.Remove(schedule.Key);
+            RecordScheduleMessager.Instance.Trigger(schedule.Key, RecordScheduleMessageType.Deleted);
         }
     }
 }

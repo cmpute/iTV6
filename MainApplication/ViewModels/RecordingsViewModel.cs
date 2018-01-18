@@ -15,9 +15,8 @@ namespace iTV6.ViewModels
     public class RecordingsViewModel : ViewModelBase
     {
         public RecordingsViewModel() { }
-
-        // TODO: 增加任务列表及任务内容变动的监听
-        public IEnumerable<DownloadToken> TaskList => RecordService.Instance.TaskList;
+        
+        public ObservableCollection<DownloadToken> TaskList => RecordService.Instance.TaskList;
 
         public DelegateCommand CustomRecord => new DelegateCommand(async () =>
         {
@@ -30,11 +29,6 @@ namespace iTV6.ViewModels
         {
             get { return _selectedTask;}
             set { Set(ref _selectedTask, value);}
-        }
-
-        public void DeleteTask()
-        {
-            throw new NotImplementedException();
         }
     }
 }
