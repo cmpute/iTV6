@@ -49,13 +49,14 @@ namespace iTV6.Background
                 return;
             }
 
+            RecordScheduleMessager.Instance.Trigger(schedule.Key, RecordScheduleMessageType.DownloadedOne);
             var _defer = taskInstance.GetDeferral();
             if (schedule.Status == ScheduleStatus.Terminated)
             {
                 System.Diagnostics.Debug.WriteLine("下载计划被终止");
                 // 将已下载的缓存合并成文件保存下来
                 schedule.Status = ScheduleStatus.Decoding;
-                var continuous = await schedule.ConcatenateSegments();
+                var continuous = await schedule.ConcatenateSegments(schedule.SavePath);
                 schedule.Status = ScheduleStatus.Terminated;
                 return;
             }
@@ -65,7 +66,7 @@ namespace iTV6.Background
             if(operation == null)
             {
                 schedule.Status = ScheduleStatus.Decoding;
-                var continuous = await schedule.ConcatenateSegments();
+                var continuous = await schedule.ConcatenateSegments(schedule.SavePath);
 
                 // 生成下载成功的消息提醒
                 XmlDocument successToastXml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
@@ -82,7 +83,6 @@ namespace iTV6.Background
         /// 判断下载任务是否失败
         /// </summary>
         /// <param name="download">下载任务</param>
-        // TODO: 如果任务失败的话考虑重新开始或者直接将计划任务设置成失败
         private bool IsFailed(DownloadOperation download)
         {
             BackgroundTransferStatus status = download.Progress.Status;

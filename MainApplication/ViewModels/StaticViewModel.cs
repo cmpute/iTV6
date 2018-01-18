@@ -12,7 +12,7 @@ using Windows.UI.Popups;
 namespace iTV6.ViewModels
 {
     /// <summary>
-    /// 为非实例化的XAML对象提供ViewModel（如各种Template）
+    /// 为非实例化的XAML对象提供全局的ViewModel
     /// </summary>
     public class StaticViewModel : ViewModelBase
     {
@@ -90,6 +90,14 @@ namespace iTV6.ViewModels
         {
             RecordService.Instance.StartRecording(program.Channel, ChannelsViewModel.Instance.SelectedSource, program.StartTime, program.Duration);
             NavigationService.ShellNavigation.Navigate<RecordingsPage>();
+        });
+
+        /// <summary>
+        /// 删除录播任务
+        /// </summary>
+        public DelegateCommand<DownloadToken> DeleteRecording { get; } = new DelegateCommand<DownloadToken>((token) =>
+        {
+            RecordService.Instance.DeleteRecording(token);
         });
     }
 }

@@ -33,6 +33,7 @@
         
         <converter:PassConverter x:Key="ObjectConverter"/>
         <converter:ToStringConverter x:Key="SizeConverter" FormatString="0.00 KB"/>
+        <converter:ToStringConverter x:Key="SavePathConverter" Default="视频库"/>
         <Style x:Key="SettingPanelStyle" TargetType="StackPanel">
             <Setter Property="Margin" Value="20,0,0,0"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -78,7 +79,7 @@
                     <TextBlock Text="存储位置" Style="{StaticResource SettingDescriptionStyle}"/>
                     <RelativePanel>
                         <TextBox Width="280" x:Name="SavePos" IsReadOnly="True"
-                                 Text="{x:Bind ViewModel.FilePath, Mode=OneWay}"/>
+                                 Text="{x:Bind ViewModel.RecordingPath, Mode=OneWay, Converter={StaticResource SavePathConverter}}"/>
                         <Button Margin="10,0" Tapped="{x:Bind ViewModel.BrowseButtonTapped, Mode=OneWay}"
                                 RelativePanel.RightOf="SavePos" RelativePanel.AlignTopWith="SavePos"
                                 RelativePanel.AlignBottomWith="SavePos" 

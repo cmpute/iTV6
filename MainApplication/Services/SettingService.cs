@@ -30,7 +30,7 @@ namespace iTV6.Services
         private IPropertySet localSettings = ApplicationData.Current.LocalSettings.Values;
         private IPropertySet roamingSettings = ApplicationData.Current.RoamingSettings.Values;
 
-        // TODO: 这里一直保持引用可能会导致内存泄漏，考虑改成WeakReference，并增加DisposeSettingAttributes方法
+        // FIXME: 这里一直保持引用可能会导致内存泄漏，考虑改成WeakReference，并增加DisposeSettingAttributes方法
         private Dictionary<string, List<object>> registeredObject = new Dictionary<string, List<object>>();
 
         private static void SetProperty(object obj, string propertyName, object value)

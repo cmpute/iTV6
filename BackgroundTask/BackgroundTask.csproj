@@ -108,11 +108,13 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Async.cs" />
     <Compile Include="RecordSchedule.cs" />
     <Compile Include="DownloadTask.cs" />
     <Compile Include="LiveTileTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecordScheduleManager.cs" />
+    <Compile Include="RecordScheduleMessager.cs" />
     <Compile Include="ScheduleTask.cs" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

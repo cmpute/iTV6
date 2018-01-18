@@ -59,13 +59,21 @@ namespace iTV6.Background
             string identifier, string playlistUri, DateTimeOffset startTime, TimeSpan recordSpan)
         {
             var key = EncodeIndentifier(identifier);
+            // 这里直接同步运行以避免async传染
+            var video = Async.InvokeAndWait(async () => await StorageLibrary.GetLibraryAsync(KnownLibraryId.Videos));
+            object path = null;
+            ApplicationData.Current.LocalSettings.Values.TryGetValue("RecordingPath", out path);
+            var pathstr = path?.ToString();
+            var filepath = (string.IsNullOrWhiteSpace(pathstr) ? video.SaveFolder.Path : pathstr) + '\\' + identifier + ".ts";
             var schedule = new RecordSchedule(key)
             {
                 PlaylistUri = playlistUri,
                 StartTime = startTime,
                 ScheduleSpan = recordSpan,
-                Status = ScheduleStatus.Scheduled
+                Status = ScheduleStatus.Scheduled,
+                SavePath = filepath
             };
+            RecordScheduleMessager.Instance.Trigger(key, RecordScheduleMessageType.Created);
             return schedule;
         }
 
@@ -133,41 +141,15 @@ namespace iTV6.Background
         public static void TerminateSchedule(RecordSchedule schedule)
             => schedule.Status = ScheduleStatus.Terminated;
 
-        /*
         /// <summary>
-        /// 立即开始录播任务
+        /// 删除下载计划的记录
         /// </summary>
-        /// <param name="Identifier">录播任务的标识符</param>
-        public static void LaunchRecording(string identifier)
+        /// <param name="schedule">下载计划对象</param>
+        public static void DeleteSchedule(RecordSchedule schedule)
         {
-            // 获取计划对象
-            var key = EncodeIndentifier(identifier);
-            var schedule = new RecordSchedule(key);
-            LaunchRecording(schedule);
+            Container.DeleteContainer(schedule.Key);
+            Container.Values.Remove(schedule.Key);
+            RecordScheduleMessager.Instance.Trigger(schedule.Key, RecordScheduleMessageType.Deleted);
         }
-
-        /// <summary>
-        /// 开始录播计划任务，定时开始下载
-        /// </summary>
-        /// <param name="identifier">任务标识串</param>
-        public static void LaunchSchedule(string identifier)
-        {
-            // 获取计划对象
-            var key = EncodeIndentifier(identifier);
-            var schedule = new RecordSchedule(key);
-            LaunchSchedule(schedule);
-        }
-
-        /// <summary>
-        /// 终止下载计划
-        /// </summary>
-        public static void TerminateSchedule(string identifier)
-        {
-            // 获取计划对象
-            var key = EncodeIndentifier(identifier);
-            var schedule = new RecordSchedule(key);
-            TerminateSchedule(schedule);
-        }
-        */
     }
 }

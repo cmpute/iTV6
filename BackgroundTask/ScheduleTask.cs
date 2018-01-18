@@ -35,11 +35,13 @@ namespace iTV6.Background
 
             var _defer = taskInstance.GetDeferral();
             // 生成下一个下载，若下载完毕则直接处理文件
+            schedule.Status = ScheduleStatus.Downloading;
             var operation = await schedule.GenerateDownloadTask();
             if (operation == null)
             {
                 // TODO: 什么情况下会发生？
                 System.Diagnostics.Debugger.Break();
+                schedule.Status = ScheduleStatus.Completed;
             }
             _defer.Complete();
         }

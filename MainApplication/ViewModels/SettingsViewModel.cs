@@ -50,15 +50,15 @@ namespace iTV6.ViewModels
             set { Set(ref _poriorSource, value); }
         }
 
-        private string _filePath = null;
+        private string _recordingPath = null;
         /// <summary>
         /// 录播文件存储地址
         /// </summary>
         [SettingProperty]
-        public string FilePath
+        public string RecordingPath
         {
-            get { return _filePath; }
-            set { Set(ref _filePath, value); }
+            get { return _recordingPath; }
+            set { Set(ref _recordingPath, value); }
         }
 
         public IEnumerable<string> ThemeList { get; } = SettingService.Instance.ThemeList;//从service获得主题列表
@@ -140,9 +140,9 @@ namespace iTV6.ViewModels
                 // Application now has read/write access to all contents in the picked folder
                 // (including other sub-folder contents)
                 StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
-                FilePath = folder.Path;
+                RecordingPath = folder.Path;
             }
-            LoggingService.Debug("Xaml", "选取文件夹：" + FilePath);
+            LoggingService.Debug("Xaml", "选取文件夹：" + RecordingPath);
         }
 
         public DelegateCommand ClearCalendarItems { get; } = new DelegateCommand(async () =>

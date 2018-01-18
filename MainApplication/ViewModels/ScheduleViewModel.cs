@@ -53,6 +53,7 @@ namespace iTV6.ViewModels
             catch(Exception e)
             {
 #if DEBUG
+                LoggingService.Debug("Schedule", e.Message, Windows.Foundation.Diagnostics.LoggingLevel.Error);
                 System.Diagnostics.Debugger.Break();
 #else
                 new MessageDialog(e.Message, $"在获取{name}区域列表时发生{e.GetType()}类型的异常").ShowAsync();
