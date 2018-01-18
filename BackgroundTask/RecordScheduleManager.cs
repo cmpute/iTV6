@@ -59,12 +59,19 @@ namespace iTV6.Background
             string identifier, string playlistUri, DateTimeOffset startTime, TimeSpan recordSpan)
         {
             var key = EncodeIndentifier(identifier);
+            // 这里直接同步运行以避免async传染
+            var video = Async.InvokeAndWait(async () => await StorageLibrary.GetLibraryAsync(KnownLibraryId.Videos));
+            object path = null;
+            ApplicationData.Current.LocalSettings.Values.TryGetValue("RecordingPath", out path);
+            var pathstr = path?.ToString();
+            var filepath = (string.IsNullOrWhiteSpace(pathstr) ? video.SaveFolder.Path : pathstr) + '\\' + identifier + ".ts";
             var schedule = new RecordSchedule(key)
             {
                 PlaylistUri = playlistUri,
                 StartTime = startTime,
                 ScheduleSpan = recordSpan,
-                Status = ScheduleStatus.Scheduled
+                Status = ScheduleStatus.Scheduled,
+                SavePath = filepath
             };
             RecordScheduleMessager.Instance.Trigger(key, RecordScheduleMessageType.Created);
             return schedule;

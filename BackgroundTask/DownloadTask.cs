@@ -56,7 +56,7 @@ namespace iTV6.Background
                 System.Diagnostics.Debug.WriteLine("下载计划被终止");
                 // 将已下载的缓存合并成文件保存下来
                 schedule.Status = ScheduleStatus.Decoding;
-                var continuous = await schedule.ConcatenateSegments();
+                var continuous = await schedule.ConcatenateSegments(schedule.SavePath);
                 schedule.Status = ScheduleStatus.Terminated;
                 return;
             }
@@ -66,7 +66,7 @@ namespace iTV6.Background
             if(operation == null)
             {
                 schedule.Status = ScheduleStatus.Decoding;
-                var continuous = await schedule.ConcatenateSegments();
+                var continuous = await schedule.ConcatenateSegments(schedule.SavePath);
 
                 // 生成下载成功的消息提醒
                 XmlDocument successToastXml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);

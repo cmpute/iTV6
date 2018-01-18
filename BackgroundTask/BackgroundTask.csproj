@@ -108,6 +108,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Async.cs" />
     <Compile Include="RecordSchedule.cs" />
     <Compile Include="DownloadTask.cs" />
     <Compile Include="LiveTileTask.cs" />

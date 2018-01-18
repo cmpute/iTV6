@@ -93,57 +93,68 @@ namespace iTV6.Background
         /// <returns>后台下载任务</returns>
         internal async Task<DownloadOperation> GenerateDownloadTask()
         {
-            // 如果超出录播时长则取消下载
-            if (DateTimeOffset.Now.Subtract(StartTime) > ScheduleSpan)
+            try
             {
-                System.Diagnostics.Debug.WriteLine("计划时间到，录播停止");
-                return null;
-            }
-
-            // 下载最新列表
-            HttpClient client = new HttpClient();
-            var m3uUri = PlaylistUri;
-            var m3u = await client.GetStringAsync(PlaylistUri);
-            foreach (var line in m3u.Split('\n'))
-                if (!line.StartsWith("#") && !string.IsNullOrWhiteSpace(line))
+                // 如果超出录播时长则取消下载
+                if (DateTimeOffset.Now.Subtract(StartTime) > ScheduleSpan)
                 {
-                    var path = _key + "\\" + line;
-                    var file = await ApplicationData. Current.LocalCacheFolder.TryGetItemAsync(path);
-                    if (file == null)
-                    {
-                        Guid taskId;
-                        // 获取下载任务
-                        var downloader = DownloadTask.CreateBackgroundDownloader(out taskId);
-                        StorageFile storage = await ApplicationData.Current.LocalCacheFolder.CreateFileAsync(path, CreationCollisionOption.ReplaceExisting);
-                        var prefix = m3uUri.Remove(m3uUri.LastIndexOf('/') + 1);
-                        var operation = downloader.CreateDownload(new Uri(prefix + line), storage);
-
-                        // 保存任务ID并开始下载
-                        RecordScheduleManager.Container.Values[_key] = taskId;
-                        var task = operation.StartAsync();
-                        downloader.CompletionGroup.Enable();
-                        System.Diagnostics.Debug.WriteLine("开始下载文件到" + storage.Path);
-
-                        return operation;
-                    }
+                    System.Diagnostics.Debug.WriteLine("计划时间到，录播停止");
+                    return null;
                 }
 
-            await Task.Delay(SegmentLength); // 等待刷新
-            return await GenerateDownloadTask(); // 循环获取下一个文件
+                // 下载最新列表
+                HttpClient client = new HttpClient();
+                var m3uUri = PlaylistUri;
+                var m3u = await client.GetStringAsync(PlaylistUri);
+                foreach (var line in m3u.Split('\n'))
+                    if (!line.StartsWith("#") && !string.IsNullOrWhiteSpace(line))
+                    {
+                        var path = _key + "\\" + line;
+                        var file = await ApplicationData.Current.LocalCacheFolder.TryGetItemAsync(path);
+                        if (file == null)
+                        {
+                            Guid taskId;
+                            // 获取下载任务
+                            var downloader = DownloadTask.CreateBackgroundDownloader(out taskId);
+                            StorageFile storage = await ApplicationData.Current.LocalCacheFolder.CreateFileAsync(path, CreationCollisionOption.ReplaceExisting);
+                            var prefix = m3uUri.Remove(m3uUri.LastIndexOf('/') + 1);
+                            var operation = downloader.CreateDownload(new Uri(prefix + line), storage);
+
+                            // 保存任务ID并开始下载
+                            RecordScheduleManager.Container.Values[_key] = taskId;
+                            var task = operation.StartAsync();
+                            downloader.CompletionGroup.Enable();
+                            System.Diagnostics.Debug.WriteLine("开始下载文件到" + storage.Path);
+
+                            return operation;
+                        }
+                    }
+
+                await Task.Delay(SegmentLength); // 等待刷新
+                return await GenerateDownloadTask(); // 循环获取下一个文件
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                System.Diagnostics.Debug.WriteLine("生成下载任务时出错：" + e.Message);
+                System.Diagnostics.Debugger.Break();
+#endif
+                return null;
+            }
         }
 
         /// <summary>
         /// 拼接下载的视频片段
         /// </summary>
         /// <returns>该异步任务返回文件是否连续</returns>
-        internal async Task<bool> ConcatenateSegments()
+        internal async Task<bool> ConcatenateSegments(string filePath)
         {
             System.Diagnostics.Debug.WriteLine("开始连接缓存");
             var continuous = true;
             var folder = await ApplicationData.Current.LocalCacheFolder.GetFolderAsync(_key);
             var files = await folder.GetFilesAsync();
-            // TODO: 选择指定文件写入
-            var target = await ApplicationData.Current.LocalFolder.CreateFileAsync("result.ts", CreationCollisionOption.ReplaceExisting);
+            var targetfolder = await StorageFolder.GetFolderFromPathAsync(filePath.Substring(0, filePath.LastIndexOf('\\')));
+            var target = await targetfolder.CreateFileAsync(filePath.Substring(filePath.LastIndexOf('\\') + 1), CreationCollisionOption.ReplaceExisting);
             using (var ws = await target.OpenAsync(FileAccessMode.ReadWrite))
             {
                 int code = -1;

@@ -81,7 +81,7 @@ namespace iTV6.Services
         public DownloadToken StartRecording(Channel channel, SourceRecord source, DateTimeOffset startTime, TimeSpan span)
         {
             // 注册相关信息
-            string identifer = channel.UniqueId + source.StationName + startTime.ToString();
+            string identifer = channel.UniqueId + source.StationName + startTime.ToString("yyMMddHHmmss");
             var schedule = RecordScheduleManager.CreateSchedule(identifer, source.Source.AbsoluteUri, startTime, span);
             var token = new DownloadToken()
             {
@@ -130,31 +130,5 @@ namespace iTV6.Services
             _TaskList.Remove(key);
             TaskList.Remove(token);
         }
-
-        /// <summary>
-        /// 获取存储文件夹
-        /// </summary>
-        //public async static Task<StorageFolder> GetMyFolderAsync()
-        //{
-        //    StorageFolder folder = null;
-        //    string path = SettingService.Instance["FilePath"].ToString();
-        //    StorageFolder defaultfolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("iTV6_Download", CreationCollisionOption.OpenIfExists);
-        //    if (!string.IsNullOrEmpty(path))
-        //    {
-        //        try
-        //        {
-        //            folder = await StorageFolder.GetFolderFromPathAsync(path);
-        //        }
-        //        catch
-        //        {
-        //            folder = defaultfolder;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        folder = defaultfolder;
-        //    }
-        //    return folder;
-        //}
     }
 }
