@@ -45,7 +45,7 @@
                     <Button Style="{StaticResource ListButtonStyle}" ToolTipService.ToolTip="收藏节目"
                             Command="{Binding Source={StaticResource StaticVM}, Path=ToggleFavouriteProgram}"
                             CommandParameter="{x:Bind}">
-                        <!-- TODO: 绑定动态图标和对应事件 -->
+                        <!-- TODO: 绑定动态图标 -->
                         <Button.Content>
                             <FontIcon Glyph="&#xE006;"
                                       Width="24" Height="24"/>

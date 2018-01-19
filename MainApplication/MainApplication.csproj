@@ -99,6 +99,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Behaviors\OpenAttachedFlyoutAction.cs" />
+    <Compile Include="Converters\IsNullOrEmptyConverter.cs" />
     <Compile Include="Converters\ToStringConverter.cs" />
     <Compile Include="Converters\PassConverter.cs" />
     <Compile Include="Converters\RelativeDatetimeConverter.cs" />

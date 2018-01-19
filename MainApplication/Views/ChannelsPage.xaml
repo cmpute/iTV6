@@ -139,6 +139,14 @@
             </Grid>
         </DataTemplate>
         <converter:RelativeDatetimeConverter x:Key="TimeConverter"/>
+        <converter:IsNullOrEmptyConverter x:Key="NullVisibilityConverter">
+            <converter:IsNullOrEmptyConverter.EmptyValue>
+                <Visibility>Visible</Visibility>
+            </converter:IsNullOrEmptyConverter.EmptyValue>
+            <converter:IsNullOrEmptyConverter.NonEmptyValue>
+                <Visibility>Collapsed</Visibility>
+            </converter:IsNullOrEmptyConverter.NonEmptyValue>
+        </converter:IsNullOrEmptyConverter>
     </Page.Resources>
 
     <Page.DataContext>
@@ -298,8 +306,9 @@
                                       Width="24" Height="24"/>
                         </Button.Content>
                     </Button>
+                    <!-- TODO: 实现手动录播的功能 -->
                     <Button x:Name="RecordNow" Style="{StaticResource HeaderButtonStyle}"
-                            ToolTipService.ToolTip="立即开始录播">
+                            ToolTipService.ToolTip="立即开始录播" Command="{x:Bind ViewModel.AddChannelRecordTask}">
                         <Button.Content>
                             <SymbolIcon Width="24" Height="24" Symbol="Video"/>
                         </Button.Content>
@@ -311,6 +320,12 @@
                       ItemTemplate="{StaticResource ProgramScheduleTemplate}"
                       ItemContainerStyle="{StaticResource FilledListItemStyle}">
             </ListView>
+            <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.Schedule, Converter={StaticResource NullVisibilityConverter}, Mode=OneWay}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <FontIcon Glyph="&#xE727;" FontSize="200" FontWeight="Bold"/>
+                    <TextBlock Text="暂无可用节目单" FontSize="32"/>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

@@ -138,8 +138,8 @@ namespace iTV6.ViewModels
             //选择默认来源
             var defaultStation = SettingService.Instance.Get("PriorSource",
                 TelevisionService.Instance.TelevisionStations.First().IdentifierName) as string;
-            var defaultSource = SelectedProgram.MediaSources.First(source => source.StationName.StartsWith(defaultStation));
-            SelectedSource = defaultSource ?? SelectedProgram.MediaSources.First();
+            var defaultSource = SelectedProgram.MediaSources.Where(source => source.StationName.StartsWith(defaultStation));
+            SelectedSource = defaultSource.Count() == 0 ? SelectedProgram.MediaSources.First() : defaultSource.First();
 
             //展开侧面面板
             ToggleSidePanel.RaiseCanExecuteChanged();
