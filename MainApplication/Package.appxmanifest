@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="59c3bec4-158c-4701-829d-088c0cb048a4" Publisher="CN=Jacob" Version="0.0.1.0" />
-  <mp:PhoneIdentity PhoneProductId="59c3bec4-158c-4701-829d-088c0cb048a4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="5650Cmpute.iTV6" Publisher="CN=96DDB1BE-5C1C-4FED-BCC1-A9B1541834D8" Version="0.8.2.0" />
+  <mp:PhoneIdentity PhoneProductId="16612e0c-72b9-400b-98b7-b2246c8ed3f1" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>MainApplication</DisplayName>
-    <PublisherDisplayName>Jacob</PublisherDisplayName>
+    <DisplayName>iTV6</DisplayName>
+    <PublisherDisplayName>Jacob Zhong</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -16,19 +16,20 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="MainApplication.App">
       <uap:VisualElements DisplayName="iTV6" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="IPv6网络电视" BackgroundColor="transparent">
+        <uap:LockScreen Notification="badge" BadgeLogo="Assets\BadgeLogo.png" />
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="iTV6.Background.ScheduleTask">
-          <BackgroundTasks>
-            <Task Type="timer" />
-          </BackgroundTasks>
-        </Extension>
         <Extension Category="windows.backgroundTasks" EntryPoint="iTV6.Background.DownloadTask">
           <BackgroundTasks>
             <Task Type="systemEvent" />
+          </BackgroundTasks>
+        </Extension>
+        <Extension Category="windows.backgroundTasks" EntryPoint="iTV6.Background.ScheduleTask">
+          <BackgroundTasks>
+            <Task Type="timer" />
           </BackgroundTasks>
         </Extension>
       </Extensions>

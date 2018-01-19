@@ -14,7 +14,7 @@ namespace iTV6.Background
     /// <summary>
     /// 在设置中保存的录播计划
     /// </summary>
-    public class RecordSchedule
+    public sealed class RecordSchedule
     {
         private string _key;
         private ApplicationDataContainer _container; // 每个对象与设置数据相对应

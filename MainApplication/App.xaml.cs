@@ -34,12 +34,25 @@ namespace iTV6
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-            this.UnhandledException += HandledException;
+            this.UnhandledException += HandleException;
         }
 
-        private async void HandledException(object sender, UnhandledExceptionEventArgs e)
+        private void RegisterExceptionHandlingSynchronizationContext()
         {
-            await new Windows.UI.Popups.MessageDialog(e.Message, e.Exception.ToString()).ShowAsync();
+            Utils.ExceptionHandlingSynchronizationContext
+                .Register()
+                .UnhandledException += HandleSynchronizedException;
+        }
+
+        private async void HandleException(object sender, UnhandledExceptionEventArgs e)
+        {
+            e.Handled = true;
+            await new Windows.UI.Popups.MessageDialog(e.Exception.ToString(), "发生异常了:(").ShowAsync();
+        }
+        private async void HandleSynchronizedException(object sender, Utils.UnhandledExceptionEventArgs e)
+        {
+            e.Handled = true;
+            await new Windows.UI.Popups.MessageDialog(e.Exception.ToString(), "发生异常了:(").ShowAsync();
         }
 
         /// <summary>
@@ -54,6 +67,9 @@ namespace iTV6
 
             // 读取缓存
             CacheService.RestoreCache();
+
+            // 注册异步事件的处理方法
+            RegisterExceptionHandlingSynchronizationContext();
 
             Frame rootFrame = Window.Current.Content as Frame;
 

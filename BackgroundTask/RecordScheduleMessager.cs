@@ -10,7 +10,7 @@ namespace iTV6.Background
     /// <summary>
     /// 提供前后台的消息传递服务
     /// </summary>
-    public class RecordScheduleMessager
+    public sealed class RecordScheduleMessager
     {
         const string queueKey = "RecordChangedMessage";
         public static RecordScheduleMessager Instance { get; } = new RecordScheduleMessager();
