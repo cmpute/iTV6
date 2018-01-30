@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Networking;
@@ -25,7 +26,11 @@ namespace iTV6.Utils
             {
                 HostName host = new HostName(hostname);
                 var eps = await DatagramSocket.GetEndpointPairsAsync(host, "80");
-                return eps.Count >= 1;
+                if (eps.Count == 0) return false;
+
+                HttpClient client = new HttpClient();
+                var response = await client.GetAsync(hostname);
+                return response.IsSuccessStatusCode;
             }
             catch(Exception e)
             {
